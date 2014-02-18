@@ -1,0 +1,3 @@
+[submodule "hyde"]
+	path = hyde
+	url = https://github.com/Keats/pelican-hyde.git

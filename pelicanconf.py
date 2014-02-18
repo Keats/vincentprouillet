@@ -21,7 +21,7 @@ TRANSLATION_FEED_ATOM = None
 
 DELETE_OUTPUT_DIRECTORY = True
 PATH = 'content/'
-THEME = "../pelican-hyde"
+THEME = "hyde"
 
 STATIC_PATHS = [
   'images',
