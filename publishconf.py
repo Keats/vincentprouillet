@@ -23,20 +23,3 @@ DELETE_OUTPUT_DIRECTORY = True
 
 DISQUS_SITENAME = "vincentprouillet"
 GOOGLE_ANALYTICS = "UA-43335571-1"
-
-PLUGINS = PLUGINS + ['gzip_cache', 'sitemap']
-
-# Settings for the sitemap plugin
-SITEMAP = {
-    'format': 'xml',
-    'priorities': {
-        'articles': 0.8,
-        'indexes': 0.7,
-        'pages': 0.5
-    },
-    'changefreqs': {
-        'articles': 'weekly',
-        'indexes': 'daily',
-        'pages': 'monthly'
-    }
-}

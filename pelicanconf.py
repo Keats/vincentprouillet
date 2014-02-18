@@ -46,4 +46,21 @@ MENU = {
 
 COLOR_SCHEME = 'theme-base-0f'
 
-PLUGIN_PATH = '../pelican-plugins'
+PLUGIN_PATH = 'plugins'
+PLUGINS = ['gzip_cache', 'sitemap']
+
+# Settings for the sitemap plugin
+SITEMAP = {
+    'format': 'xml',
+    'priorities': {
+        'articles': 0.8,
+        'indexes': 0.7,
+        'pages': 0.5
+    },
+    'changefreqs': {
+        'articles': 'weekly',
+        'indexes': 'daily',
+        'pages': 'monthly'
+    }
+}
+
