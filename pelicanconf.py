@@ -28,6 +28,11 @@ STATIC_PATHS = [
   'extras'
 ]
 
+# A list of extra files to copy from the source to the destination
+EXTRA_PATH_METADATA = {
+  'extras/robots.txt': {'path': 'robots.txt'}
+}
+
 # I don't want pagination/tags/categories/etc
 DEFAULT_PAGINATION = False
 AUTHOR_SAVE_AS = False
