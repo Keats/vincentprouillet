@@ -1,5 +1,6 @@
 Title: Gulp by example
 Date: 2014-02-17
+summary: Showing how to use Gulp, a new javascript build system and its difference with Grunt
 URL: introducing-people-to-gulp/
 save_as: introducing-people-to-gulp/index.html
 

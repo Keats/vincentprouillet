@@ -46,13 +46,16 @@ ARCHIVES_SAVE_AS = False
 MENU = {
   'About': '%s/presenting-himself/' % SITEURL,
   'Projects': '%s/working-on/' % SITEURL,
-  'Github': 'https://github.com/Keats'
+  'Github': 'https://github.com/Keats',
+  'Feed': '%s/feed.xml' % SITEURL
 }
 
 COLOR_SCHEME = 'theme-base-0f'
 
 PLUGIN_PATH = 'plugins'
-PLUGINS = ['gzip_cache', 'sitemap']
+PLUGINS = ['gzip_cache', 'sitemap', 'feed_summary']
+
+FEED_USE_SUMMARY = True
 
 # Settings for the sitemap plugin
 SITEMAP = {

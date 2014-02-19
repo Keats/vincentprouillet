@@ -1,5 +1,6 @@
 Title: Making third party widgets
 Date: 2013-11-06
+Summary: How to develop cross-domains javascript widgets such as Facebook Like buttons
 URL: making-third-party-widgets/
 save_as: making-third-party-widgets/index.html
 

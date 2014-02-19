@@ -1,5 +1,6 @@
 Title: Class-based views VS function-based views
 Date: 2013-10-02
+Summary: What are the pros/cons of CBV and FBV in Django
 URL: using-class-based-views/
 save_as: using-class-based-views/index.html
 

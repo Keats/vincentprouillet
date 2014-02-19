@@ -1,5 +1,6 @@
 Title: Starting an AngularJS project
 Date: 2013-10-23
+Summary: A Boilerplate for a complete dev environment using AngularJS
 URL: starting-an-angularjs-project/
 save_as: starting-an-angularjs-project/index.html
 

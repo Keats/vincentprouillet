@@ -1,5 +1,6 @@
 Title: Provisioning and deploying this blog with Ansible
 Date: 2013-08-17
+summary: Showing off Ansible by example
 URL: deploying-this-blog-using-ansible/
 save_as: deploying-this-blog-using-ansible/index.html
 

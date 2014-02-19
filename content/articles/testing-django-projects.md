@@ -1,5 +1,6 @@
 Title: Testing Django projects
 Date: 2013-09-02
+Summary: Tools and tricks I use to make tests fast and easy to write in Django projects
 URL: testing-django-projects/
 save_as: testing-django-projects/index.html
 
