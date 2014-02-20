@@ -50,7 +50,7 @@ MENU = {
   'Feed': '%s/feed.xml' % SITEURL
 }
 
-COLOR_SCHEME = 'theme-base-0f'
+COLOR_SCHEME = 'theme-base-08'
 
 PLUGIN_PATH = 'plugins'
 PLUGINS = ['gzip_cache', 'sitemap', 'feed_summary']
