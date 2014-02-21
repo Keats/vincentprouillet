@@ -64,7 +64,7 @@ The second command will run the task called default.
 Before modifying the file, let's think at what we will need:
 
 - sass compiler (gulp-sass)
-- something to reload the page (gulp-connect)
+- something to reload the page (browsersync)
 - coffeescript linter (gulp-coffeelint)
 - coffeescript compiler (gulp-coffee)
 - concat files (gulp-concat)
@@ -73,7 +73,7 @@ Before modifying the file, let's think at what we will need:
 Let's install those.
 
 ```bash
-$ npm install gulp-sass gulp-connect gulp-coffeelint gulp-coffee gulp-concat gulp-uglify --save-dev
+$ npm install gulp-sass browser-sync gulp-coffeelint gulp-coffee gulp-concat gulp-uglify --save-dev
 ```
 
 No need to load task the Grunt way, we can just require those the node way:
@@ -83,7 +83,7 @@ gulp = require 'gulp'
 gutil = require 'gulp-util'
 
 sass = require 'gulp-sass'
-connect = require 'gulp-connect'
+browserSync = require 'browser-sync'
 coffeelint = require 'gulp-coffeelint'
 coffee = require 'gulp-coffee'
 concat = require 'gulp-concat'
@@ -109,15 +109,17 @@ Gulp has a very simple API and we are going to use 4 methods from it: task, src,
 The first task will be to set the server for the dev environment with the autoreload, this one doesn't take source files as you can imagine.
 
 ```coffeescript
-gulp.task 'connect', connect.server(
-  root: ['dist'] # this is the directory the server will run
-  port: 1337
-  livereload: true
-  open:
-    browser: 'chromium-browser' # change that to the browser you're using
-)
+# Reloads the page for us
+gulp.task 'browser-sync', ->
+  browserSync.init [
+    'dist/*.html'
+    'dist/**/*.js'
+    'dist/**/*.css'
+    ],
+    server:
+      baseDir: './dist'
 ```
-
+There are several plugins that reload the page but this one is the simplest I found, simply defines the files you want to watch and it will reload for you, no need for additional config.  
 This task is not a really good example of what gulp does so let's move to a more exciting one, the sass task.
 
 ```coffeescript
@@ -125,12 +127,10 @@ gulp.task 'style', ->
   gulp.src(sources.sass) # we defined that at the top of the file
   .pipe(sass({outputStyle: 'compressed', errLogToConsole: true}))
   .pipe(gulp.dest(destinations.css))
-  .pipe(connect.reload())
 ```
 
 Now you can see a bit more of a magic but it's still fairly straightforward.  
 gulp.src finds the files that matches the glob, pipe them to the sass plugin that will compile them (setting errLogToConsole to true means we won't exit gulp if we make a mistake in the sass file, good when watching), result is piped to gulp.dest which defines the destination to which we want to write the file.  
-Finally, it reloads the server.  
 
 The HTML task just copies the index.html file to the dist folder and reloads the server, you should be able to follow the code by now.
 
@@ -138,7 +138,6 @@ The HTML task just copies the index.html file to the dist folder and reloads the
 gulp.task 'html', ->
   gulp.src(sources.html)
   .pipe(gulp.dest(destinations.html))
-  .pipe(connect.reload())
 ```
 
 Now the coffeescript task is more interesting because it really highlights the difference between Grunt and Gulp.  
@@ -157,7 +156,6 @@ gulp.task 'src', ->
   .pipe(concat('app.js'))
   .pipe(uglify())
   .pipe(gulp.dest(destinations.js))
-  .pipe(connect.reload())
 ```
 
 I find this system quite brilliant, no need to go through temp folders just to be able to run all your tasks and it's WAY more readable than going through the config for each of these plugins you would do in Grunt.  
@@ -193,11 +191,7 @@ gulp.task 'clean', ->
 gulp.task 'build', ->
   runSequence 'clean', ['style', 'lint', 'src', 'html']
 
-gulp.task 'default', [
-  'build'
-  'connect'
-  'watch'
-]
+gulp.task 'default', ['build', 'browser-sync','watch']
 ```
 This allows us to make a clean build and watch over the changes. 
 For the env/prod differences (like minifying), you need to pass another argument called type when running gulp:
