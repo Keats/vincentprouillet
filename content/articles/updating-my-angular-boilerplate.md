@@ -43,7 +43,7 @@ The templates, tests and styles are placed in their own directory (with tests be
 I've seen quite a few people mentionning they were putting all of this in the feature directory but to me it makes it hard to find stuff (I use the same templates and tests directory in my django projects as well so it may be an habit).  
 
 In the style directory, you might have noticed the snowflake thing.   
-This is my base SCSS (you can see the repo on github: [https://github.com/Keats/snowflake](https://github.com/Keats/snowflake)) which is Foundation (for the general style/typography), Bourbon (for the mixins you would usually use compasss) and Neat (for the grid system).  
+This is my base SCSS (you can see the repo on github: [https://github.com/Keats/snowflake](https://github.com/Keats/snowflake)) which is Bourbon (for the mixins you would usually use compasss), Neat (for the grid system) and Bitters (for the typography for now).  
 
 ## Build and features
 The previous build system was using Grunt but I switched to Gulp as the config file made much more sense to me (and way simpler to understand and faster).  
