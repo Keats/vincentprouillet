@@ -1,4 +1,4 @@
-Title: Factory Boy or Model Mommy
+Title: Python testing: Factory Boy or Model Mommy
 Date: 2014-04-05
 summary: Pros/cons of each
 URL: using-factory-boy-or-model-mommy/
@@ -60,12 +60,12 @@ class TeashopFactory(factory.django.DjangoModelFactory):
 Now, to use it in your tests, it's very simple:
 
 ```python
->> OwnerFactory() # will save into database and return an instance of the model
->> OwnerFactory.create() # same as above
->> OwnerFactory.build() # will create the object but not save it in database, very cool for unit tests
->> OwnerFactory(first_name='Malcom') # override the default first name we defined in the factory
->> TeashopFactory() # will create both a teashop and an associated owner model and return the teashop
->> TeashopFactory(owner=my_owner_object) # will use the Owner object provided instead of creating one
+>>> OwnerFactory() # will save into database and return an instance of the model
+>>> OwnerFactory.create() # same as above
+>>> OwnerFactory.build() # will create the object but not save it in database, very cool for unit tests
+>>> OwnerFactory(first_name='Malcom') # override the default first name we defined in the factory
+>>> TeashopFactory() # will create both a teashop and an associated owner model and return the teashop
+>>> TeashopFactory(owner=my_owner_object) # will use the Owner object provided instead of creating one
 ```
 
 Factory boy also provides hooks if you need to modify the object or save some properties in another database.
@@ -75,18 +75,18 @@ Factory boy also provides hooks if you need to modify the object or save some pr
 Look at that:
 
 ```python
->> mommy.make(Owner) # identical to .create() in factory boy
->> mommy.make(Teashop) # will create and save the teashop and the owner
->> mommy.prepare(Owner) # create but not save in the database
+>>> mommy.make(Owner) # identical to .create() in factory boy
+>>> mommy.make(Teashop) # will create and save the teashop and the owner
+>>> mommy.prepare(Owner) # create but not save in the database
 ```
 
 And yes, there's nothing else to define. Model mommy will automatically fill the objects attributes with random data corresponding to the type of column in the ORM.  
 You can obviously define the attributes manually if you want, even for related objects:  
 
 ```python
->> mommy.make(Owner, first_name='Malcolm')
->> mommy.make(Teashop, owner__first_name='Malcom') # AWESOME
->> mommy.make(Teashop, _quantity=7) # creates and return 7 teashop objects, everyone gets a teashop!
+>>> mommy.make(Owner, first_name='Malcolm')
+>>> mommy.make(Teashop, owner__first_name='Malcom') # AWESOME
+>>> mommy.make(Teashop, _quantity=7) # creates and return 7 teashop objects, everyone gets a teashop!
 ```
 
 You might be thinking that having random data in your tests can be a bad idea (I tend to agree) and annoying to track down bugs (it's hard to see that sdawrewaev is a first name).  
