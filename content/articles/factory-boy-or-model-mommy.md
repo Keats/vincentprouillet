@@ -4,7 +4,6 @@ summary: Pros/cons of each
 URL: using-factory-boy-or-model-mommy/
 save_as: using-factory-boy-or-model-mommy/index.html
 
-# Python testing: Factory Boy or Model Mommy
 
 Writing tests is necessary.  
 Whether you write them before the code itself (TDD, BDD) or after, it allows you to refactor and change your code with confidence (nobody wants to refactor a critical feature with no coverage).  
