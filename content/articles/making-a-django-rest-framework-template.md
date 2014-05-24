@@ -1,5 +1,6 @@
 Title: A template for Django REST Framework projects
 Date: 2014-05-15
+Modified: 2014-05-24
 summary: Showing off a django template to kickstart a DRF project
 URL: making-a-django-rest-framework-template/
 save_as: making-a-django-rest-framework-template/index.html
@@ -25,6 +26,7 @@ There are also goodies on dev and test environments:
 - [django-extensions](https://github.com/django-extensions/django-extensions): adds some useful management commands
 - [coverage](http://nedbatchelder.com/code/coverage/): measures code coverage
 - [factory-boy](https://factoryboy.readthedocs.org/en/latest/): my library of choice to create objects in tests, I go more into details in my article [Python testing: Factory Boy or Model Mommy](http://vincent.is/using-factory-boy-or-model-mommy/)
+- [flake8](https://flake8.readthedocs.org): ensures code quality, respect of pep8 and other nice things, it can easily be installed as a git/mercurial hook
 
 ## Install
 You will need Postgres installed and the following libs (for ubuntu/debian, for others systems look in your package managers).
@@ -44,6 +46,14 @@ $ cd myproject
 $ pip install -r requirements/local.txt
 $ python myproject/manage.py migrate
 ```
+
+If you want, you can also add a pre-commit flake8 hook to ensure that commit respects it.  
+
+```bash
+$ flake8 --install-hook
+```
+
+By default it will not stop commits because of warning, a quick look at .git/hooks/pre-commit shows that putting an environment variable of FLAKE8_STRICT will stop them.  
 
 And you should be almost good to go. 
 There are a few hardcoded temporary settings that you will want to replace, look for the string 'Ann Onymous' and you should find them.  
