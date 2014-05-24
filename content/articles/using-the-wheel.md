@@ -32,7 +32,7 @@ The first thing you need to do is installing wheel.
 $ pip install wheel # with pip version >= 1.4
 ```
 At this point you remember that not even 10 lines above, I said we didn't use to use pypi to deploy.  
-Wheels are zip archives that python can execute so that means we can actually use the wheel of wheel to install wheel (yo dawg).  
+Wheels are zip archives that python can execute so that means we can actually use the wheel of wheel to install wheel (yo dawg, I heard you liked wheels).  
 You could download the wheel manually and installing using whatever deployment system you are using but let's install from pip locally.  
 
 Now that you got pip and your requirements file ready, time to reinvent the wheels (haha...).  
@@ -80,6 +80,7 @@ To install my requirements from my wheels, I simply need to tell pip where to lo
 ```bash
 $ pip install --use-wheel --no-index --find-links=wheelhouse/ -r requirements/local.txt
 ``` 
+The no-index part flag ensures that pip won't try to look it up in others sources than the directory we specify in find-links.
 Delete your virtualenv and see how fast it is to install now (apparently wheel ignores URLs though, you could install the wheel file manually as explained above).  
 
 This is roughly the workflow with using wheels for your project.  
