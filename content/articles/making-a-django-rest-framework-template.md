@@ -1,6 +1,6 @@
 Title: A template for Django REST Framework projects
 Date: 2014-05-15
-Modified: 2014-05-24
+Updated: 2014-05-24
 summary: Showing off a django template to kickstart a DRF project
 URL: making-a-django-rest-framework-template/
 save_as: making-a-django-rest-framework-template/index.html
