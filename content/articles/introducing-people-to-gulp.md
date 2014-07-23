@@ -1,9 +1,14 @@
 Title: Gulp by example
 Date: 2014-02-17
+Updated: 2014-07-23
 summary: Showing how to use Gulp, a new javascript build system and its difference with Grunt
 URL: introducing-people-to-gulp/
 save_as: introducing-people-to-gulp/index.html
 
+
+#### UPDATE (2014/07/23)
+I have updated gulp and replaced connect with browsersync (I did that already in the article with an earlier version of browser-sync but not on the [example project](https://github.com/Keats/gulp-example) on github, it is now up to date).  
+I also do not use coffeescript anymore, I [switched to typescript](http://vincent.is/switching-to-typescript/) and use plain js for the gulpfile but everything in this post is still valid.  
 
 ## Introduction
 So I wanted to make changes to my [ng-boilerplate](https://github.com/Keats/ng-boilerplate "ng-boilerplate") project to make it simple enough for a javascript newbie to understand what was going on.  
@@ -52,11 +57,11 @@ $ sudo npm install -g gulp # for the cli
 $ npm install gulp gulp-util coffee-script --save-dev
 $ touch gulpfile.coffee
 ```
-You can run a gulp task that way if the gulpfile is in coffeescript:
+You can run a gulp task that way:
 
 ```bash
-$ gulp mytaskname --require coffee-script/register
-$ gulp --require coffee-script/register
+$ gulp mytaskname
+$ gulp
 ```
 
 The second command will run the task called default.
@@ -106,18 +111,17 @@ destinations =
 
 Gulp has a very simple API and we are going to use 4 methods from it: task, src, dest and watch (that's pretty much the whole API).  
 
-The first task will be to set the server for the dev environment with the autoreload, this one doesn't take source files as you can imagine.
+The first task will be to set the server for the dev environment with the autoreload.
 
 ```coffeescript
 # Reloads the page for us
 gulp.task 'browser-sync', ->
-  browserSync.init [
-    'dist/*.html'
-    'dist/**/*.js'
-    'dist/**/*.css'
-    ],
+    browserSync.init null,
+    open: false
     server:
-      baseDir: './dist'
+      baseDir: "./dist"
+    watchOptions:
+      debounceDelay: 1000
 ```
 There are several plugins that reload the page but this one is the simplest I found, simply defines the files you want to watch and it will reload for you, no need for additional config.  
 This task is not a really good example of what gulp does so let's move to a more exciting one, the sass task.
@@ -166,6 +170,10 @@ gulp.task 'watch', ->
   gulp.watch sources.sass, ['style']
   gulp.watch sources.app, ['lint', 'src', 'html']
   gulp.watch sources.html, ['html']
+  
+  # And we reload our page if something changed in the output folder
+  gulp.watch 'dist/**/**', (file) ->
+    browserSync.reload(file.path) if file.type is "changed"
 ```
 
 And that's it, you got the whole thing set up (well...), very easy to understand even by someone that never used gulp.
@@ -197,7 +205,7 @@ This allows us to make a clean build and watch over the changes.
 For the env/prod differences (like minifying), you need to pass another argument called type when running gulp:
 
 ```bash
-$ gulp --require coffee-script/register --type prod
+$ gulp --type prod
 ``` 
 
 And then retrieve that value using gulp-util and use it in the tasks:
