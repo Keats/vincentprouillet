@@ -1,8 +1,10 @@
 Title: Python testing: Factory Boy or Model Mommy
 Date: 2014-04-05
+Updated: 2014-07-25
 summary: Pros/cons of each
 URL: using-factory-boy-or-model-mommy/
 save_as: using-factory-boy-or-model-mommy/index.html
+
 
 
 Writing tests is necessary.  
@@ -40,7 +42,8 @@ Let's see how the factories would work for our models:
 
 ```python
 class OwnerFactory(factory.django.DjangoModelFactory):
-    FACTORY_FOR = 'Owner'
+    class Meta:
+        model = models.Owner
 
     first_name = 'bobby'
     last_name = 'D'
@@ -50,6 +53,9 @@ class OwnerFactory(factory.django.DjangoModelFactory):
     email = factory.LazyAttribute(lambda a: '{0}.{1}@example.com'.format(a.first_name, a.last_name).lower())
 
 class TeashopFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Teashop
+
     name = 'Tea-Bone'
     # the first teashop will be 0 Downing street, the second 1 Downing Street etc
     address = factory.Sequence(lambda n: '{0} Downing Street'.format(n))
@@ -97,4 +103,3 @@ If you are using something other than Django, the choice is easy and you should 
 If you are using Django, things are pretty much down to your personal preference as both do a good job providing models for your tests.  
 I really like how simple it is to use Model Mommy and the ORM syntax to edit relationship attributes but since I don't want random data, I would always use recipes and I might as well use Factory Boy.  
 In the end I use Factory Boy, the explicit declaration and the possibility of using the same tool on a Flask or Pyramid project makes it very attractive.  
-
