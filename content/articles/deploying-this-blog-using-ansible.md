@@ -12,7 +12,7 @@ Or you get a new server and need to make it up and running quickly, are you goin
 Fortunately, lots of tools exist to automate the process : Chef, Puppet, Salt, Ansible and several others.
 Because I don't want to configure my server everytime and would like to automate the whole deploy thing, I chose to use 
 Ansible for it.  
-We're also Ansible using for [Hizard](http://www.hizard.com/ "Hizard") as well so there's that. 
+We're also using Ansible for [Hizard](http://www.hizard.com/ "Hizard") as well so there's that. 
 
 
 ## Ansible, I choose you !
