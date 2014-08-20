@@ -60,6 +60,23 @@ external_id = models.IntegerField(db_index=True)
 ```
 Adding an index in postgres is pretty damn fast so do not be worried about the time it could take and sped up those queries significantly (ie they do not appear in the slow queries log).
 
+The last trick is to wrap a method/bit of code to ensure atomicity.  
+Django provides a method usable both as a decorator and as a context manager allowing to do that:
+
+```python
+# As a decorator
+@transaction.atomic
+def do_lots_of_queries:
+  pass
+
+# As a context manager
+with transaction.atomic():
+  # do queries
+  pass
+```
+This prevents from commiting every query and can speed up the piece of code significantly.  
+Use that sparingly though as transactions have some performance cost initially and are not suitable to create in a public view for example.
+
 After all these changes, the processing was faster but still super slow.  
 I decided to then look at the DB server.  
 
