@@ -15,6 +15,7 @@ The PostgreSQL database being on his own server, I assumed it was properly confi
 The models in that case are news article, so it contains the text of the article (and it can get pretty big) as well as lots of metadata about it.   
 All in all, one of these objects can get pretty big (relatively speaking, keep in mind there are tens of millions of them) so getting/saving them can take some time.  
 
+### Only
 Most of the time you do not need to get the whole object, you might want to only get one or two fields, very simple thing to do in SQL and in Django as well thanks to .only():
 
 ```python
@@ -25,6 +26,8 @@ Article.objects.all().only('id')
 Article.objects.only('id').get(id=42)
 ```
 That sped up things in some places, but it was still pretty damn slow.  
+
+### Update fields
 Looking at the slow queries log (more on that in the postgres part below), the issue was very clear: when updating an article on one field, it was re-saving everything !  
 Django's ORM comes with an easy way to fix that:
 
@@ -37,6 +40,8 @@ article.save(update_fields=['url']) # correct way
 ```
 
 That's three problems fixed. Still slow though.  
+
+### Bulk create
 Another thing to try was to bulk insert articles instead of creating them while looping:
 
 ```python
@@ -52,6 +57,17 @@ Article.objects.bulk_create([
 ```
 There are a few caveats to be aware of when using using bulk_create, those are explained in the [django doc](https://docs.djangoproject.com/en/dev/ref/models/querysets/#bulk-create).  
 
+### Mass update
+In the same spirit of the bulk_create, mass update will also speed up your code quite a bit:
+
+```python
+ids_to_update = []
+# Code that appends to ids_to_update
+Article.objects.filter(id__in=ids_to_update).update(failed=True)
+```
+This will be much faster than doing one update for each article individually as it will be done in a single query.
+
+### Indices
 Another one was to add an index on a column that was used to filter but wasn't an index at all:
 
 ```python
@@ -60,6 +76,7 @@ external_id = models.IntegerField(db_index=True)
 ```
 Adding an index in postgres is pretty damn fast so do not be worried about the time it could take and sped up those queries significantly (ie they do not appear in the slow queries log).
 
+### Transactions
 The last trick is to wrap a method/bit of code to ensure atomicity.  
 Django provides a method usable both as a decorator and as a context manager allowing to do that:
 
@@ -113,7 +130,7 @@ checkpoint_completion_target = 0.9
 wal_buffers = 16MB
 default_statistics_target = 500
 ```
-This made everything run about 10x faster.
+This made everything run about 10x faster.  
 
 ## Conclusion
 Most of the time, the biggest bottleneck will be the database so do not forget that you are not using SQL and therefore you might make mistakes using an ORM (forgetting the update_fields for example) that you would never do in SQL.  
