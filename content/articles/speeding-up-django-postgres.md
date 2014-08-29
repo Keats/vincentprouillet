@@ -1,5 +1,6 @@
 Title: Speeding up Django / PostgreSQL
 Date: 2014-08-20
+Updated: 2014-08-29
 summary: Tips to improve performance with Django/postgresql
 URL: speeding-up-django-postgres/
 save_as: speeding-up-django-postgres/index.html
