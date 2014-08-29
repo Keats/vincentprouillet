@@ -7,9 +7,9 @@ save_as: speeding-up-django-postgres/index.html
 
 ## Background
 
-At my current contract, we process hundreds of thousand of articles a day and those are saved in some different models as we go along the pipeline. The stack for that application is Django + PostgreSQL + [rq](http://python-rq.org/) (alternative to the classic Celery for the queues).   
+At my current contract, we process hundreds of thousand of articles a day and those are saved in some different models as we go along the pipeline. The stack for that application is Django (1.6) + PostgreSQL (9.3) + [rq](http://python-rq.org/) (alternative to the classic Celery for the queues).   
 Tasks started to take way too much time and so I started looking into.  
-This is not going to mention caching but things should obviously be cached if this is applicated to your project.  
+This is not going to mention caching but things should obviously be cached if it is possible in your project.  
 
 
 ## Speeding up Django queries
@@ -41,8 +41,6 @@ article.url = 'http://www.google.com'
 article.save(update_fields=['url']) # correct way
 ```
 
-That's three problems fixed. Still slow though.  
-
 ### Bulk create
 Another thing to try was to bulk insert articles instead of creating them while looping:
 
@@ -58,6 +56,8 @@ Article.objects.bulk_create([
     
 ```
 There are a few caveats to be aware of when using using bulk_create, those are explained in the [django doc](https://docs.djangoproject.com/en/dev/ref/models/querysets/#bulk-create).  
+
+That's three problems fixed. Still slow though.  
 
 ### Mass update
 In the same spirit of the bulk_create, mass update will also speed up your code quite a bit:
