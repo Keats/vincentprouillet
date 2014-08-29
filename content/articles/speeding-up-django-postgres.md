@@ -117,7 +117,7 @@ articles = Article.objects.all().select_related('author')
 # With select_related:  1 query
 # Without: 51 queries
 ```
-You can easily from the example how it helps A LOT.  
+You can easily see from the example how it helps A LOT.  
 To easily spot the places where you can/should use them, install [django-debug-toolbar](https://github.com/django-debug-toolbar/django-debug-toolbar) and look at the SQL panels.
 
 ## Postgres speed improvement
