@@ -34,14 +34,14 @@ EXTRA_PATH_METADATA = {
 }
 
 # I don't want pagination/tags/categories/etc
-DEFAULT_PAGINATION = False
-AUTHOR_SAVE_AS = False
-AUTHORS_SAVE_AS = False
-TAG_SAVE_AS = False
-TAGS_SAVE_AS = False
-CATEGORY_SAVE_AS = False
-CATEGORIES_SAVE_AS = False
-ARCHIVES_SAVE_AS = False
+AUTHOR_SAVE_AS = ''
+TAG_SAVE_AS = ''
+CATEGORY_SAVE_AS = ''
+
+AUTHORS_SAVE_AS = ''
+TAGS_SAVE_AS = ''
+CATEGORIES_SAVE_AS = ''
+ARCHIVES_SAVE_AS = ''
 
 MENU = {
   'About': '%s/presenting-himself/' % SITEURL,
@@ -52,8 +52,8 @@ MENU = {
 
 COLOR_SCHEME = 'theme-base-08'
 
-PLUGIN_PATH = 'plugins'
-PLUGINS = ['gzip_cache', 'sitemap', 'feed_summary']
+PLUGIN_PATHS = ['plugins']
+PLUGINS = ['gzip_cache', 'feed_summary', 'sitemap']
 
 FEED_USE_SUMMARY = True
 
@@ -66,8 +66,8 @@ SITEMAP = {
         'pages': 0.5
     },
     'changefreqs': {
-        'articles': 'weekly',
-        'indexes': 'daily',
+        'articles': 'daily',
+        'indexes': 'weekly',
         'pages': 'monthly'
     }
 }
