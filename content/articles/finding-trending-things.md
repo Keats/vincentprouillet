@@ -1,13 +1,16 @@
 Title: Finding trending things in Elasticsearch using python and redis
-Date: 2014-09-09
+Date: 2014-09-19
 Summary: How to calculate trendiness factor from ES and use it in queries
 URL: finding-trending-things/
 save_as: finding-trending-things/index.html
 
-At my current contract, some widgets that were displaying trending articles had been timing out even for short-ish time periods (3 months or so) worth of data.  
-Since we can't really have things timing out, I decided to have a look and try to improve things.  
-Some context about what we are trying to achieve first: we store a bunch of articles in [Elasticsearch](http://www.elasticsearch.org/) and want to spot the trending ones for a given time period (last week, last month, last quarter, last year).  
-For each article we keep track (in the article doc in ES, as a nested type) of the companies mentioned and we use that field to calculate the trends (this is a bit simplified, there is actually a second similar field as well but let's keep things simple for the sake of the article).  
+One of the features at my current contract is displaying widgets showing trending news articles.  
+We define trendiness on a company basis (topic as well but let's keep it to only companies for this article), ie we want to display articles from companies that are trending.  
+The articles are stored in [Elasticsearch](http://www.elasticsearch.org/) and we want to spot the trending ones for a given time period (last week, last month, last quarter, last year).  
+For each article we keep track (in the article doc in ES, as a [nested type](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-nested-type.html)) of the companies mentioned and we use that field to calculate the trends (this is a bit simplified, there is actually a second similar field as well but let's keep things simple for the sake of the article).  
+
+These trending articles are shown in a iframe and this iframe had been timing out even for short-ish time periods (3 months or so) worth of data.  
+Since we can't really have things timing out, I decided to have a look and try to improve things.   
 
 ## What was there before
 Looking at the code, I realised that the current trending code was very naive.  
@@ -45,8 +48,8 @@ Let's have a look at a query, there are a few options worth mentioning:
                 "field": "harvest_date",
                 "interval": "day",
                 "format": "yyyy-MM-dd",
-                "min_doc_count": 0,   # filling the blanks with 0,
-                "extended_bounds": {  # forces to fill everything
+                "min_doc_count": 0, 
+                "extended_bounds": {
                     "min": history_start,
                     "max": end
                 },
@@ -79,7 +82,7 @@ There are a few things to note:
 - we want to get as many buckets as possible so we even get the days where we don't have any matching documents by setting **min_doc_count** to 0
 - we want every possible day between history_start and end to have a bucket by setting the **extended_bounds** min/max to these dates
 
-With this query we get aa bucket for each day that can contain companies with they doc_count if there are, or an empty bucket otherwise.  
+With this query we get a bucket for each day that can contain companies with they doc_count if there are, or an empty bucket otherwise.  
 With all the companies ids and that data, we can recreate the complete histogram of the number of article for each company in our postgres  database.  I also separate the history data from the window we are observing, the python code looks something like:
 
 ```python
