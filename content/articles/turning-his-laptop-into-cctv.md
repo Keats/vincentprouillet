@@ -163,7 +163,7 @@ Here you can see my arm while I was standing up (a bit on profile):
 
 ![Result after bitwise_and]({filename}/images/articles/rodent/bitwise_and.jpg)
 
-To make it clearer, I tried to highlight the outline of my body (admire my graphic design skills):
+To make it clearer (and know what you're looking at), I tried to highlight the outline of my body (admire my graphic design skills):
 
 ![Result after bitwise_and outline]({filename}/images/articles/rodent/bitwise_and_contour.jpg)
 
