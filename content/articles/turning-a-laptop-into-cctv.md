@@ -13,11 +13,11 @@ The best way to find out what it is being actually seeing it, we decided to put 
 We don't have a camera but we have webcams on our laptop.  
 How hard could it be to create a script to take pictures with it at a set interval ?  
 I ended up creating [Rodent](https://github.com/Keats/rodent) to solve that issue.  
-One of my flatmate is a designer (Barbara Marcantonio, you can look at her [website](http://grarighe.co.uk/)) and made a logo for it for fun.
+One of my flatmates is a designer (Barbara Marcantonio, you can look at her [website](http://grarighe.co.uk/)) and made a logo for it for fun.
 ![Rodent](https://raw.githubusercontent.com/Keats/rodent/master/logo.png)
 
 
-Below is an explanation of how it works.  
+Below is an explanation of how it works, this is pretty basic but that was new to me !
 
 
 ## Installation
@@ -198,7 +198,7 @@ Here's what a motion made into a video looks like:
 ## Results
 We still haven't caught the culprit but Rodent has been quite fun so far !  
 This is the first time I'm using OpenCV and it is very powerful, the API is not very pythonic but works very well.  
-Also, don't forget to delete the camera because it happened to me that the webcam refused to turn on until I rebooted after a several CTRL+C (now handled properly).  
+Also, don't forget to delete the camera object because it happened to me that the webcam refused to turn on until I rebooted after a several CTRL+C (now handled properly).  
 
 The space below is reserved for a picture of the culprit once we catch him.  
 
