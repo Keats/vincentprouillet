@@ -5,7 +5,7 @@ URL: turning-a-laptop-into-cctv/
 save_as: turning-a-laptop-into-cctv/index.html
 
 During the night of the 14th to the 15th of September, the lunch (a glorious looking BBQ pulled pork sandwich) I had put on my kitchen table was half eaten (the bite was seriously huge, think a good 100g of bread + meat).  
-A previous accident (garbage bag being torn) suggested we might have a rodent issue in the house (rodent of whatever that could be).  
+A previous accident (garbage bag being torn) suggested we might have a rodent issue in the house (rodent or whatever that could be).  
 Being curious about who (could be a sleepeating housemate!)/what the hell ate my lunch, we decided to investigate with my flatmates.  
 No droppings and the quantity of food eaten rule out mice (or at least we think so, unless we're up against a colony of ninja mice), leaving us with rats, squirrels or stray cats (a small window was open in the kitchen, big enough for a small animal to enter).  
 
