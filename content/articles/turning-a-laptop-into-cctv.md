@@ -4,10 +4,11 @@ Summary: Using computer vision to find who ate my lunch
 URL: turning-a-laptop-into-cctv/
 save_as: turning-a-laptop-into-cctv/index.html
 
-During the night of the 14th to the 15th of September, the lunch (a glorious looking BBQ pulled pork sandwich) I had put on my kitchen table was half eaten (the bite was seriously huge, think a good 100g of bread + meat).  
-A previous accident (garbage bag being torn) suggested we might have a rodent issue in the house (rodent or whatever that could be).  
+During the night of the 14th to the 15th of September, a glorious looking BBQ pulled pork sandwich I had put on my kitchen table was half eaten.  
+The bite was seriously huge, think a good 100g of bread + meat.    
+A previous accident, garbage bag being torn, suggested we might have a rodent issue in the house (or anything else really).  
 Being curious about who (could be a sleepeating housemate!)/what the hell ate my lunch, we decided to investigate with my flatmates.  
-No droppings and the quantity of food eaten rule out mice (or at least we think so, unless we're up against a colony of ninja mice), leaving us with rats, squirrels or stray cats (a small window was open in the kitchen, big enough for a small animal to enter).  
+No droppings and the quantity of food eaten rule out mice — or at least we think so, unless we're up against a colony of ninja mice — leaving us with rats, squirrels or stray cats: a small window was open in the kitchen, big enough for a small animal to enter.  
 
 The best way to find out what it is being actually seeing it, we decided to put some bait out and film the kitchen at night.  
 We don't have a camera but we have webcams on our laptop.  
@@ -35,7 +36,7 @@ We were not sure of what we are trying to catch so the bait is pretty much a bit
 Rodent exposes 4 methods:
 
 - capture: takes a picture from the webcam at a given `interval` forever or `until` the time specified in the `folder` given
-- make_video: takes all the pictures in the `folder` and makes a video out of it (better than watching pictures!)
+- make_video: takes all the pictures in the `folder` and makes a video out of it, better than watching pictures!
 - automate: does both capture and make_video, I use it for example to record until 15 minutes before I wake up and the video will be ready by the time I get to the kitchen
 - motion: takes a picture only if it detects a movement (the sexy part)
 
@@ -119,7 +120,7 @@ for filename in filenames:
 
 video.release()
 ```
-The only tricky part is to take an image to get the size of the video n and the fourcc parameter which is the 4-character code for the codec, which I pretty much tried randomly until I got one that works.  
+The only tricky part is to take an image to get the size of the video and the fourcc parameter which is the 4-character code for the codec, which I pretty much tried randomly until I got one that works.  
 Right now the fps is determined completely arbitrarily depending on the number of pictures so it's highly probable that it will be too slow or too fast, simply change the value of the 3rd parameter to VideoWriter.  
 The only issue is that it seems that OpenCV doesn't write the last few images somehow.
 
@@ -151,19 +152,20 @@ In practice the difference looks like the following:
 
 ![Difference with absdiff]({filename}/images/articles/rodent/difference.jpg)
 
-You can see my outline (with a pretty cool effect imo) as I was moving in front of the camera.  
+You can see my outline, with a pretty cool effect imo, as I was moving in front of the camera.  
 
 Next we want to know the if something changed in both differences, done with the OpenCV bitwise_and method.
 
 ```python
 result = cv2.bitwise_and(difference1, difference2)
 ```
-This gives a result similar to the above, but usually more faint (I personally love this kind of picture, it gives a watercolour like effect).  
-Here you can see my arm while I was standing up (a bit on profile):  
+This gives a result similar to the above, but usually more faint.  
+I personally love this kind of picture, it gives a watercolour like effect.    
+Here you can see my arm while I was standing up, a bit on profile:  
 
 ![Result after bitwise_and]({filename}/images/articles/rodent/bitwise_and.jpg)
 
-To make it clearer (and know what you're looking at), I tried to highlight the outline of my body (admire my graphic design skills):
+To make it clearer and know what you're looking at, I tried to highlight the outline of my body (admire my graphic design skills):
 
 ![Result after bitwise_and outline]({filename}/images/articles/rodent/bitwise_and_contour.jpg)
 
@@ -182,7 +184,7 @@ A picture after threshold with no motion would be completely black.
 We now have an image with the areas where a motion occured in white and we only need to check if we have some pixels with a value of 255 in the image to know if there was a motion.  
 Since we know that, we might as well highlight the area where a movement occured: Rodent does that by putting a purple rectangle around the area.  
 The code is not that interesting and lives in utils.py/find_motion_boundaries if you want to check it out.  
-It simply finds the lowest/highest point (X, Y) in the image with 255, becoming the coordinates for the rectangle (and None if there was no motion).  
+It simply finds the lowest/highest point (X, Y) in the image with 255, becoming the coordinates for the rectangle and None if there was no motion.  
 Adding a rectangle to an image is trivial as well:
 ```
 # low_point and high_point are the (X,Y) tuple mentioned above
@@ -198,7 +200,7 @@ Here's what a motion made into a video looks like:
 ## Results
 We still haven't caught the culprit but Rodent has been quite fun so far !  
 This is the first time I'm using OpenCV and it is very powerful, the API is not very pythonic but works very well.  
-Also, don't forget to delete the camera object because it happened to me that the webcam refused to turn on until I rebooted after a several CTRL+C (now handled properly).  
+Also, don't forget to delete the camera object because it happened to me that the webcam refused to turn on until I rebooted after a several CTRL+C, it is now handled properly by catching KeyboardInterrupt.  
 
 The space below is reserved for a picture of the culprit once we catch him.  
 
