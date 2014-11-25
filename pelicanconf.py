@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 AUTHOR = u'Vincent Prouillet'
 SITENAME = u'Vincent Prouillet'
 SITEURL = ''
-SITE_SUBTITLE = u'Contractor in London <br> Python + Javascript'
+SITE_SUBTITLE = u'Director @ <br>We Are Wizards'
 
 TIMEZONE = 'Europe/London'
 
@@ -47,7 +47,8 @@ MENU = {
   'About': '%s/presenting-himself/' % SITEURL,
   'Projects': '%s/working-on/' % SITEURL,
   'Github': 'https://github.com/Keats',
-  'Feed': '%s/feed.xml' % SITEURL
+  'Feed': '%s/feed.xml' % SITEURL,
+  'We Are Wizards': 'https://wearewizards.io/',
 }
 
 COLOR_SCHEME = 'theme-base-08'

@@ -1,3 +1,5 @@
 *.pyc
 output/
 cache/
+srv.pid
+pelican.pid
