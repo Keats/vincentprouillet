@@ -5,7 +5,7 @@ URL: starting-a-company/
 save_as: starting-a-company/index.html
 
 
-TL;DR: started a tech ageny, visit [https://wearewizards.io](https://wearewizards.io)
+TL;DR: started a tech agency, visit [https://wearewizards.io](https://wearewizards.io)
 
 I have been wanting to create my own company for a very long time, even before I graduated.  
 
