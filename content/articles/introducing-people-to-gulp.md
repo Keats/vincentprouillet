@@ -10,6 +10,10 @@ save_as: introducing-people-to-gulp/index.html
 I have updated gulp and replaced connect with browsersync (I did that already in the article with an earlier version of browser-sync but not on the [example project](https://github.com/Keats/gulp-example) on github, it is now up to date).  
 I also do not use coffeescript anymore, I [switched to typescript](http://vincent.is/switching-to-typescript/) and use plain js for the gulpfile but everything in this post is still valid.  
 
+#### UPDATE (2015/05/07)
+This article was written for gulp 3.  
+If you want to move to gulp 4, please go [this article](https://blog.wearewizards.io/migrating-to-gulp-4-by-example) I wrote on my company website.
+
 ## Introduction
 So I wanted to make changes to my [ng-boilerplate](https://github.com/Keats/ng-boilerplate "ng-boilerplate") project to make it simple enough for a javascript newbie to understand what was going on.  
 The main issue was the Gruntfile and its configuration, roughly 400 lines of javascript handling all the possible tasks (watch, releasse, test, etc): it was working, but was pretty hard to see what was going on.  
