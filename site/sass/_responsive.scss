@@ -1,0 +1,27 @@
+// All responsiveness stuff
+
+$breakpoints: (
+  'small': (max-width: 640px),
+  'medium': (max-width: 1023px),
+  'large': (min-width: 1024px),
+) !default;
+
+
+@mixin respond-to($breakpoint) {
+  $raw-query: map-get($breakpoints, $breakpoint);
+
+  @if $raw-query {
+    $query: if(
+      type-of($raw-query) == 'string',
+      unquote($raw-query),
+      inspect($raw-query)
+    );
+
+    @media #{$query} {
+      @content;
+    }
+  } @else {
+    @error 'No value found for `#{$breakpoint}`. '
+         + 'Please make sure it is defined in `$breakpoints` map.';
+  }
+}

@@ -1,0 +1,48 @@
+.content {
+  margin-left: $sidebar-width + 3rem;
+  margin-right: 3rem;
+  padding-bottom: 4rem;
+}
+
+// Some non-layout things here but meh
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: $sidebar-width;
+  padding: 2rem 1rem;
+  text-align: left;
+  margin-bottom: 0;
+  background-color: $main-colour;
+  color: white;
+  display: flex;
+  align-items: flex-end;
+
+  &__nav {
+    list-style: none;
+    padding: 0;
+  }
+}
+
+
+@include respond-to("small") {
+  .sidebar {
+    display: block;
+    position: inherit;
+    width: 100%;
+    text-align: center;
+
+    h1 {
+      margin-top: 0;
+    }
+
+    &__content, &__nav {
+      margin-bottom: 0;
+    }
+  }
+
+  .content {
+    margin: 0 1rem;
+  }
+}
