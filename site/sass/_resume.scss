@@ -20,15 +20,36 @@
     position: absolute;
     top: 0;
     right: 0;
-    color: #97AAC3;
+    color: #737e8e;
   }
 
   .company {
-    color: #97AAC3;
+    color: #737e8e;
     margin-bottom: 1rem;
   }
 
   h5 {
     margin-top: 0;
+  }
+}
+
+@include respond-to("small") {
+  .resume .period-time {
+    position: initial;
+    margin-bottom: 0;
+  }
+}
+
+// print version
+@media print {
+  .resume-body {
+    .sidebar__social, .sidebar__nav, .sidebar__content p {
+      display: none;
+    }
+
+    .sidebar__content h1 {
+      color: black;
+      margin-bottom: 1rem;
+    }
   }
 }
