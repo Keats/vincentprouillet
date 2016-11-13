@@ -1,366 +1,158 @@
 +++
-title = "A MobX introduction and case study"
+title = "Introducing Tera, a template engine in Rust"
 slug = "introducing-tera"
 url = "introducing-tera"
-description = "Getting started with MobX and a case study"
-date = "2016-11-01"
+description = "A template engine in Rust inspired by Jinja2/Django"
+date = "2016-04-15"
 categories = ["programming"]
-tags = ["javascript", "typescript"]
+tags = ["rust"]
 +++
 
-
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/a-mobx-introduction-and-case-study).
-
-
-[MobX](https://mobxjs.github.io/mobx/) (previously mobservable) is a state management library for JavaScript frontend application. This article introduces it with examples as well as showing how it works in a real app with TypeScript. It is based on a talk I gave at the Osaka Web designers and developers meetup recently.
-
-## What is MobX and why should I look into it
-
-### MobX?
-Let's start by explaining what is MobX and how it works. It's presented as using Transparent Functional Reactive Programming.
-
-Now, FRP is a very controversial term as everyone seems to have their own definition so let's forget about that and look at a illustration from the MobX docs (click on it to open in a new tab and get full size or open [this link](../images/mobx-flow.png)).
+> This article was originally posted on [my company's blog](https://blog.wearewizards.io/introducing-tera-a-template-engine-in-rust).
 
 
-<a href="../images/mobx-flow.png" target="_blank"><img width="100%" src="../images/mobx-flow.png"></a>
+Back in October 2015, I tried [Rust for web services](https://blog.wearewizards.io/trying-rust-for-web-services) and found the ecosystem lacking at the time. That's why I've been working on porting some of the tools we use in [Proppy](https://proppy.io/) to Rust: [jwt](https://crates.io/crates/jsonwebtoken), [bcrypt](https://crates.io/crates/bcrypt) (granted that Argon2 seems superior) and a [migration tool](https://crates.io/crates/dbmigrate). While I mostly do SPAs these days and don't write many templates in the backend, I still need one for some occasions. When using Python, I like [Jinja2](http://jinja.pocoo.org/docs/dev/) and [Django templates](https://docs.djangoproject.com/en/1.9/topics/templates/#the-django-template-language). Here's how I attempted to port them to Rust and the result is [Tera](https://github.com/Keats/tera/).
 
-In short, actions modify the state, which triggers reactions. Part of the state can be derived automatically, such as the number of tasks left to do in a TODO list to take the example of the picture above.
-What sets MobX apart from other Observable implementations is the transparent part. Reactions observe which observables you are using and subscribe to them automatically, without you having to explicitely subscribe to those.
 
-Before we continue, a few more things:
+## Goals and philosophy
+As mentioned before, the inspiration comes from both Jinja2 and Django templates. As you might know, those two have similar syntax but different philosophies: Django templates are for presentation only and don't allow a lot of logic while Jinja2 has more powerful programming constructs in the templates.
+I side with Django on this one as complex logic is better put in code than in a template but Django goes a bit too far by even not supporting something like `{{ count + 1 }}`.
 
-- while some of the examples use React, MobX is not tied to any particular framework
-- it is written in TypeScript so you get type definitions out of the box if you are using TypeScript
-- the learning curve is very small and you will be able to start an app by the end of that article
+So here are some of the features I want:
 
-### Why would I use it instead of Redux/ImmutableJS or library X?
-This part is written from my experience using both Redux/ImmutableJS and MobX with React in [Proppy](https://proppy.io), our app to write proposals for freelancers and small agencies/companies. Its frontend is written in TypeScript, which was one of a big reason to moving to MobX as we will see in a bit.
+- math operations in templates
+- no macros or other complex logic in the template
+- beautiful html output out of the box (ie no need for the `{{-` tags)
+- simple inheritance
+- simple to use filters
+- able to register new tags easily like the `{% url ... %}` in Django
+- include partial templates
 
-Our issues with Redux/ImmutableJS were twofold.
+While new tags are definitely logic in the template, that logic would have to be written in Rust and not in a template. That limits reusability but is simpler to understand in the end.
 
-The first issue was that it is very verbose. You need to write an action, the reducer function, a selector and then connect the actions and the data on the React components.
+Filters should be kept simple and be limited in scope: variable in, modifier function with optional argument and return a string. The easiest to think of would be uppercase, lowercase, capitalize and more importantly time formatting. Here are some examples of how it should look:
+```jinja
+{{ name | uppercase }}
+{{ birthday | time:"YYYY-MM-dd" }}
+```
+Users should be able to add their own filters as well.
 
-The second issue only occurs if you are using TypeScript like us. You also need to add the types of actions and data at each step and sometimes even repeat them if you are passing down actions to dumb components. We were also using ImmutableJS records with maps in them which meant the code was very often stringly typed. For example, getting a value using `.getIn(["blocks", id, "data", "value"])` was common and there was no typecheck whatsoever.
+In terms of error handling, we cannot do anything if a template cannot be parsed so panicking when encountering an error is fine and template compilation should be done at rustc compile time to ensure everything works perfectly (more on that on the README.md).
+On the API side, using Tera should be trivial:
 
-With MobX we only have to mention the types and, as we will see when showing examples of Proppy, get full typechecking as we are only dealing with plain JavaScript objects.
+- give a glob that will load all the matching files
+- register tag/filter to Tera
+- parse all templates
+- create a context easily (not as simple as a dict obviously though)
+- call a render method that returns a `Result`
 
-Note that using MobX means you have to give up immutability, which could be a showstopper for you.
+In code that would like that:
 
-## MobX by example
+```rust
+// setting up
+let mut tera = Tera::new("./app/**/*.html");
+tera.register_tag(url_for);
+tera.register_tag(retina);
+tera.register_filter(number_format);
+tera.parse();
 
-This section is a brief introduction to MobX. If you have already used it, you can safely skip to the next section to see some patterns/snippets from a live application.
+// rendering
+let mut context = Context::new();
+context.add("user", &user);
 
-Note that I will use ES6 syntax and decorators throughout the examples but it works in plain ES5 as well.
-
-### Observing arrays and map changes with autorun
-Let's start with observing arrays and maps, as it constitutes a big chunk of what we would want
-to observe.
-
-```js
-import { observable, asMap, autorun } from "mobx";
-
-// becomes an ObservableArray (same API as normal array)
-const numbers = observable([1,2,3]);
-// becomes an ObservableMap (same API as Map)
-const users = observable(asMap({"bob": "bob"}));
+tera.render("user/profile.html", context)
 ```
 
-To show the changes to observable values, we will use the `autorun` function provided by the mobx package. This function takes a function as argument and call it once to detect which observables are being used in it and subscribe to them.
+Template compilation should only happen once. This can be achieved by using [lazy_static](https://crates.io/crates/lazy_static).
 
-```js
-autorun(() => {
-  console.log("autorun!", numbers.toJS(), users.toJS());
-});
-// initial run: prints autorun! [1,2,3] {"bob": "bob"}
-numbers.push(4);
-// prints autorun! [1,2,3,4] {"bob": "bob"}
-users.set("jane", "jane");
-// prints autorun! [1,2,3,4] {"bob": "bob", "jane": "jane"}
+Let's see how it's built now!
+
+## How it's made
+I actually thought of making a template engine after watching the "Lexical Scanning in Go" video by Rob Pike ([youtube link](https://www.youtube.com/watch?v=HxaD_trXwRE)). 
+
+### Lexer/Parser
+This talk explains how the lexing in the [template package in the Go standard library](https://golang.org/pkg/text/template/) is implemented. I thought it was pretty cool and implemented something similar last summer.
+For those that don't want to watch the video, here's a quick summary.
+
+The lexer can be in a few states: inside a block, text, space, number, identifier, string for Tera currently and there are actions that represents what we do and result in a new state. In short, that means we have a state function that takes the lexer as an argument and returns a state function. While this is easy to do in Go, you cannot do reference the type while declaring it but it's ok to do so for a struct.
+```rust
+// working
+struct StateFn(Option<fn(&mut Lexer) -> StateFn>);
+// not working
+type StateFn = fn(&mut Lexer) -> Option<StateFn>;
 ```
-We will show in the next section that `autorun` doesn't actually run everytime any observable is modified like the example above might indicate but only when one of those used in the function are modified.
+Thanks for the help on IRC for that one.
+The lexer just runs the state function until we reach EOF which in our case is represented by returning `None` as a state function. Here's the whole run method of the lexer:
 
-### Observing class properties and transactions
-The other thing that we typically want to observe are class properties.
-
-```js
-import { observable, autorun } from "mobx";
-
-class Meetup {
-  @observable name;
-  @observable numberPeople;
-
-  constructor(name, numberPeople) {
-    this.name = name;
-    this.numberPeople = numberPeople;
-  }
-}
-
-
-const thisMeetup = new Meetup("Osaka Web designers and developers", 0);
-autorun(() => {
-  console.log(thisMeetup.numberPeople + " people");
-});
-thisMeetup.numberPeople = 1;
-// prints "1 people"
-```
-In that example, both `name` and `numberPeople` are observable properties of the `thisMeetup` object but only `numberPeople` is used in the `autorun` function. Therefore, the following snippet will not print anything:
-
-```js
-thisMeetup.name = "Hello";
-// doesn't print anything
-```
-Remember the T part of TFRP? MobX automatically figured out which observable to subscribe to and has done so transparently.
-
-Reactions are synchronous so you might wonder how to avoid "useless" reactions, e.g. when setting multiple observables at once such as when receiving a response from a AJAX request. `transaction` solves that issue by not triggering reactions until the end of the function.
-
-```js
-transaction(() => {
-  thisMeetup.numberPeople = 2;
-  thisMeetup.numberPeople = 3;
-  thisMeetup.numberPeople = 4;
-});
-// print "4 people"
-```
-In the example above, `autorun` only runs once: with `numberPeople` equal to 4, not with the intermediate 2 and 3.
-
-### Computed values
-In some cases, data can be derived directly from the state. To take a simplified example from Proppy, we are going to look at a row in a cost table: we have quantity and unit price and can therefore automatically calculate the total.
-`computed` is lazy (won't be evaluated unless needed in a reaction) and it is memoized (if the observables used inside didn't change, it doesn't need to re-run and can return the current value).
-
-```js
-class TableRow {
-  @observable quantity = 0;
-  @observable price = 0;
-
-  constructor(price) {
-    this.price = price
-  }
-
-  // a getter
-  @computed get total() {
-    return this.price * this.quantity;
-  }
-}
-
-const row = new TableRow(10);
-console.log(row.total);
-// prints 0 (since 10x0=0)
-row.quantity = 10;
-// Only computed on the call
-console.log(row.total);
-// prints 100
-// Not recomputed if the observables used didn't change
-console.log(row.total)
-// prints 100
-```
-
-Note that `@computed` can only be used on [getter](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/get) in a class.
-
-### Actions
-Actions are functions that modify the state.
-While, as shown in the previous examples, we can simply modify the object directly, it is not the recommended way to do so.
-
-The recommended way is to wrap any actions that modify the state with the `action` function or decorator. This will accomplish a few things:
-
-- wrap the function in a transaction automatically
-- provide debugging info for that state change that can be displayed in dev tools
-
-You can force your app to only modify state through actions by using `useStrict(true)` in your app.
-
-```js
-useStrict(true);
-
-class TableRow {
-  @observable quantity = 0;
-  price = 0;
-
-  constructor(price) {
-    this.price = price
-  }
-
-  // a getter
-  @computed get total() {
-    return this.price * this.quantity;
-  }
-
-  @action setQuantity(quantity) {
-    this.quantity = quantity;
-  }
-}
-
-const row = new TableRow(10);
-console.log(row.total);
-row.setQuantity(10);
-// Only computed on the call
-console.log(row.total);
-// Not recomputed if the observables used didn't change
-console.log(row.total);
-
-// Use `useStrict` to force state to only be modified in `action` fns
-row.quantity = 10; // will error
-```
-We don't use the strict mode ourselves
-
-## MobX in real life
-Now that you know the basics of MobX, it's time to see how it looks in production.
-It's currently the backbone of our frontend app in [Proppy](https://proppy.io) so we will use examples from it.
-
-If you are doing SSR, be aware that the way we handle stores shown below will not work for you.
-
-Converting Proppy to use MobX took about 4 days, numerous long-standing issues were fixed along the way and the end result was a deletion of around 1000 to 2000 lines (estimate as we also moved to use npm @types for typings in that branch).
-
-### Stores
-Our stores are simple singleton classes that have observable properties.
-Here's a shorter version of one of our stores, dealing with clients for proposals.
-
-```js
-import { observable, action, map, transaction, ObservableMap } from "mobx";
-
-// a class definition with types
-import { Client } from "./models/Client";
-import fetchling from "../utils/fetchling";
-import uiStore from "./UIStore";
-
-export class ClientStore {
-  @observable clients: ObservableMap<Client> = map<Client>();
-
-  getClient(id: number) {
-    return this.clients.get(id.toString());
-  }
-
-  @action fetchAll(): Promise<any> {
-    return fetchling("/clients").get().then((response: any) => {
-      transaction(() => {
-        this.setClients(response.clients);
-      });
-    });
-  }
-
-  @action deleteClient(clientId: number) {
-    const client = this.clients.get(clientId.toString());
-    return fetchling(`/clients/${clientId}`).delete()
-      .then(() => {
-        this.clients.delete(clientId.toString());
-        uiStore.notify(`Client deleted`, false);
-      })
-      .catch(() => uiStore.notify(`Client ${client.name} could not be deleted. Please try again later`, false));
-  }
-
-  @action updateClient(clientId: number, name: string) {
-    return fetchling(`/clients/${clientId}`).put({name})
-      .then((response: any) => {
-        this.clients.set(clientId.toString(), new Client(response.client));
-        uiStore.notify(`Client updated`, false);
-      })
-      .catch(response => {
-        uiStore.notify(`Client could not be updated. Please try again later`, true);
-        if (response.errors) {
-          return response.errors.errors;
+```rust
+pub fn run(&mut self) {
+    loop {
+        let StateFn(state_fn) = self.state;
+        if state_fn.is_none() {
+            break;
         }
-      });
-  }
-}
-
-const clientStore = new ClientStore();
-export default clientStore;
-```
-Quite simple stuff.
-You can see we are calling another store from our store. That would be a big no-no in Redux and we were using a middleware to solve that previously.
-It feels much nicer now: we have a full view of what's happening and it's very easy to see if something is missing (which was actually the case for some ajax requests).
-
-This example doesn't really show it but every data stored in a store is typed and trying to access `client.random` would be a compiler error.
-It really shines for complex objects like cost tables that were previously a simple map with no schema and are now fully typed objects with functions of their own. Thanks to that, we moved things such as calculating totals to the cost table class rather than a React component like before.
-
-### Components
-We're using the `mobx-react` package that gives us the `observer` decorator that we put on top of a component.
-Doing so gives us the same thing as the `autorun` in the MobX by example section: when an observable used in the `render` function changes, the component will be re-rendered.
-`@observer` also comes with an optimized `shouldComponentUpdate` that works very well in our experience: the only `shouldComponentUpdate` left in our code are the ones impossible to not handle manually due to `contenteditable`.
-
-Since we don't do server side rendering, we can directly import a store and call its function directly. Here's a slightly modified code sample for the Settings>Clients page:
-
-```js
-import * as React  from "react";
-import { observer } from "mobx-react";
-import { observable } from "mobx";
-
-import companyStore from "../../stores/CompanyStore";
-import clientStore from "../../stores/ClientStore";
-// ... some component import
-
-@observer
-export class Clients extends React.Component<{}, {}> {
-  // not used, only here for the sake of example
-  @observable clientAdded: boolean = false;
-
-  // Our async loaded component will call that function and wait until
-  // the promises complete to render that component
-  static fetchData() {
-    return Promise.all([
-      companyStore.fetchUs(),
-      clientStore.fetchAll(),
-    ]);
-  }
-
-  renderClients() {
-    return clientStore.clients.values().map(client => {
-      return (
-        <div className="client" key={client.id}>
-          <span onClick={() => clientStore.deleteClient(client.id)} className="icon-delete" />
-          <InlineInput
-            value={client.name}
-            onEnter={(value) => clientStore.updateClient(client.id, value)} />
-        </div>
-      );
-    });
-  }
-
-  renderForm() {
-    return (
-      <InAppForm
-        inline={true}
-        resetOnSuccess
-        submitText="Add client"
-        onSubmit={(data) => clientStore.createClient(data)} />
-    );
-  }
-  render() {
-    return (
-      <SettingsContainer>
-        <div className="clients">
-          <h2>Manage {your} clients</h2>
-          {this.renderForm()}
-          <div className="clients-list">
-            {this.renderClients()}
-          </div>
-        </div>
-      </SettingsContainer>
-    );
-  }
+        self.state = state_fn.unwrap()(self);
+    }
 }
 ```
-No ceremony needed, everything works out of the box as if I was just dealing with plain JavaScript objects. All the store functions and data are typed too. Trying to call `clientStore.deleteClient("1")` for example would be a compilation error and I only had to write the type once: in the store as shown before.
+The actions read the next character and know what to do for each kind of character, eg. finding a number in a variable block will return the `lex_number` state function. The lexer ouput is a vector of tokens that ends with either a EOF or an error.
 
-Another aspect not mentioned before is that you can also use `observable` to remove the need for React state.
+You can read the whole lexer [on GitHub](https://github.com/Keats/tera/blob/fddb8a0b82cba7374bd0552fed1cf831b8943395/src/lexer.rs), it is actually quite simple and readable.
 
-Rather than having a state and updating it with `this.setState`, you can just update your variable directly and it will re-render the component if that property is used in the render method.
-To use the previous example, if I wanted to display a banner after adding a client in that component I could set `this.client = true` and render something different when `this.client` is true. No more `this.setState({..} as any)` to satisfy the TypeScript compiler.
-Another neat thing about using MobX for state is that changes will be logged if you are using dev tools.
 
-### Dev tools
-For React, `mobx-react-devtools` is available and is pretty great. See the gif below from its repo to have an overview of the 3 features.
+The parser is quite simple as well. Since we are either in text, in a variable block or in a tag block, we just handle those cases in a loop and use EOF to break. Each "state" knows how to parse itself so the main logic is actually only:
 
-![React MobX devtools](https://github.com/mobxjs/mobx-react-devtools/blob/02f8371dea637b0aa819a78286cbcc464265707b/devtools.gif?raw=true)
+```rust
+pub fn parse(&mut self) {
+    loop {
+        match self.peek().kind {
+            TokenType::TagStart => self.parse_tag_block(),
+            TokenType::VariableStart => self.parse_variable_block(),
+            TokenType::Text => self.parse_text(),
+            TokenType::Eof => break,
+            _ => unreachable!()
+        };
+    }
+}
+```
 
-I have mostly used the logging to inspect action and state changes while debugging and to spot erroneous updates and the re-rendering highlighter to figure out if some of our components were re-rendering too often.
+The trickiest bit was handling precedence in blocks so that something like `{{1 / 2 + 3 * 2 + 42}}` would parse as expected. This is done by assigning precedence values to each kind of token and looking forward to see if something with higer precedence is coming. I would be surprised if there was not a bug in there.
 
-## Useful links
+The output of the parser is a classic AST.
 
-- [Official docs](https://mobxjs.github.io/mobx/) and in particular [Common pitfalls & best practices](https://mobxjs.github.io/mobx/best/pitfalls.html) and [What does MobX reacts to?](https://mobxjs.github.io/mobx/best/react.html)
-- [In-depth explanation of MobX](https://medium.com/@mweststrate/becoming-fully-reactive-an-in-depth-explanation-of-mobservable-55995262a254#.9aufnt6up)
-- [Understanding MobX and when to use it](https://github.com/mobxjs/mobx/issues/199)
-- [Example: real-life with router/ajax etc](https://github.com/mobxjs/mobx/issues/104)
+### Context
+Context is where dynamic languages have the upper hand. In python I can just pass a dict `{"user": user, "count": 1}` to Jinja2 or Django and be done with it. In Rust, it can't be that easy unfortunately.
+Here's the same context as above for Tera:
 
-## Conclusion
+```rust
+let mut context = Context::new();
+context.add("user", &user);
+context.add("count", &1);
+```
+To make that possible, Tera uses [serde](https://github.com/serde-rs/serde) which means that in the example above, the `user` variable would have to implement the `Serialize` trait. This makes Tera annoying to use on non-nightly Rust as compiler plugins are not stable yet. Serde is the future for serialization in Rust so might as well embrace it.
 
-Overall, we are very happy with the transition to MobX and would recommend investigating it if you are looking for a state management solution, especially if you are using TypeScript or Flow.
-I'm pretty impressed by the constant work the TypeScript team has accomplished and highly recommend it as well if you are planning to stay on the JavaScript side and not go for Elm/PureScript/etc.
+### Rendering
+In the rendering phase, we take the AST from the parser and traverse it, replacing variables with values from the context and handling the various tag blocks. It is also home to some terrible terrible code, namely the [`eval_condition`](https://github.com/Keats/tera/blob/fddb8a0b82cba7374bd0552fed1cf831b8943395/src/render.rs#L126-L241) method that checks `if` and `elif` conditions. It has a cyclomatic complexity of 27 apparently.
+It also contains the classic test fixing snippet that will be removed after I handle calculations properly:
+
+```rust
+// TODO: fix properly
+// TODO: add tests for float maths arithmetics
+if result.fract() < 0.01 {
+    result = result.round();
+}
+```
+
+## Feedback on the dev aspect
+The more Rust I do, the more I like it. There are times where you might look at the screen blankly for a few minutes and then decide to have a walk instead but it happens less and less. IRC and the [Rust subreddit](https://www.reddit.com/r/rust) are very good source for help if you are stuck and they have interesting conversations.
+
+With no hesitation, [Clippy](https://github.com/Manishearth/rust-clippy) is the MVP of the development tools I'm using at the moment across all languages (Rust, Python and TypeScript mostly). It is a linter that catches lots of errors or bad code and shows you how to fix or how to do what you wanted to do but in a clearer way. The team is adding lints continuously so I usually just `cargo update` my projects every week or so just so I can run the latest `clippy` on it.
+
+Error messages are usually very good and are getting [even better soon](https://github.com/rust-lang/rust/pull/32756).
+
+## What's next
+The main things Tera are missing right now are filters and a way to add custom tag blocks. If anyone thinks that it is 2016 and therefore should use a parser combinator, feel free to submit a PR! I also welcome any feedback on Tera design as it doesn't have to be a clone of Jinja2 or Django.
+
+Since I am quite busy with our first product [Proppy](https://proppy.io/), I won't have a huge amount of time so any help is welcome.
+
+To finish on a "Rust for web" note, the last main thing I would miss to try it for real is a validation crate that would work [like this gist](https://gist.github.com/Keats/32d26f699dcc13ebd41b). We use [marshmallow](https://marshmallow.readthedocs.org/en/latest/) in proppy and it makes validation API data a breeze. Unfortunately, with compiler plugins being still unstable, I don't think I will start working on that. There is a RFC for stabilization though: [Procedural macros](https://github.com/rust-lang/rfcs/pull/1566).
