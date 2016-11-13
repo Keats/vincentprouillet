@@ -19,6 +19,7 @@ p, small, li {
 pre {
   display: block;
 }
+
 pre, code {
   overflow: auto;
   font-family: 'Fira Mono', monospace;
@@ -37,6 +38,7 @@ pre {
 }
 
 pre > code {
+  display: block;
   border: none;
   font-style: normal;
   font-size: 1rem;
@@ -216,4 +218,15 @@ blockquote {
   .highlight {
     border-radius: 2px;
   }
+
+  @include respond-to("small") {
+    .article-container__title {
+      margin-top: 2rem;
+    }
+
+    pre > code {
+      max-width: 100%;
+    }
+  }
+
 }

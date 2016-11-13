@@ -1,3 +1,5 @@
+{{ $page := replace .Permalink (printf "%s" .Site.BaseURL) "" }}
+
 <aside class="sidebar">
     <div class="sidebar__content">
         <h1>Vincent Prouillet</h1>
@@ -6,9 +8,16 @@
         </p>
 
         <ul class="sidebar__nav">
-            <li>Blog</li>
-            <li>Projects</li>
-            <li>About</li>
+            <li {{ if eq $page "" }}class="active"{{ end }}><a href="/">Blog</a></li>
+            <li {{ if eq $page "is-working-on" }}class="active"{{ end }}><a href="/is-working-on">Projects</a></li>
+            <li {{ if eq $page "presenting-himself" }}class="active"{{ end }}><a href="/presenting-himself">About</a></li>
         </ul>
+
+        <div class="sidebar__social">
+            <a href="https://github.com/Keats" target="_blank"><i class="icon-github"></i></a>
+            <a href="https://www.linkedin.com/in/vincentprouillet" target="_blank"><i class="icon-linkedin"></i></a>
+            <a href="#" target="_blank"><i class="icon-twitter"></i></a>
+            <a href="/index.xml"><i class="icon-rss"></i></a>
+        </div>
     </div>
 </aside>

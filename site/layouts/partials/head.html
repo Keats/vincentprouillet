@@ -7,4 +7,8 @@
   <link href="https://fonts.googleapis.com/css?family=Fira+Mono|Fira+Sans|Merriweather" rel="stylesheet">
   <title>{{ .Site.Title }}</title>
   <link rel="stylesheet" href="{{ .Site.BaseURL }}app.css" />
+  {{ if .RSSlink }}
+    <link href="/index.xml" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+    <link href="{{ .RSSlink }}" rel="feed" type="application/rss+xml" title="{{ .Site.Title }}" />
+  {{ end }}
 </head>

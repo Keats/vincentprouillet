@@ -1,0 +1,34 @@
+.resume {
+  &__experience {
+    margin-bottom: 2rem;
+  }
+
+  .meta {
+    margin-bottom: 0;
+  }
+
+  .upper-row {
+    position: relative;
+    margin-bottom: 0;
+  }
+
+  .job-title {
+    margin-bottom: 0;
+  }
+
+  .period-time {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #97AAC3;
+  }
+
+  .company {
+    color: #97AAC3;
+    margin-bottom: 1rem;
+  }
+
+  h5 {
+    margin-top: 0;
+  }
+}

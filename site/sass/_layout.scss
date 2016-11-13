@@ -19,9 +19,44 @@
   display: flex;
   align-items: flex-end;
 
+  .active a {
+    border-color: white;
+  }
+
+
   &__nav {
     list-style: none;
     padding: 0;
+
+    li {
+      margin: 0;
+    }
+
+    a {
+      color: white;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.3s ease;
+      padding-bottom: 2px;
+
+      &:hover {
+        text-decoration: none;
+        border-color: white;
+      }
+    }
+  }
+
+  &__social {
+    text-align: center;
+    @include font-size(1.5);
+
+    a {
+      color: rgba(255, 255, 255, 0.7);
+      transition: color 0.2s linear;
+
+      &:hover {
+      color: rgba(255, 255, 255, 1);
+      }
+    }
   }
 }
 
@@ -37,7 +72,7 @@
       margin-top: 0;
     }
 
-    &__content, &__nav {
+    &__content, &__social {
       margin-bottom: 0;
     }
   }
@@ -45,4 +80,8 @@
   .content {
     margin: 0 1rem;
   }
+}
+
+.projects, .resume {
+  max-width: $max-width;
 }

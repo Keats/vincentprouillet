@@ -11,7 +11,12 @@
 @import "responsive";
 @import "base";
 @import "layout";
+@import "icons";
 
 @import "components/list-posts";
 @import "components/article";
 @import "components/post-meta";
+
+// pages
+@import "projects";
+@import "resume";
