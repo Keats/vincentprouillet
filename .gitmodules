@@ -1,6 +1,0 @@
-[submodule "hyde"]
-	path = hyde
-	url = https://github.com/Keats/pelican-hyde.git
-[submodule "plugins"]
-	path = plugins
-	url = https://github.com/getpelican/pelican-plugins
