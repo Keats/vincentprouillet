@@ -92,7 +92,7 @@ pre > code {
 
 * {
   @include line-height();
-  @include margin-bottom(1);
+  @include margin-bottom(0.5);
 }
 
 html {
@@ -184,6 +184,7 @@ blockquote {
   font-style: italic;
   padding-left: 1rem;
   border-left: 10px solid $text-colour;
+  margin-left: 0;
 
   p {
     padding: 1rem 0;
@@ -197,9 +198,14 @@ blockquote {
     margin-top: 0;
   }
 
-  p, ul, img, blockquote, .highlight {
+  p, ul, img, blockquote, .highlight, .contained, h1, h2, h3, h4, h5 {
     max-width: $max-width;
     transition: max-width linear 0.2s;
+  }
+
+  .contained {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
   }
 
   .highlight:hover {
@@ -207,7 +213,7 @@ blockquote {
   }
 
   p > img {
-    margin-bottom: 0;
+    margin-top: 1rem;
     vertical-align: bottom;
   }
 
@@ -226,6 +232,16 @@ blockquote {
 
     pre > code {
       max-width: 100%;
+    }
+  }
+
+  table {
+    border-collapse: collapse;
+
+    th, td {
+      vertical-align: top;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
     }
   }
 
