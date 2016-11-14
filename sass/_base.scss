@@ -1,0 +1,248 @@
+// From gutenberg (http://matejlatin.github.io/Gutenberg/)
+$base-mobile: 16;
+$line-height-mobile: 1.6;
+$leading-mobile: round($base-mobile * $line-height-mobile);
+
+$base-desktop: 18;
+$line-height-desktop: 1.7;
+$leading-desktop: round($base-desktop * $line-height-desktop);
+
+// Typography
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Merriweather', serif;
+}
+
+p, small, li {
+  font-family: 'Fira Sans', sans-serif;
+}
+
+pre {
+  display: block;
+}
+
+pre, code {
+  overflow: auto;
+  font-family: 'Fira Mono', monospace;
+  margin-bottom: 0;
+}
+
+code {
+  padding: 0 5px;
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 5px;
+  font-size: 85%;
+}
+
+pre {
+  padding: 1rem;
+}
+
+pre > code {
+  display: block;
+  border: none;
+  font-style: normal;
+  font-size: 1rem;
+}
+
+
+@mixin padding-x($side, $number) {
+  padding-#{$side}: #{ $number * $leading-desktop + 'px'};
+
+  @include respond-to("small") {
+    padding-#{$side}: #{ $number * $leading-mobile + 'px'};
+  }
+}
+
+@mixin padding-equal($number) {
+  padding: #{ $number * $leading-desktop + 'px'};
+
+  @include respond-to("small") {
+    padding: #{ $number * $leading-mobile + 'px'};
+  }
+}
+@mixin font-size($number) {
+  font-size: #{ $number * $base-desktop + 'px'};
+
+  @include respond-to("medium") {
+    font-size: #{ $number * $base-mobile + 'px'};
+  }
+}
+@mixin line-height() {
+  line-height: $line-height-desktop;
+
+  @include respond-to("small") {
+    line-height: $line-height-mobile;
+  }
+}
+@mixin margin-top($number) {
+  margin-top: #{ $number * $leading-desktop + 'px'};
+
+  @include respond-to("small") {
+    margin-top: #{ $number * $leading-mobile + 'px'};
+  }
+}
+@mixin margin-bottom($number) {
+  margin-bottom: #{ $number * $leading-desktop + 'px'};
+
+  @include respond-to("small") {
+    margin-bottom: #{ $number * $leading-mobile + 'px'};
+  }
+}
+
+
+* {
+  @include line-height();
+  @include margin-bottom(0.5);
+}
+
+html {
+  @include font-size(1);
+  color: $text-colour;
+}
+
+// Headings
+
+// [ h1: size (in rem), line height (* leading), margin top (* leading), margin bottom (* leading) ]
+$headings: (
+  h1: (2.5, 2, 3, 1),
+  h2: (1.6875, 1.5, 2, 0.5),
+  h3: (1.375, 1, 1.5, 0.5),
+  h4: (1.2, 1, 1, 0.5),
+  h5: (1, 1, 2.5, 0.5),
+  h6: (1, 1, 2.5, 0.5)
+) !default;
+
+// Set headings sizes, line-heights and margins
+@each $heading, $properties in $headings {
+  #{$heading} {
+    line-height: 1.5;
+    @include font-size(nth($properties, 1));
+    @include margin-top(nth($properties, 3));
+    @include margin-bottom(nth($properties, 4));
+  }
+}
+
+h1 + h2 {
+  @include margin-top(1);
+}
+
+h2 + h3,
+h3 + h4,
+h4 + h5 {
+  @include margin-top(0.5);
+}
+
+h5 + h6 {
+  @include margin-top(-0.5);
+}
+
+h6 {
+  font-style: italic;
+  font-weight: normal;
+}
+
+
+// Lists
+ul, ol {
+  @include padding-x("left", 1);
+
+  li {
+    @include margin-bottom(0.5);
+  }
+}
+
+// Text
+
+// Prevent `em` and `i` affecting `line-height` in all browsers.
+em, i {
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+
+p + p {
+  @include margin-top(-0.5);
+}
+
+
+a {
+  cursor: pointer;
+  color: $main-colour;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:visited {
+    color: $main-colour;
+  }
+}
+
+blockquote {
+  font-style: italic;
+  padding-left: 1rem;
+  border-left: 10px solid $text-colour;
+  margin-left: 0;
+
+  p {
+    padding: 1rem 0;
+  }
+}
+
+// post specific typography
+.article-container {
+  p, li {
+    @include font-size(1.2);
+    margin-top: 0;
+  }
+
+  p, ul, img, blockquote, .highlight, .contained, h1, h2, h3, h4, h5 {
+    max-width: $max-width;
+    transition: max-width linear 0.2s;
+  }
+
+  .contained {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .highlight:hover {
+    max-width: 100%;
+  }
+
+  p > img {
+    margin-top: 1rem;
+    vertical-align: bottom;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  .highlight {
+    border-radius: 2px;
+  }
+
+  @include respond-to("small") {
+    .article-container__title {
+      margin-top: 2rem;
+    }
+
+    pre > code {
+      max-width: 100%;
+    }
+  }
+
+  table {
+    border-collapse: collapse;
+
+    th, td {
+      vertical-align: top;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+    }
+  }
+
+}

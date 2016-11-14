@@ -1,0 +1,10 @@
+baseurl = "https://vincent.is/"
+title = "Vincent Prouillet"
+languageCode = "en-gb"
+author = "Vincent Prouillet"
+
+# Code highlighting
+PygmentsCodeFences = true
+pygmentsuseclasses = true
+pygmentsstyle = "monokai"
+
