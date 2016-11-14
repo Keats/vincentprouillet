@@ -11,4 +11,5 @@
     <link href="/index.xml" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
     <link href="{{ .RSSlink }}" rel="feed" type="application/rss+xml" title="{{ .Site.Title }}" />
   {{ end }}
+  {{ template "_internal/google_analytics.html" . }}
 </head>

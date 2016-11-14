@@ -8,3 +8,4 @@ PygmentsCodeFences = true
 pygmentsuseclasses = true
 pygmentsstyle = "monokai"
 
+googleAnalytics = "UA-43335571-1"
