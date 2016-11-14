@@ -198,9 +198,13 @@ blockquote {
     margin-top: 0;
   }
 
-  p, ul, img, blockquote, .highlight, .contained, h1, h2, h3, h4, h5 {
+  p, ul, img, blockquote, .highlight, .contained, h1, h2, h3, h4, h5, #disqus_thread {
     max-width: $max-width;
     transition: max-width linear 0.2s;
+  }
+
+  #disqus_thread {
+    margin-top: 4rem;
   }
 
   .contained {
