@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "watch": "gulp watch",
-    "sass": "gulp sass"
+    "sass": "gulp sass",
+    "dist": "gulp sass && hugo"
   },
   "author": "",
   "license": "",
