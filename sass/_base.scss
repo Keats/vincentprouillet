@@ -194,7 +194,6 @@ blockquote {
 // post specific typography
 .article-container {
   p, li {
-    @include font-size(1.2);
     margin-top: 0;
   }
 
