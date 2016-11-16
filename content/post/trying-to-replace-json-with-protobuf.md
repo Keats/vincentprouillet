@@ -57,23 +57,24 @@ The first thing we do is a basic GET to get all our contacts which is trivial si
 
 ```text
 .
-MarlonSheets
-7771 Eastern Avenue11239
+�Marlon��Sheets��
+�7771 Eastern Avenue��11239
 ,
-HarleyMalloy60139"
+�Harley��Malloy����60139"����
 (712)614-9303
 Y
-Mack  Hendricks3
-9573 Kimridge Cove
-7490 Orchard Hill Cove11239"
+�Mack�  Hendricks�3
+�9573 Kimridge Cove
+�7490 Orchard Hill Cove��11239"����
 (802)466-7004
-
-MadelineBowen87023
+�
+�Madeline��Bowen����87023
 0
-WillaSadler
-693 Burlington Parkway43824
+�Willa��Sadler��
+�693 Burlington Parkway��43824
 T
 ```
+(Note that I had to replace some of the characters so the RSS could be generated).
 By default, this is more compact than JSON by quite a bit but once I turned on GZIP, the difference became much smaller: 851B for ProtoBuf and 942B for JSON.  
 
 In the example I copied the .proto file into the static directory and created our [models](https://github.com/WeAreWizards/protojson/blob/master/static/main.js#L12-L15) following the ProtoBuf.js tutorial.  
