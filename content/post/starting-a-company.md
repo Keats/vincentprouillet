@@ -5,7 +5,7 @@ url = "starting-a-company"
 description = "Starting a tech agency"
 date = "2014-11-25"
 categories = ["business"]
-tags = []
+tags = ["business"]
 +++
 
 TL;DR: started a tech agency, visit [https://wearewizards.io](https://wearewizards.io)

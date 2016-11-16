@@ -5,7 +5,7 @@ url = "testing-django-projects"
 description = "Tools and tricks I use to make tests fast and easy to write in Django projects"
 date = "2013-09-02"
 categories = ["programming"]
-tags = ["django", "python"]
+tags = ["python", "django"]
 +++
 
 ## Introduction

@@ -5,7 +5,7 @@ url = "looking-at-where-to-incorporate-as-eu-citizen"
 description = "We have lots of options as to where incorporate as EU citizens, let's look at them."
 date = "2016-07-10"
 categories = ["business"]
-tags = []
+tags = ["business"]
 +++
 
 > This article was originally posted on [my company's blog](https://blog.wearewizards.io/where-to-incorporate-if-you-are-a-eu-citizen).

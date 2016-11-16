@@ -5,7 +5,7 @@ url = "looking-at-payments-in-europe"
 description = "Payments in Europe are complicated due to recent VAT changes. I researched several SaaS that handle the new rules."
 date = "2015-12-10"
 categories = ["business"]
-tags = []
+tags = ["business"]
 +++
 
 > This article was originally posted on [my company's blog](https://blog.wearewizards.io/looking-at-payments-solution-for-saas-in-europe).
