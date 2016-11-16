@@ -10,3 +10,8 @@ pygmentsstyle = "monokai"
 
 googleAnalytics = "UA-43335571-1"
 disqusShortname = "vincentprouillet"
+
+
+[taxonomies]
+  category = "n1"
+  tag = "n2"
