@@ -63,7 +63,7 @@ The corporation tax is currently **20%** but there are [talks to reduce it to 17
 [Dividend tax](https://www.gov.uk/tax-on-dividends/how-dividends-are-taxed) depends on your total income and can vary quite a bit.
 
 #### How to incorporate/open bank account
-Incorporating is very simple and usually only takes a day or so. Most accountants will offer incorporation as a freebie. 
+Incorporating is very simple and usually only takes a day or so. Most accountants will offer incorporation as a freebie.
 You can open a bank account remotely and most banks in the UK (at least the one I've seen) offer a good online banking experience.
 
 With an accountant and a tool like FreeAgent or Xero, you don't really need to do any significant business administration work. We haven't run into issues with HMRC (the revenue service in the UK) that you are dealing with as a company but I have heard many horror stories about it.
@@ -98,7 +98,7 @@ The political environment seems pretty quiet and the current leading political p
 
 Estonia ranks 1st on the [Barclays Digital Development index](https://digitalindex.uk.barclays/ranking) and 16th on the [Doing Business ranking](http://www.doingbusiness.org/rankings)
 
-Do note that Stripe is not available in Estonia yet so it might be a deal breaker if your business depends on it, which might be our case depending on what payment provider we choose for [Proppy](https://proppy.io) (article on that coming soon). There is no timeline for it as well: 
+Do note that Stripe is not available in Estonia yet so it might be a deal breaker if your business depends on it, which might be our case depending on what payment provider we choose for [Proppy](https://proppy.io) (article on that coming soon). There is no timeline for it as well:
 
 <blockquote class="twitter-tweet" data-lang="en-gb"><p lang="en" dir="ltr"><a href="https://twitter.com/WeAreWizardsIO">@WeAreWizardsIO</a> No timeline as of yet, sorry! Feel free to sign up here and we&#39;ll notify you as soon as we&#39;re ready <a href="https://t.co/vbuzSSxceJ">https://t.co/vbuzSSxceJ</a></p>&mdash; Stripe (@stripe) <a href="https://twitter.com/stripe/status/757525171943120896">25 July 2016</a></blockquote>
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
@@ -149,7 +149,7 @@ This is pretty much a tax haven.
 #### How to incorporate/open bank account
 Incorporation is possible remotely but you have to be there in person to create a bank account.
 
-I have looked at [Rivkin](www.rikvin.com) which offers different packages for incorporations, some including a visa.
+I have looked at [Rivkin](http://www.rikvin.com) which offers different packages for incorporations, some including a visa.
 The whole package (incorporation + registered office address +  virtual office) is about 6000 SGD, roughly £3360 per year.
 
 As mentioned before, you can also relocate yourself to Singapore if you fancy mango lassi and green space.
@@ -157,8 +157,8 @@ As mentioned before, you can also relocate yourself to Singapore if you fancy ma
 ## Conclusion
 A few possible choices are available! I would personally remove the UK from the list unless you have the UK citizenship.
 
-That leaves us with Ireland, Estonia, Singapore and, potentially, your own country. The choice is then up to you and your preferences. 
+That leaves us with Ireland, Estonia, Singapore and, potentially, your own country. The choice is then up to you and your preferences.
 
-We Are Wizards *might* move to one of these countries because of Brexit and the IP Bill and therefore would like to hear stories from companies/startups based in those. 
+We Are Wizards *might* move to one of these countries because of Brexit and the IP Bill and therefore would like to hear stories from companies/startups based in those.
 
 Let us know by email (team AT wearewizards.io) or comment and we can add it to the article!
