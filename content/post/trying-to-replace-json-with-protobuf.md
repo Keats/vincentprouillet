@@ -6,7 +6,6 @@ description = "Using Protobuf instead of JSON to communicate with a frontend"
 date = "2015-06-14"
 categories = ["programming"]
 tags = ["javascript"]
-reading_time = "1"
 +++
 
 
