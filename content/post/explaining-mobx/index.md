@@ -1,10 +1,9 @@
 +++
 title = "A MobX introduction and case study"
-slug = "talking-about-mobx"
 url = "talking-about-mobx"
 description = "Getting started with MobX and a case study"
 date = "2016-11-01"
-categories = ["programming"]
+category = "Programming"
 tags = ["javascript", "typescript"]
 +++
 
@@ -22,7 +21,7 @@ Let's start by explaining what is MobX and how it works. It's presented as using
 Now, FRP is a very controversial term as everyone seems to have their own definition so let's forget about that and look at a illustration from the MobX docs (click on it to open in a new tab and get full size or open [this link](../images/mobx-flow.png)).
 
 
-<a href="../img/mobx/mobx-flow.png" target="_blank"><img width="100%" src="../img/mobx/mobx-flow.png"></a>
+<a href="mobx-flow.png" target="_blank"><img width="100%" src="mobx-flow.png"></a>
 
 In short, actions modify the state, which triggers reactions. Part of the state can be derived automatically, such as the number of tasks left to do in a TODO list to take the example of the picture above.
 What sets MobX apart from other Observable implementations is the transparent part. Reactions observe which observables you are using and subscribe to them automatically, without you having to explicitely subscribe to those.

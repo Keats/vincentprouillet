@@ -1,10 +1,9 @@
 +++
 title = "Where to incorporate if you are a EU citizen"
-slug = "looking-at-where-to-incorporate-as-eu-citizen"
 url = "looking-at-where-to-incorporate-as-eu-citizen"
 description = "We have lots of options as to where incorporate as EU citizens, let's look at them."
 date = "2016-07-10"
-categories = ["business"]
+category = "Business"
 tags = ["business"]
 +++
 

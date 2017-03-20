@@ -1,10 +1,9 @@
 +++
 title = "Looking at payments solution for SaaS in Europe"
-slug = "looking-at-payments-in-europe"
 url = "looking-at-payments-in-europe"
 description = "Payments in Europe are complicated due to recent VAT changes. I researched several SaaS that handle the new rules."
 date = "2015-12-10"
-categories = ["business"]
+category = "Business"
 tags = ["business"]
 +++
 

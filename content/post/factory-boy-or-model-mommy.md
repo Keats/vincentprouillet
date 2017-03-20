@@ -1,12 +1,13 @@
 +++
 title = "Python testing: Factory Boy or Model Mommy"
-slug = "using-factory-boy-or-model-mommy"
 url = " using-factory-boy-or-model-mommy"
 description = "Pros/cons of each"
 date = "2014-04-05"
-updated = "2014-07-25"
-categories = ["programming"]
+category = "Programming"
 tags = ["python"]
+
+[extra]
+updated = "2014-07-25"
 +++
 
 

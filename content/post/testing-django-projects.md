@@ -1,10 +1,9 @@
 +++
 title = "Testing Django projects"
-slug = "testing-django-projects"
 url = "testing-django-projects"
 description = "Tools and tricks I use to make tests fast and easy to write in Django projects"
 date = "2013-09-02"
-categories = ["programming"]
+category = "Programming"
 tags = ["python", "django"]
 +++
 

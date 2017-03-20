@@ -1,10 +1,9 @@
 +++
 title = "Comparing weathers in places I've lived"
-slug = "comparing-weathers"
 url = "comparing-weathers"
 description = "Looking how they differ by data"
 date = "2015-05-22"
-categories = ["data science"]
+category = "Data science"
 tags = ["python", "notebook"]
 +++
 
@@ -124,7 +123,7 @@ _ = nice['avg_temp'].plot(figsize=(15, 5))
 ```
 
 
-![png](weather_files/weather_3_0.png)
+![png](weather_3_0.png)
 
 
 While we could continue having one `DataFrame` per city, it is more convenient to have one `DataFrame` containing all the data as this allows us to use plotting directly from it like we did above.
@@ -373,7 +372,7 @@ _ = plt.xlabel("Time", fontsize=16)
 ```
 
 
-![png](/img/weather/weather_8_0.png)
+![png](weather_8_0.png)
 
 
 We can make a few observations on this chart:
@@ -522,7 +521,7 @@ _ = plt.ylabel("Humidity %", fontsize=16)
 ```
 
 
-![png](/img/weather/weather_11_0.png)
+![png](weather_11_0.png)
 
 
 Looking at those graphs we can notice a few things:
@@ -571,7 +570,7 @@ _ = plt.ylabel("Number of snow days", fontsize=16)
 ```
 
 
-![png](/img/weather/weather_13_0.png)
+![png](weather_13_0.png)
 
 
 We can see it's raining quite a bit in Okinawa since they have a rainy season (May-June) and a typhoon season (June-November).  

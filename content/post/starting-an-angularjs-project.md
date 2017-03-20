@@ -1,10 +1,9 @@
 +++
 title = "Starting an AngularJS project"
-slug = "starting-an-angularjs-project"
 url = "starting-an-angularjs-project"
 description = "A Boilerplate for a complete dev environment using AngularJS"
 date = "2013-10-23"
-categories = ["programming"]
+category = "Programming"
 tags = ["javascript"]
 +++
 

@@ -1,10 +1,9 @@
 +++
 title = "Handling errors in Rust"
-slug = "handling-errors-in-rust"
 url = "handling-errors-in-rust"
 description = "Handling errors in Rust and making it easier with error-chain"
 date = "2016-12-15"
-categories = ["programming"]
+category = "Programming"
 tags = ["rust"]
 +++
 

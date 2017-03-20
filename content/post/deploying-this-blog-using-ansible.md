@@ -1,10 +1,9 @@
 +++
 title = "Provisioning and deploying this blog with Ansible"
-slug = "deploying-this-blog-using-ansible"
 url = "deploying-this-blog-using-ansible"
 description = "Showing off Ansible by example"
 date = "2013-08-17"
-categories = ["devops"]
+category = "Devops"
 tags = ["ansible"]
 +++
 

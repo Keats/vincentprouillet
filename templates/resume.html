@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en-gb">
-  {{ partial "head.html" . }}
-  <body class="resume-body">
+{% extends "index.html" %}
 
-    {{ partial "sidebar.html" . }}
-
-    <div class="content resume">
+{% block content %}
+    <div class="resume">
         <h2>About</h2>
         <p>
             I am a developer with an entrepreneurial mind and a good eye for UX.
@@ -142,6 +138,4 @@ applied it to widgets like blog comments and want button
         </div>
 
     </div>
-
-  </body>
-</html>
+{% endblock content %}

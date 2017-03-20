@@ -1,10 +1,9 @@
 +++
 title = "Speeding up Django / PostgreSQL"
-slug = "speeding-up-django-postgres"
 url = "speeding-up-django-postgres"
 description = "Tips to improve performance with Django/PostgreSQL"
 date = "2014-08-20"
-categories = ["programming"]
+category = "Programming"
 tags = ["python", "django", "postgres"]
 +++
 

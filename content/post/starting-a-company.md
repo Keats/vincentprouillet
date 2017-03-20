@@ -1,10 +1,9 @@
 +++
 title = "Starting a company"
-slug = "starting-a-company"
 url = "starting-a-company"
 description = "Starting a tech agency"
 date = "2014-11-25"
-categories = ["business"]
+category = "Business"
 tags = ["business"]
 +++
 

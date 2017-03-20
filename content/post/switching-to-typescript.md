@@ -1,10 +1,9 @@
 +++
 title = "Switching to TypeScript"
-slug = "switching-to-typescript"
 url = "switching-to-typescript"
 description = "Why use TypeScript"
 date = "2014-05-04"
-categories = ["programming"]
+category = "Programming"
 tags = ["javascript", "typescript"]
 +++
 

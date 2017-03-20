@@ -1,10 +1,9 @@
 +++
 title = "Finding trending things in Elasticsearch using python and redis"
-slug = "finding-trending-things"
 url = "finding-trending-things"
 description = "How to calculate trendiness factor from ES and use it in queries"
 date = "2014-09-19"
-categories = ["programming"]
+category = "Programming"
 tags = ["elasticsearch", "python"]
 +++
 

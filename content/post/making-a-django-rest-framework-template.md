@@ -1,12 +1,13 @@
 +++
 title = "A template for Django REST Framework projects"
-slug = "making-a-django-rest-framework-template"
 url = "making-a-django-rest-framework-template"
 description = "Showing off a django template to kickstart a DRF project"
 date = "2014-05-15"
-updated = "2014-05-24"
-categories = ["programming"]
+category = "Programming"
 tags = ["python", "django"]
+
+[extra]
+updated = "2014-05-24"
 +++
 
 

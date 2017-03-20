@@ -1,10 +1,9 @@
 +++
 title = "Trying Rust for web services"
-slug = "trying-rust-for-web-services"
 url = "trying-rust-for-web-services"
 description = "I made a very basic Rust backend, here's what I think about it"
 date = "2015-10-01"
-categories = ["programming"]
+category = "Programming"
 tags = ["rust"]
 +++
 

@@ -1,10 +1,9 @@
 +++
 title = "Migrating to gulp 4"
-slug = "migrating-to-gulp-4"
 url = "migrating-to-gulp-4"
 description = "Migrating my ng-boilerplate to gulp4"
 date = "2015-03-20"
-categories = ["programming"]
+category = "Programming"
 tags = ["javascript"]
 +++
 

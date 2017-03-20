@@ -1,10 +1,9 @@
 +++
 title = "Trying out Rust"
-slug = "trying-out-rust"
 url = "trying-out-rust"
 description = "Checking out that new language from Mozilla"
 date = "2014-07-19"
-categories = ["programming"]
+category = "Programming"
 tags = ["rust"]
 +++
 

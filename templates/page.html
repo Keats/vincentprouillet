@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+{% import "macros.html" as macros %}
+
+{% block content %}
+    <section class="article-container">
+        <h1 class="article-container__title">{{ page.title }}</h1>
+        {{ macros::post_meta(page=page) }}
+
+        <article class="article-container__content">
+            {{ page.content | safe }}
+        </article>
+    </section>
+{% endblock content %}

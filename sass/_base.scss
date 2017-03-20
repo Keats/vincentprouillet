@@ -197,7 +197,7 @@ blockquote {
     margin-top: 0;
   }
 
-  p, ul, img, blockquote, .highlight, .contained, h1, h2, h3, h4, h5, #disqus_thread {
+  p, ul, img, blockquote, pre, .contained, h1, h2, h3, h4, h5, #disqus_thread {
     max-width: $max-width;
     transition: max-width linear 0.2s;
   }
@@ -211,7 +211,7 @@ blockquote {
     margin-bottom: 2rem;
   }
 
-  .highlight:hover {
+  pre:hover {
     max-width: 100%;
   }
 
@@ -224,7 +224,7 @@ blockquote {
     max-width: 100%;
   }
 
-  .highlight {
+  pre {
     border-radius: 2px;
   }
 

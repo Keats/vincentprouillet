@@ -1,10 +1,9 @@
 +++
 title = "The Hacker News effect examined"
-slug = "looking-at-hackernews-effect"
 url = "looking-at-hackernews-effect"
 description = "Looking at stats from HN crowd after getting on the top spot"
 date = "2015-06-14"
-categories = ["data science"]
+category = "Data Science"
 tags = ["python", "notebook"]
 +++
 
@@ -79,7 +78,7 @@ for (date, title, offset) in articles:
 ```
 
 
-![png](/img/hn-effect/ga-stats_1_0.png)
+![png](ga-stats_1_0.png)
 
 
 Here are the links of the articles for reference (I'll refer to them by their number in the list below from now on):
@@ -112,7 +111,7 @@ _ = plt.axis('equal')
 ```
 
 
-![png](/img/hn-effect/ga-stats_3_0.png)
+![png](ga-stats_3_0.png)
 
 
 We can see most of our sessions are coming from Social, which includes HN/Reddit/Twitter mainly: 16,946 to be exact.
@@ -145,7 +144,7 @@ _ = ax.set_xlabel("Number of sessions")
 ```
 
 
-![png](/img/hn-effect/ga-stats_5_0.png)
+![png](ga-stats_5_0.png)
 
 
 As expected, most of the users are from English speaking countries, the articles being written in English after all. We could translate them into French/German if we wanted but that wouldn't be worth the effort of maintaining multiple versions of each article.  
@@ -184,7 +183,7 @@ _ = plt.axis('equal')
 ```
 
 
-![png](/img/hn-effect/ga-stats_8_0.png)
+![png](ga-stats_8_0.png)
 
 
 Interestingly enough, Android and iOS are almost identical. 
@@ -211,7 +210,7 @@ _ = plt.axis('equal')
 ```
 
 
-![png](/img/hn-effect/ga-stats_10_0.png)
+![png](ga-stats_10_0.png)
 
 
 This is a pretty damn big win for Chrome here and almost all of those are on Chrome 42 or 43.

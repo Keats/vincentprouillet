@@ -1,10 +1,9 @@
 +++
 title = "Turning a laptop into a CCTV"
-slug = "turning-a-laptop-into-cctv"
 url = "turning-a-laptop-into-cctv"
 description = "Using computer vision to find who ate my lunch"
 date = "2014-09-22"
-categories = ["programming"]
+category = "Programming"
 tags = ["python"]
 +++
 
@@ -29,9 +28,9 @@ Below is an explanation of how it works, this is pretty basic but that was new t
 The installation is a bit tricky as it uses [OpenCV](http://opencv.org/) and needs a few dependencies for video/images (you will need the libjpg one for the pictures at least).  
 The setup for Ubuntu is described in the README, I haven't tried to install it on any other OS so I cannot comment on it.  
 Here's a photo of actualy physical installation:
-![Laptop](/img/rodent/setup_laptop.jpg)
+![Laptop](setup_laptop.jpg)
 
-![Bait](/img/rodent/setup_bait.jpg)
+![Bait](setup_bait.jpg)
 
 We were not sure of what we are trying to catch so the bait is pretty much a bit of everything: nutella, bread, tuna, cheese etc
 
@@ -154,7 +153,7 @@ difference2 = cv2.absdiff(current_image, gray_image)
 ```
 In practice the difference looks like the following:  
 
-![Difference with absdiff](/img/rodent/difference.jpg)
+![Difference with absdiff](difference.jpg)
 
 You can see my outline, with a pretty cool effect imo, as I was moving in front of the camera.  
 
@@ -167,11 +166,11 @@ This gives a result similar to the above, but usually more faint.
 I personally love this kind of picture, it gives a watercolour like effect.    
 Here you can see my arm while I was standing up, a bit on profile:  
 
-![Result after bitwise_and](/img/rodent/bitwise_and.jpg)
+![Result after bitwise_and](bitwise_and.jpg)
 
 To make it clearer and know what you're looking at, I tried to highlight the outline of my body (admire my graphic design skills):
 
-![Result after bitwise_and outline](/img/rodent/bitwise_and_contour.jpg)
+![Result after bitwise_and outline](bitwise_and_contour.jpg)
 
 We then want to apply a binary threshold to only get clear motions:
 
@@ -181,7 +180,7 @@ _, result = cv2.threshold(result, 40, 255, cv2.THRESH_BINARY)
 This means that for every pixel in the result, turn those with a value above 40 (arbitrary value, seems to give good results but open to changing it!) to 255 (white).  
 This is the picture above after the thresholding:
 
-![Result after thresholding](/img/rodent/threshold.jpg)
+![Result after thresholding](threshold.jpg)
 
 A picture after threshold with no motion would be completely black.  
 
@@ -198,7 +197,7 @@ cv2.rectangle(image, low_point, high_point, purple, 3)
 Note that the rectangle method does the transformation in-place, it doesn't return the new image.  
 Here's what a motion made into a video looks like:
 
-![Motion detection](/img/rodent/motion.gif)
+![Motion detection](motion.gif)
 
 
 ## Results

@@ -1,10 +1,9 @@
 +++
 title = "Updating my AngularJS boilerplate"
-slug = "updating-my-angular-boilerplate"
 url = "updating-my-angular-boilerplate"
 description = "Starting an AngularJS project the easy way v2"
 date = "2014-03-26"
-categories = ["programming"]
+category = "Programming"
 tags = ["javascript"]
 +++
 

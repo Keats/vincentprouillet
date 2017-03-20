@@ -1,10 +1,9 @@
 +++
 title = "My current frontend setup is pretty neat"
-slug = "happy-with-frontend-setup"
 url = "happy-with-frontend-setup"
 description = "Showing my current frontend setup"
 date = "2017-01-28"
-categories = ["programming"]
+category = "Programming"
 tags = ["javascript", "typescript"]
 +++
 

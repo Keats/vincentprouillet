@@ -1,10 +1,9 @@
 +++
 title = "Using Protobuf instead of JSON to communicate with a frontend"
-slug = "trying-to-replace-json-with-protobuf"
 url = "trying-to-replace-json-with-protobuf"
 description = "Using Protobuf instead of JSON to communicate with a frontend"
 date = "2015-06-14"
-categories = ["programming"]
+category = "Programming"
 tags = ["javascript"]
 +++
 

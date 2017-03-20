@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html lang="en-gb">
-  {{ partial "head.html" . }}
-  <body>
+{% extends "index.html" %}
 
-    {{ partial "sidebar.html" . }}
-
-    <div class="content projects">
+{% block content %}
+    <div class="projects">
         <h2>For profit</h2>
         <div class="projects-container">
             <div class="project">
-                <img class="project__logo" src="{{ .Site.BaseURL }}img/projects/proppy-logo.png" alt="Proppy" height="60px">
+                <img class="project__logo" src="proppy-logo.png" alt="Proppy" height="60px">
                 <h3>Proppy (2016 - now)</h3>
                 <p>
                     <a href="https://proppy.io">Proppy</a> is a tool to make the whole proposals process less painful. No more back and forth via emails and
@@ -20,7 +16,7 @@
                 </p>
             </div>
             <div class="project">
-                <img  class="project__logo" src="{{ .Site.BaseURL }}img/projects/hizard-logo.png" alt="Hizard" height="60px">
+                <img  class="project__logo" src="hizard-logo.png" alt="Hizard" height="60px">
                 <h3>Hizard (2014)</h3>
                 <p>
                     Hizard was a webapp to facilitate hiring at small companies by making it collaborative.
@@ -72,5 +68,4 @@
             <blockquote>See <a href="https://github.com/Keats">my Github profile</a> for the full list.</blockquote>
         </div>
     </div>
-  </body>
-</html>
+{% endblock content %}

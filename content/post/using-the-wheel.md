@@ -1,10 +1,9 @@
 +++
 title = "Python wheel"
-slug = "using-the-wheel"
 url = "using-the-wheel"
 description = "What are wheels and why/how should I use them"
 date = "2014-05-24"
-categories = ["programming"]
+category = "Programming"
 tags = ["python"]
 +++
 

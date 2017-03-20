@@ -1,18 +1,9 @@
-baseurl = "https://vincent.is/"
 title = "Vincent Prouillet"
-languageCode = "en-gb"
+base_url = "https://vincent.is/"
+
+generate_tags_pages = false
+generate_categories_pages = false
+highlight_code = true
+
+[extra]
 author = "Vincent Prouillet"
-
-# Code highlighting
-PygmentsCodeFences = true
-pygmentsuseclasses = true
-pygmentsstyle = "monokai"
-
-googleAnalytics = "UA-43335571-1"
-disqusShortname = "vincentprouillet"
-
-enableRobotsTXT = true
-
-[taxonomies]
-  category = "n1"
-  tag = "n2"

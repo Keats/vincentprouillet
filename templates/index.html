@@ -1,0 +1,58 @@
+{% import "macros.html" as macros %}
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="{{ config.description }}">
+      <meta name="author" content="{{ config.extra.author }}">
+      <link href="https://fonts.googleapis.com/css?family=Fira+Mono|Fira+Sans|Merriweather" rel="stylesheet">
+      <title>{{ config.title }}</title>
+      <link rel="stylesheet" href="{{ config.base_url }}app.css" />
+      <link href="{{ config.base_url }}rss.xml" rel="feed" type="application/rss+xml" title="{{ config.title }}" />
+    </head>
+
+  <body>
+
+    <aside class="sidebar">
+        <div class="sidebar__content">
+            <h1>Vincent Prouillet</h1>
+            <p>
+                Coder and entrepreneur living in Osaka. <br/>
+                <b>Available for contract</b>
+            </p>
+
+            <ul class="sidebar__nav">
+                <li><a href="/">Blog</a></li>
+                <li><a href="/is-working-on">Projects</a></li>
+                <li><a href="/presenting-himself">About</a></li>
+            </ul>
+
+            <div class="sidebar__social">
+                <a href="mailto:prouillet.vincent@gmail.com"><i class="icon-mail"></i></a>
+                <a href="https://github.com/Keats" target="_blank"><i class="icon-github"></i></a>
+                <a href="https://www.linkedin.com/in/vincentprouillet" target="_blank"><i class="icon-linkedin"></i></a>
+                <a href="https://twitter.com/20100Prouillet" target="_blank"><i class="icon-twitter"></i></a>
+                <a href="/index.xml"><i class="icon-rss"></i></a>
+            </div>
+        </div>
+    </aside>
+
+
+    <div class="content">
+        {% block content %}
+            <div class="list-posts">
+                {% for page in pages %}
+                    {% if page.date %}
+                        <article class="post">
+                            <h3 class="post__title"><a href="{{ page.permalink }}">{{ page.title }}</a></h3>
+                            {{ macros::post_meta(page=page) }}
+                        </article>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endblock content %}
+    </div>
+  </body>
+</html>

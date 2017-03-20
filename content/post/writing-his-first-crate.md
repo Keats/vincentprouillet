@@ -1,10 +1,9 @@
 +++
 title = "Writing my first Rust crate: jsonwebtoken"
-slug = "writing-his-first-crate"
 url = "writing-his-first-crate"
 description = "Experience writing a JWT library in Rust"
 date = "2015-11-04"
-categories = ["programming"]
+category = "Programming"
 tags = ["rust"]
 +++
 

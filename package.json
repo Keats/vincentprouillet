@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "gulp watch",
     "sass": "gulp sass",
-    "dist": "rm -rf public && gulp sass && hugo"
+    "dist": "rm -rf public && gulp sass && gutenberg build"
   },
   "author": "",
   "license": "",
