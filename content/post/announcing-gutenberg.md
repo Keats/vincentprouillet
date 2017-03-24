@@ -29,7 +29,7 @@ program to write to learn the language. Sadly, I didn't find a template engine I
 prompted me to write my own, [Tera](https://github.com/Keats/tera).
 
 Now that Tera is getting more mature and my frustration with Go templates grows, I started
-working again on it a few weeks ago and it got to a point where it's usable.
+working again on the static site engine a few weeks ago and it got to a point where it's usable.
 
 It's called **Gutenberg** and is now available in a 0.0.2 version on crates.io and [Github](https://github.com/Keats/gutenberg/releases).
 It seems AppVeyor is running into some issue with curl so I haven't been able to test it on Windows yet but
