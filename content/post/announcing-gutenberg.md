@@ -54,7 +54,6 @@ which are a big table of contents over several sections
 More information is available on the [README](https://github.com/Keats/gutenberg) and better documentation will come
 once the tool is in a more stable shape.
 
-
 ## What's next
 As the 0.0.2 version number indicates, Gutenberg is still a work-in-progress. Despite
 that, it fills almost all my static engine needs. There are a few things that will need

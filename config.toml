@@ -3,6 +3,7 @@ base_url = "https://vincent.is/"
 
 generate_tags_pages = false
 generate_categories_pages = false
+generate_rss = true
 highlight_code = true
 
 [extra]
