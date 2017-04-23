@@ -10,7 +10,8 @@
 
 body {
   font-family: 'Fira Mono', sans-serif;
-  margin-bottom: 2rem;
+  margin-bottom: 5rem;
+  margin-top: 5rem;
 }
 
 p, li {
@@ -46,7 +47,7 @@ h1 {
 
 .timeline {
   border-left: 1px solid #aaa;
-  padding: 0 1rem 1rem 1.5rem;
+  padding: 0 1rem 0 1.5rem;
   margin-left: 0.75rem;
 }
 
@@ -55,15 +56,15 @@ h1 {
   margin-bottom: 2rem;
 
   &__dot {
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
     position: absolute;
     border: 1px solid #aaa;
     border-radius: 50%;
     z-index: 1000;
-    left: -37px;
+    left: -34px;
     background: white;
-    top: -3px;
+    // top: -3px;
   }
 
   &__info {
@@ -98,6 +99,7 @@ h1 {
 @media print {
   body {
     padding: 0 1rem;
+    margin: 0;
   }
 
   .container {
