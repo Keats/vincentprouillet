@@ -261,3 +261,6 @@ The route name will be checked at compile time as well, no more typos!
 ## The end
 Will this work for complex apps? 
 I don't know but I will certainly try it and report!
+
+Edit: It looks like TypeScript 2.4 will support [string enums](https://github.com/Microsoft/TypeScript/pull/15486)!
+This means we will be able to not duplicate the `Routes` content and use an enum instead!
