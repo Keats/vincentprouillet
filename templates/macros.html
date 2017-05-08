@@ -1,6 +1,6 @@
 {% macro post_meta(page) %}
     <span class="post-meta">
-        {{ page.date | date(format="%Y-%m-%d") }}
+        {% if page.date %}{{ page.date | date(format="%Y-%m-%d") }}{% endif %}
         {% if page.extra.updated %}(last updated: {{ page.extra.updated | date(format="%Y-%m-%d") }}){% endif %}
         — Reading time: {{ page.reading_time }} min
     </span>
