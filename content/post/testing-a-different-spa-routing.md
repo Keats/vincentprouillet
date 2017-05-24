@@ -264,3 +264,5 @@ I don't know but I will certainly try it and report!
 
 Edit: It looks like TypeScript 2.4 will support [string enums](https://github.com/Microsoft/TypeScript/pull/15486)!
 This means we will be able to not duplicate the `Routes` content and use an enum instead!
+
+Edit2: This approach is now in production! Read up on [the follow-up article](./post/testing-a-different-spa-routing-update.md).
