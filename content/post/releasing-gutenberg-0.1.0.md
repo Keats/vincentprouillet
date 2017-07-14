@@ -7,7 +7,7 @@ category = "Programming"
 tags = ["rust"]
 +++
 
-[Gutenberg](https://github.com/Keats/gutenberg12) is a powerful static site engine inspired by [Hugo](https://gohugo.io/) but simpler to use.
+[Gutenberg](https://github.com/Keats/gutenberg) is a powerful static site engine inspired by [Hugo](https://gohugo.io/) but simpler to use.
 You can build pretty much any kind of static site with it using markdown:
 
 - a basic blog
