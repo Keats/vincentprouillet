@@ -1,6 +1,6 @@
 +++
 title = "Resume"
 description = "My resume"
-url = "introducing-himself"
+path = "introducing-himself"
 template = "resume.html"
 +++
