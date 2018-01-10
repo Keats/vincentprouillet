@@ -1,6 +1,6 @@
 +++
 title = "Provisioning and deploying this blog with Ansible"
-url = "deploying-this-blog-using-ansible"
+path = "deploying-this-blog-using-ansible"
 description = "Showing off Ansible by example"
 date = "2013-08-17"
 category = "Devops"

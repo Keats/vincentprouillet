@@ -1,6 +1,6 @@
 +++
 title = "Switching to TypeScript"
-url = "switching-to-typescript"
+path = "switching-to-typescript"
 description = "Why use TypeScript"
 date = "2014-05-04"
 category = "Programming"

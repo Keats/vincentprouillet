@@ -1,6 +1,6 @@
 +++
 title = "Announcing Gutenberg, a static site engine"
-url = "announcing-gutenberg"
+path = "announcing-gutenberg"
 description = "Introducing Gutenberg, an opinionated static site engine written in Rust"
 date = "2017-03-25"
 +++

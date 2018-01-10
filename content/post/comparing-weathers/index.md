@@ -1,6 +1,6 @@
 +++
 title = "Comparing weathers in places I've lived"
-url = "comparing-weathers"
+path = "comparing-weathers"
 description = "Looking how they differ by data"
 date = "2015-05-22"
 category = "Data science"

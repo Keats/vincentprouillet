@@ -1,6 +1,6 @@
 +++
 title = "Python testing: Factory Boy or Model Mommy"
-url = " using-factory-boy-or-model-mommy"
+path = " using-factory-boy-or-model-mommy"
 description = "Pros/cons of each"
 date = "2014-04-05"
 category = "Programming"

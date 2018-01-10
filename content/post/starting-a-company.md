@@ -1,6 +1,6 @@
 +++
 title = "Starting a company"
-url = "starting-a-company"
+path = "starting-a-company"
 description = "Starting a tech agency"
 date = "2014-11-25"
 category = "Business"

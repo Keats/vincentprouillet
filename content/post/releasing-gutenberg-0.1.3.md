@@ -1,6 +1,6 @@
 +++
 title = "Gutenberg 0.1.3: themes are in"
-url = "releasing-gutenberg-0.1.3"
+path = "releasing-gutenberg-0.1.3"
 description = "Gutenberg 0.1.3 is out with theme support"
 date = "2017-08-31"
 category = "Programming"

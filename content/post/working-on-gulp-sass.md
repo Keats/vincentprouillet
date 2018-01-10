@@ -1,6 +1,6 @@
 +++
 title = "Release of gulp-sass v2"
-url = "working-on-gulp-sass"
+path = "working-on-gulp-sass"
 description = "Release of gulp-sass v2 and what it means"
 date = "2015-05-07"
 category = "Programming"

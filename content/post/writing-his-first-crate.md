@@ -1,6 +1,6 @@
 +++
 title = "Writing my first Rust crate: jsonwebtoken"
-url = "writing-his-first-crate"
+path = "writing-his-first-crate"
 description = "Experience writing a JWT library in Rust"
 date = "2015-11-04"
 category = "Programming"

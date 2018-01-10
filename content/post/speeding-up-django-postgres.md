@@ -1,6 +1,6 @@
 +++
 title = "Speeding up Django / PostgreSQL"
-url = "speeding-up-django-postgres"
+path = "speeding-up-django-postgres"
 description = "Tips to improve performance with Django/PostgreSQL"
 date = "2014-08-20"
 category = "Programming"

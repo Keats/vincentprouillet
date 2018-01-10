@@ -1,6 +1,6 @@
 +++
 title = "Updating my AngularJS boilerplate"
-url = "updating-my-angular-boilerplate"
+path = "updating-my-angular-boilerplate"
 description = "Starting an AngularJS project the easy way v2"
 date = "2014-03-26"
 category = "Programming"

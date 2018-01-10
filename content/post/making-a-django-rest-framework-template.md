@@ -1,6 +1,6 @@
 +++
 title = "A template for Django REST Framework projects"
-url = "making-a-django-rest-framework-template"
+path = "making-a-django-rest-framework-template"
 description = "Showing off a django template to kickstart a DRF project"
 date = "2014-05-15"
 category = "Programming"

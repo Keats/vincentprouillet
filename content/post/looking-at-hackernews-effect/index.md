@@ -1,6 +1,6 @@
 +++
 title = "The Hacker News effect examined"
-url = "looking-at-hackernews-effect"
+path = "looking-at-hackernews-effect"
 description = "Looking at stats from HN crowd after getting on the top spot"
 date = "2015-06-14"
 category = "Data Science"

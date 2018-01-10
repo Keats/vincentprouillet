@@ -1,6 +1,6 @@
 +++
 title = "Making third party widgets"
-url = "making-third-party-widgets"
+path = "making-third-party-widgets"
 description = "How to develop cross-domains javascript widgets such as Facebook Like buttons"
 date = "2013-11-06"
 category = "Programming"

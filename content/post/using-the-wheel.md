@@ -1,6 +1,6 @@
 +++
 title = "Python wheel"
-url = "using-the-wheel"
+path = "using-the-wheel"
 description = "What are wheels and why/how should I use them"
 date = "2014-05-24"
 category = "Programming"

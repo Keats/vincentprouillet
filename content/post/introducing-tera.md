@@ -1,6 +1,6 @@
 +++
 title = "Introducing Tera, a template engine in Rust"
-url = "introducing-tera"
+path = "introducing-tera"
 description = "A template engine in Rust inspired by Jinja2/Django"
 date = "2016-04-15"
 category = "Programming"

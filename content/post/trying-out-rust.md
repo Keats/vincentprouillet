@@ -1,6 +1,6 @@
 +++
 title = "Trying out Rust"
-url = "trying-out-rust"
+path = "trying-out-rust"
 description = "Checking out that new language from Mozilla"
 date = "2014-07-19"
 category = "Programming"

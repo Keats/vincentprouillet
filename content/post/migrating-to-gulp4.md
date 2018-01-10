@@ -1,6 +1,6 @@
 +++
 title = "Migrating to gulp 4"
-url = "migrating-to-gulp-4"
+path = "migrating-to-gulp-4"
 description = "Migrating my ng-boilerplate to gulp4"
 date = "2015-03-20"
 category = "Programming"

@@ -1,6 +1,6 @@
 +++
 title = "Turning a laptop into a CCTV"
-url = "turning-a-laptop-into-cctv"
+path = "turning-a-laptop-into-cctv"
 description = "Using computer vision to find who ate my lunch"
 date = "2014-09-22"
 category = "Programming"

@@ -1,6 +1,6 @@
 +++
 title = "Handling errors in Rust"
-url = "handling-errors-in-rust"
+path = "handling-errors-in-rust"
 description = "Handling errors in Rust and making it easier with error-chain"
 date = "2016-12-15"
 category = "Programming"

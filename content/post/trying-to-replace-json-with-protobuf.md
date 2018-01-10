@@ -1,6 +1,6 @@
 +++
 title = "Using Protobuf instead of JSON to communicate with a frontend"
-url = "trying-to-replace-json-with-protobuf"
+path = "trying-to-replace-json-with-protobuf"
 description = "Using Protobuf instead of JSON to communicate with a frontend"
 date = "2015-06-14"
 category = "Programming"

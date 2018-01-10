@@ -1,6 +1,6 @@
 +++
 title = "Releasing Gutenberg 0.1.0"
-url = "releasing-gutenberg-0.1.0"
+path = "releasing-gutenberg-0.1.0"
 description = "Releasing Gutenberg 0.1.0: what's in it and what's coming"
 date = "2017-07-14"
 category = "Programming"

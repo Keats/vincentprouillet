@@ -1,6 +1,6 @@
 +++
 title = "This month in my Rust projects"
-url = "working-on-rust-projects-in-april-2017"
+path = "working-on-rust-projects-in-april-2017"
 description = "Progress of my Rust projects in April 2017"
 date = "2017-04-23"
 category = "Programming"

@@ -1,6 +1,6 @@
 +++
 title = "Looking at payments solution for SaaS in Europe"
-url = "looking-at-payments-in-europe"
+path = "looking-at-payments-in-europe"
 description = "Payments in Europe are complicated due to recent VAT changes. I researched several SaaS that handle the new rules."
 date = "2015-12-10"
 category = "Business"
