@@ -2,7 +2,7 @@
 title = "Switching to TypeScript"
 path = "switching-to-typescript"
 description = "Why use TypeScript"
-date = "2014-05-04"
+date = 2014-05-04
 category = "Programming"
 tags = ["javascript", "typescript"]
 +++

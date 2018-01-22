@@ -2,7 +2,7 @@
 title = "Gulp by example"
 path = "introducing-people-to-gulp"
 description = "Showing how to use Gulp, a new javascript build system and its difference with Grunt"
-date = "2014-02-17"
+date = 2014-02-17
 updated = "2014-07-23"
 category = "Programming"
 tags = ["javascript"]

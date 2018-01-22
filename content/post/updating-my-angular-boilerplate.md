@@ -2,7 +2,7 @@
 title = "Updating my AngularJS boilerplate"
 path = "updating-my-angular-boilerplate"
 description = "Starting an AngularJS project the easy way v2"
-date = "2014-03-26"
+date = 2014-03-26
 category = "Programming"
 tags = ["javascript"]
 +++

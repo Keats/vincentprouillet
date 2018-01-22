@@ -2,7 +2,7 @@
 title = "A different approach to routing in Single-Page Applications"
 path = "testing-a-different-spa-routing"
 description = "Trying out a framework agnostic approach to routing for SPA"
-date = "2017-05-08"
+date = 2017-05-08
 category = "Programming"
 tags = ["javascript"]
 +++

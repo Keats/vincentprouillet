@@ -2,7 +2,7 @@
 title = "Writing my first Rust crate: jsonwebtoken"
 path = "writing-his-first-crate"
 description = "Experience writing a JWT library in Rust"
-date = "2015-11-04"
+date = 2015-11-04
 category = "Programming"
 tags = ["rust"]
 +++

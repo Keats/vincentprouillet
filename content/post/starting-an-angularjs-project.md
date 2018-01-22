@@ -2,7 +2,7 @@
 title = "Starting an AngularJS project"
 path = "starting-an-angularjs-project"
 description = "A Boilerplate for a complete dev environment using AngularJS"
-date = "2013-10-23"
+date = 2013-10-23
 category = "Programming"
 tags = ["javascript"]
 +++

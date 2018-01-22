@@ -2,7 +2,7 @@
 title = "The Hacker News effect examined"
 path = "looking-at-hackernews-effect"
 description = "Looking at stats from HN crowd after getting on the top spot"
-date = "2015-06-14"
+date = 2015-06-14
 category = "Data Science"
 tags = ["python", "notebook"]
 +++

@@ -2,7 +2,7 @@
 title = "Release of gulp-sass v2"
 path = "working-on-gulp-sass"
 description = "Release of gulp-sass v2 and what it means"
-date = "2015-05-07"
+date = 2015-05-07
 category = "Programming"
 tags = ["css", "sass"]
 +++

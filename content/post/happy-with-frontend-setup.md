@@ -2,7 +2,7 @@
 title = "My current frontend setup is pretty neat"
 path = "happy-with-frontend-setup"
 description = "Showing my current frontend setup"
-date = "2017-01-28"
+date = 2017-01-28
 category = "Programming"
 tags = ["javascript", "typescript"]
 +++

@@ -2,7 +2,7 @@
 title = "Using Protobuf instead of JSON to communicate with a frontend"
 path = "trying-to-replace-json-with-protobuf"
 description = "Using Protobuf instead of JSON to communicate with a frontend"
-date = "2015-06-14"
+date = 2015-06-14
 category = "Programming"
 tags = ["javascript"]
 +++

@@ -2,7 +2,7 @@
 title = "A MobX introduction and case study"
 path = "talking-about-mobx"
 description = "Getting started with MobX and a case study"
-date = "2016-11-01"
+date = 2016-11-01
 category = "Programming"
 tags = ["javascript", "typescript"]
 +++

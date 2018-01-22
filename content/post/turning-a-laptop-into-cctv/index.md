@@ -2,7 +2,7 @@
 title = "Turning a laptop into a CCTV"
 path = "turning-a-laptop-into-cctv"
 description = "Using computer vision to find who ate my lunch"
-date = "2014-09-22"
+date = 2014-09-22
 category = "Programming"
 tags = ["python"]
 +++

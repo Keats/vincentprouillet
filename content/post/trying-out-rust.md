@@ -2,7 +2,7 @@
 title = "Trying out Rust"
 path = "trying-out-rust"
 description = "Checking out that new language from Mozilla"
-date = "2014-07-19"
+date = 2014-07-19
 category = "Programming"
 tags = ["rust"]
 +++

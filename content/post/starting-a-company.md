@@ -2,7 +2,7 @@
 title = "Starting a company"
 path = "starting-a-company"
 description = "Starting a tech agency"
-date = "2014-11-25"
+date = 2014-11-25
 category = "Business"
 tags = ["business"]
 +++

@@ -2,7 +2,7 @@
 title = "Provisioning and deploying this blog with Ansible"
 path = "deploying-this-blog-using-ansible"
 description = "Showing off Ansible by example"
-date = "2013-08-17"
+date = 2013-08-17
 category = "Devops"
 tags = ["ansible"]
 +++

@@ -2,7 +2,7 @@
 title = "Comparing weathers in places I've lived"
 path = "comparing-weathers"
 description = "Looking how they differ by data"
-date = "2015-05-22"
+date = 2015-05-22
 category = "Data science"
 tags = ["python", "notebook"]
 +++

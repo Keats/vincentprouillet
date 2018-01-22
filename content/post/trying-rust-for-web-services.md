@@ -2,7 +2,7 @@
 title = "Trying Rust for web services"
 path = "trying-rust-for-web-services"
 description = "I made a very basic Rust backend, here's what I think about it"
-date = "2015-10-01"
+date = 2015-10-01
 category = "Programming"
 tags = ["rust"]
 +++

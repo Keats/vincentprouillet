@@ -2,7 +2,7 @@
 title = "Speeding up Django / PostgreSQL"
 path = "speeding-up-django-postgres"
 description = "Tips to improve performance with Django/PostgreSQL"
-date = "2014-08-20"
+date = 2014-08-20
 category = "Programming"
 tags = ["python", "django", "postgres"]
 +++

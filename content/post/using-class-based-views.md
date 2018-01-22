@@ -2,7 +2,7 @@
 title = "Class-based views VS function-based views"
 path = "using-class-based-views"
 description = "What are the pros/cons of CBV and FBV in Django"
-date = "2013-10-02"
+date = 2013-10-02
 category = "Programming"
 tags = ["python", "django"]
 +++

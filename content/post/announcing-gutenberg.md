@@ -2,7 +2,7 @@
 title = "Announcing Gutenberg, a static site engine"
 path = "announcing-gutenberg"
 description = "Introducing Gutenberg, an opinionated static site engine written in Rust"
-date = "2017-03-25"
+date = 2017-03-25
 +++
 
 *Why would we possibly want another static site engine?* I already hear some say.
