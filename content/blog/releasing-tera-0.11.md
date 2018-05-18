@@ -14,10 +14,10 @@ highlights are:
 
 - whitespace handling
 - default arguments for macros
-- tests, global functions calls and macro calls are now expressions and can be combined like so: if x is divisibleby(2) and x > 10
+- tests, global functions calls and macro calls are now expressions and can be combined like so: `if x is divisibleby(2) and x > 10`
 
 Quite a few of the changelog items were written by contributors and I hope this trend continues: thanks
-to [@upsuper](https://github.com/upsuper), [@Alex-PK](https://github.com/Alex-PK), [@jturner314](https://github.com/jturner314), 
+to [@upsuper](https://github.com/upsuper), [@Alex-PK](https://github.com/Alex-PK), [@jturner314](https://github.com/jturner314),
 [@hoggetaylor](https://github.com/hoggetaylor) and [@alex](https://github.com/alex) for that.
 
 
@@ -30,7 +30,7 @@ I expect most of the changes until then to happen to the Rust side:
 
 - ergonomics improvement: I'm pretty happy with it so would welcome other viewpoints
 - template rendering performance improvement (reducing the number `clone()`, etc)
-- look into the benefits of [failure](https://github.com/withoutboats/failure) 
+- look into the benefits of [failure](https://github.com/withoutboats/failure)
 and whether it's worth moving from [error-chain](https://github.com/rust-lang-nursery/error-chain) (no at a first glance)
 - try to get something like [streamable templates](https://github.com/Keats/tera/issues/211) in or wait if it would be nicer when generators are stable
 - look into [https://github.com/Keats/tera/issues/219](https://github.com/Keats/tera/issues/219)

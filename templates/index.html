@@ -1,4 +1,3 @@
-{% import "macros.html" as macros %}
 <!DOCTYPE html>
 <html lang="en-gb">
     <head>
@@ -7,9 +6,10 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
       <meta name="author" content="{{ config.extra.author }}">
-      <link href="https://fonts.googleapis.com/css?family=Fira+Mono|Fira+Sans|Merriweather" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Montserrat|PT+Serif" rel="stylesheet">
       <title>{% block title %}{{ config.title }}{% endblock title %}</title>
-      <link rel="stylesheet" href="{{ get_url(path="app.css") }}" />
+      <link rel="stylesheet" href="{{ get_url(path="site.css") }}" />
+      <link rel="shortcut icon" type="image/png" href="{{ get_url(path="favicon.ico") }}"/>
       <link href="{{ get_url(path="rss.xml") }}" rel="feed" type="application/rss+xml" title="{{ config.title }}" />
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -22,45 +22,20 @@
         </script>
     </head>
 
-  <body>
+    <header id="header">
+        <h1 class="logo">Vincent Prouillet</h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/projects/">Projects</a></li>
+            <li><a href="/about/">About</a></li>
+        </ul>
+    </header>
 
-    <aside class="sidebar">
-        <div class="sidebar__content">
-            <h1>Vincent Prouillet</h1>
-            <p>
-                Coder and entrepreneur living in France/Italy. <br/>
-                <b>Available for contract</b>
-            </p>
-
-            <ul class="sidebar__nav">
-                <li><a href="/">Blog</a></li>
-                <li><a href="/is-working-on">Projects</a></li>
-                <li><a href="/introducing-himself">Resume</a></li>
-            </ul>
-
-            <div class="sidebar__social">
-                <a href="mailto:prouillet.vincent@gmail.com"><i class="icon-mail"></i></a>
-                <a href="https://github.com/Keats" target="_blank"><i class="icon-github"></i></a>
-                <a href="https://www.linkedin.com/in/vincentprouillet" target="_blank"><i class="icon-linkedin"></i></a>
-                <a href="https://twitter.com/20100Prouillet" target="_blank"><i class="icon-twitter"></i></a>
-                <a href="{{ get_url(path="rss.xml") }}"><i class="icon-rss"></i></a>
-            </div>
-        </div>
-    </aside>
-
-
-    <div class="content">
+    <div id="content">
         {% block content %}
-            <div class="list-posts">
-                {% set posts = get_section(path="post/_index.md") %}
-                {% for page in posts.pages %}
-                    <article class="post">
-                        <h3 class="post__title"><a href="{{ page.permalink }}">{{ page.title }}</a></h3>
-                        {{ macros::post_meta(page=page) }}
-                    </article>
-                {% endfor %}
-            </div>
         {% endblock content %}
     </div>
+
+  <body>
   </body>
 </html>

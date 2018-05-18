@@ -17,7 +17,7 @@ You can build pretty much any kind of static site with it using markdown:
 - a documentation site
 - all of the above combined
 
-You can download built binaries from the [Github releases page](https://github.com/Keats/gutenberg/releases). 
+You can download built binaries from the [Github releases page](https://github.com/Keats/gutenberg/releases).
 
 ## What's new
 
@@ -25,9 +25,9 @@ The highlight of this release is, as you might have guessed from the title of th
 
 Themes are a staple of static site engines: you can use one to get started with your site and only tweak little bits.
 
-As a proof of concept I have ported a famous theme from Jekyll: [hyde](https://github.com/Keats/hyde). 
+As a proof of concept I have ported a famous theme from Jekyll: [hyde](https://github.com/Keats/hyde).
 
-Since [Tera](https://github.com/Keats/tera), the template engine used in Gutenberg, 
+Since [Tera](https://github.com/Keats/tera), the template engine used in Gutenberg,
 supports multiple levels of [inheritance](https://tera.netlify.com/docs/templates/#inheritance), using a theme is almost seamless.
 For example, if you want to change the about part of the sidebar of Hyde, it is as easy as adding a `index.html` in your
 `templates` folder with the following:
@@ -37,8 +37,8 @@ For example, if you want to change the about part of the sidebar of Hyde, it is 
 
 {% block sidebar_about %}
     Something else
-    You can of course render the theme block 
-    first by calling {{ super() }} if wanted.
+    You can of course render the theme block
+    first by calling {{/* super() */}} if wanted.
 {% endblock sidebar_about %}
 ```
 

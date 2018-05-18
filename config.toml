@@ -1,9 +1,10 @@
 title = "Vincent Prouillet"
-base_url = "https://vincent.is"
+base_url = "https://vincentprouillet.com"
 
 generate_rss = true
 highlight_code = true
 compile_sass = true
+highlight_theme = "cheerfully-light"
 
 [extra]
 author = "Vincent Prouillet"

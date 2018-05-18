@@ -20,7 +20,7 @@ Note that this change only applies to B2C customers.
 This article will focus on what it means for a UK-based VAT-registered company as it is our case.
 
 
-# Business side
+## Business side
 If the customer is a business and is VAT registered, just getting the VAT number and checking it should be enough. However, companies paying without giving their VAT number or non-VAT registered ones should be treated as B2C.
 
 As mentioned in the introduction, we need to charge the VAT of the customer's country which means we need to locate them.
@@ -32,7 +32,7 @@ Here are some examples of pieces of informations we can use to identify a custom
 - bank location
 - card location
 
-Note that the legislation requires to have two non-conflicting items of information and keep them for 10 (!) years. 
+Note that the legislation requires to have two non-conflicting items of information and keep them for 10 (!) years.
 Without the non-conflicting information you have to reject the transaction. You could possibly ask for the user to send some proof by mail but that's a terrible user experience.
 
 If we manage to get customers to pay us, we then need to separate sales by country and apply the right VAT. This gives us the amount of tax we need to pay for each country.
@@ -40,10 +40,10 @@ If we manage to get customers to pay us, we then need to separate sales by count
 The UK has put in place something called the VAT Mini One Stop Shop or VAT MOSS (https://www.gov.uk/guidance/register-and-use-the-vat-mini-one-stop-shop). This allows businesses to register in only one country and let it redistribute the money after filing a VAT return for other countries on a quarterly basis with the amounts we calculated.
 
 
-# Implementing
+## Implementing
 Now that we have an overview of what the VAT system looks like, let's have a look at the solutions.
 
-## Payment providers
+### Payment providers
 None of these (except FastSpring) actually help with the VAT mess but are still needed.
 There are a few alternatives here:
 
@@ -77,36 +77,38 @@ fastspring = (5.95 * 10000 / 100) + (0.63 * 100) # today's rate $0.95 > £0.63
 Stripe seems to give the best price but keep in mind you cand probably get better rates than the advertised one (at least for Paymill according to the employee I met ages ago).
 FastSpring is pretty damn expensive but seems to have European VAT handling built-in.
 
-## Handling VAT
+### Handling VAT
 
-### Implementing it yourself
+#### Implementing it yourself
 In all cases, you need to ask for the customer's country in the checkout form to serve as an equivalent of a billing address. You can prefill that by using the IP address for better UX.
 
-You need to handle a few cases:
+You need to handle two cases:
 
-#### Customer provides a VAT number
+- Customer provides a VAT number
+
 Check that the VAT number is correct and match the country given.
 If it is valid, you only need to add VAT if the customer is based in the same country as you.
 If the customer is not in the same country, do not charge any VAT.
 
-#### Customer doesn't provide VAT number
-Compare the country selected with the IP location. 
-If it matches continue otherwise compare the country filled with the bank country. 
-If it matches continue otherwise ask the customer to send a fax with their certificate of birth and a passport. 
-More seriously: what should be done in the last case? 
+- Customer doesn't provide VAT number
+
+Compare the country selected with the IP location.
+If it matches continue otherwise compare the country filled with the bank country.
+If it matches continue otherwise ask the customer to send a fax with their certificate of birth and a passport.
+More seriously: what should be done in the last case?
 
 There are APIs to get up-to-date VAT rates and check VAT numbers but you could use [pyvat](https://github.com/iconfinder/pyvat) for example to handle all of that for you. Keep in mind that you do not charge VAT for clients outside of the EU.
 
 While this is annoying, it doesn't seem like a huge amount of work.
 
 
-### Using a third party
+#### Using a third party
 If you prefer using off-the-shelf solutions, a few exist that handle the VAT aspect (note that I haven't used any of them):
 
 - [Recurly](https://recurly.com/): $99/month and 10¢ per transaction + 1.25% of revenue (on top of payment gateway)
 - [Quaderno](https://quaderno.io/): $29/month on top of your payment provider, provides a widget for checkout that handles European VAT rules
 - [Taxamo](https://www.taxamo.com): £40/month for all the regions, pretty limited number of country as it's missing Canada and Australia for example. Doesn't actually show what the product is but included for completeness
-- [chargebee](https://www.chargebee.com): $49/month on top of a payment provider
+- [Chargebee](https://www.chargebee.com): $49/month on top of a payment provider
 
 Out of those, Quaderno seems to be the best choice and is fairly cheap. Recurly looks neat as well but is quite expensive without a clear added value on what it adds to let's say Stripe recurrent billing.
 

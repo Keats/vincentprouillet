@@ -30,7 +30,6 @@ nice[:5]
 
 
 
-<div class="contained" style="max-height:1000px;overflow:auto;">
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -103,16 +102,15 @@ nice[:5]
     </tr>
   </tbody>
 </table>
-</div>
 
 
 
-We can see the shape of our CSV files.  
-There are 8 columns, all pretty explicit and containing the average for the month in column month except for raindays and snowdays which contains the number of days in that month where it rained and snowed respectively.   
+We can see the shape of our CSV files.
+There are 8 columns, all pretty explicit and containing the average for the month in column month except for raindays and snowdays which contains the number of days in that month where it rained and snowed respectively.
 
-Note: I currently count raindays as the number of days where the rainfall is above 5mm (which is completely arbitrary).  
-If you look at the website I scraped it does contain a column for rain days  but some days are marked as rain days when there is no rainfall and the reverse.  
-Even then it's not really accurate as I'm only interested in quality of life and rain at 4am is not annoying lots of people.  
+Note: I currently count raindays as the number of days where the rainfall is above 5mm (which is completely arbitrary).
+If you look at the website I scraped it does contain a column for rain days  but some days are marked as rain days when there is no rainfall and the reverse.
+Even then it's not really accurate as I'm only interested in quality of life and rain at 4am is not annoying lots of people.
 
 Cool. Let's try plotting something first to see if everything is okay and load the other cities.
 
@@ -123,7 +121,7 @@ _ = nice['avg_temp'].plot(figsize=(15, 5))
 ```
 
 
-![png](weather_3_0.png)
+{{ image(src="weather_3_0.png", alt="Average temperature in Nice") }}
 
 
 While we could continue having one `DataFrame` per city, it is more convenient to have one `DataFrame` containing all the data as this allows us to use plotting directly from it like we did above.
@@ -142,8 +140,6 @@ for location in locations:
 # Alternative to using slicing
 weather.head()
 ```
-
-
 
 
 <div class="contained" style="max-height:1000px;overflow:auto;">
@@ -353,7 +349,7 @@ def plot_grouped_by(dataframe, column_name):
     """Plots the dataframe grouped by location for the given column"""
     # Need to use the month as the index
     locations = dataframe.set_index('month').groupby('location')
-    
+
     for loc_name, loc in locations:
         loc[column_name].plot(x='month', label=str(loc_name), style=styles[str(loc_name)])
 
@@ -367,12 +363,12 @@ plot_grouped_by(weather, 'avg_temp')
 plt.yticks([-15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 40], fontsize=14)
 plt.legend(fontsize=14, loc="upper left")
 plt.title("Monthly average temperature 2011-2014", fontsize=16)
-_ = plt.ylabel("Temperature (celsius)", fontsize=16) 
-_ = plt.xlabel("Time", fontsize=16) 
+_ = plt.ylabel("Temperature (celsius)", fontsize=16)
+_ = plt.xlabel("Time", fontsize=16)
 ```
 
 
-![png](weather_8_0.png)
+{{ image(src="weather_8_0.png", alt="Monthly average temperatures") }}
 
 
 We can make a few observations on this chart:
@@ -486,7 +482,7 @@ weather_2014.head()
 # Let's look at temperatures and humidity
 plt.figure(figsize=(16, 8))
 
-# this 221 means we want a 2x2 plots display and this is the first one 
+# this 221 means we want a 2x2 plots display and this is the first one
 # (so upper left)
 ax = plt.subplot(221)
 
@@ -494,7 +490,7 @@ plot_grouped_by(weather_2014, 'avg_temp')
 plt.yticks([-15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35], fontsize=14)
 plt.legend(fontsize=14, loc="lower center")
 plt.title("Monthly average temperature 2014")
-_ = plt.ylabel("Temperature (celsius)", fontsize=16) 
+_ = plt.ylabel("Temperature (celsius)", fontsize=16)
 
 ax2 = plt.subplot(222)
 
@@ -502,7 +498,7 @@ plot_grouped_by(weather_2014, 'max_temp')
 plt.yticks([0, 10, 20, 30, 40], fontsize=14)
 plt.legend(fontsize=14, loc="lower center")
 plt.title("Max temperature 2014")
-_ = plt.ylabel("Temperature (celsius)", fontsize=16) 
+_ = plt.ylabel("Temperature (celsius)", fontsize=16)
 
 ax3 = plt.subplot(223)
 
@@ -510,18 +506,18 @@ plot_grouped_by(weather_2014, 'min_temp')
 plt.yticks([-30, -20, -10, 0, 10, 20, 30], fontsize=14)
 plt.legend(fontsize=14, loc="lower center")
 plt.title("Min temperature 2014")
-_ = plt.ylabel("Temperature (celsius)", fontsize=16) 
+_ = plt.ylabel("Temperature (celsius)", fontsize=16)
 
 ax4 = plt.subplot(224)
 
 plot_grouped_by(weather_2014, 'humidity')
 plt.title("Average monthly humidity % in 2014 (legend identical)")
-_ = plt.ylabel("Humidity %", fontsize=16) 
+_ = plt.ylabel("Humidity %", fontsize=16)
 
 ```
 
 
-![png](weather_11_0.png)
+{{ image(src="weather_11_0.png", alt="Graph comparing 4 cities") }}
 
 
 Looking at those graphs we can notice a few things:
@@ -549,7 +545,7 @@ def bar_plot(ax, column_name):
         ['month', 'location']
     ).unstack().plot(
         ax=ax,
-        kind='bar', 
+        kind='bar',
         y=column_name
     )
 
@@ -559,31 +555,31 @@ ax = plt.subplot(211)
 bar_plot(ax, "raindays")
 plt.legend(fontsize=14, loc="best")
 plt.title("Rain days per month in 2014")
-_ = plt.ylabel("Number of rain days", fontsize=16) 
+_ = plt.ylabel("Number of rain days", fontsize=16)
 
 ax2 = plt.subplot(212)
 
 bar_plot(ax2, "snowdays")
 plt.legend(fontsize=14, loc="best")
 plt.title("Snow days per month in 2014")
-_ = plt.ylabel("Number of snow days", fontsize=16) 
+_ = plt.ylabel("Number of snow days", fontsize=16)
 ```
 
 
-![png](weather_13_0.png)
+{{ image(src="weather_13_0.png", alt="Rain and snow days") }}
 
 
-We can see it's raining quite a bit in Okinawa since they have a rainy season (May-June) and a typhoon season (June-November).  
-Nice is probably the nicest, having close to no rains during summer.  
-When it comes to snow, Montreal is the only contender as snow in Nice and London is very rare and it hasn't snowed in Okinawa for over 30 years.  
+We can see it's raining quite a bit in Okinawa since they have a rainy season (May-June) and a typhoon season (June-November).
+Nice is probably the nicest, having close to no rains during summer.
+When it comes to snow, Montreal is the only contender as snow in Nice and London is very rare and it hasn't snowed in Okinawa for over 30 years.
 
 
-While weather is only one of the elements that are necessary to consider when moving (along with salary, atmosphere, friends/family etc.), it is one of the most important thing for me.  
+While weather is only one of the elements that are necessary to consider when moving (along with salary, atmosphere, friends/family etc.), it is one of the most important thing for me.
 If I had to make a ranking of those cities on a weather basis, it would be:
 
 1. Nice
 2. Montreal
 3. Okinawa/London
 
-Okinawa and London are tied for completely different reasons: one has the legendary British weather and its 2 weeks of summer and the other is so hot and humid that it can be hard to breath at times (but you get amazing sea and beaches).  
+Okinawa and London are tied for completely different reasons: one has the legendary British weather and its 2 weeks of summer and the other is so hot and humid that it can be hard to breath at times (but you get amazing sea and beaches).
 Now that you have seen how to use Pandas (for those that had never tried it before), it's up to you to finds things to compare. Do share them when you do as it is always interesting to read.

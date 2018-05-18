@@ -35,12 +35,12 @@ The focus for the next version will be on:
 - improving error handling and reporting (maybe [error-chain](https://github.com/brson/error-chain) could help there?)
 - optimizations and code cleanup
 
-As you can see, no new big features planned, it will be mostly polishing. 
+As you can see, no new big features planned, it will be mostly polishing.
 
 To ensure Tera is easy to use, I'm thinking of making a static site engine using it but that will depend on how much free time I have.
 I'm currently using [Hugo](https://gohugo.io/) for all my sites but the Golang template engine is godawful.
 
-Making the templates compile to Rust functions is still not planned in the near future. 
+Making the templates compile to Rust functions is still not planned in the near future.
 Check out [Maud](https://maud.lambda.xyz/) or [horrorshow](https://docs.rs/horrorshow/0.6.1/horrorshow/) if you want type-safe HTML.
 
 
@@ -52,9 +52,9 @@ Thanks to [SergioBenitez](https://github.com/SergioBenitez) and [yonran](https:/
 ## Other crates
 
 ### bcrypt (0.1.2)
-This one has an explicit name and is stable. 
-I was thinking of extracting the bcrypt specific code from [rust-crypto](https://github.com/DaGenix/rust-crypto) 
-but someone already started on that: https://github.com/RustCrypto so I'll just wait.
+This one has an explicit name and is stable.
+I was thinking of extracting the bcrypt specific code from [rust-crypto](https://github.com/DaGenix/rust-crypto)
+but someone already started on that: [https://github.com/RustCrypto](https://github.com/RustCrypto) so I'll just wait.
 
 ### dbmigrate (0.2.7)
 A CLI tool to general and manage SQL migrations for MySQL, SQLite and Postgres.

@@ -8,33 +8,33 @@ tags = ["javascript"]
 +++
 
 
-Routing is a big part of most SPA: 
+Routing is a big part of most SPA:
 
 - what to render when a user hits a certain URL
 - whether the user is allowed to reach that page
-- what data do we need to load before rendering 
+- what data do we need to load before rendering
 - eventually display some loading screen if necessary.
 
 ## The problem
-In the React world, [React-Router](https://github.com/ReactTraining/react-router) is the standard. 
-It is a bit infamous as its API has changed drastically for each major version. 
+In the React world, [React-Router](https://github.com/ReactTraining/react-router) is the standard.
+It is a bit infamous as its API has changed drastically for each major version.
 [Proppy](https://proppy.io) is still using v2 as updating it didn't seem to bring much benefit and would take time.
 Our only issue with our current setup is that we are not able to make the async transitions the way we would like them to be, but it is
 an annoying one from a UX point of view.
 
-After reading [How to decouple state and UI (a.k.a. you don’t need componentWillMount)](https://hackernoon.com/how-to-decouple-state-and-ui-a-k-a-you-dont-need-componentwillmount-cc90b787aa37) by the author of [MobX](https://mobx.js.org), I realised that routing should be something that is framework-agnostic. 
+After reading [How to decouple state and UI (a.k.a. you don’t need componentWillMount)](https://hackernoon.com/how-to-decouple-state-and-ui-a-k-a-you-dont-need-componentwillmount-cc90b787aa37) by the author of [MobX](https://mobx.js.org), I realised that routing should be something that is framework-agnostic.
 After all, isn't routing simply matching a URL state to a function? There is no need for something specific to React, Angular or anything else.
 
-I recently started experimenting with it and I think I found a nice setup. 
+I recently started experimenting with it and I think I found a nice setup.
 I haven't tried it for a complex app yet though so it is probably lacking in some ways.
 I will write another article on how it works in a real app when I have the time to try it in Proppy.
 
 ## The solution
 
-This example will use React, MobX and [router5](http://router5.github.io/). 
-router5 is a nice router library that treats routing state like any application state. 
+This example will use React, MobX and [router5](http://router5.github.io/).
+router5 is a nice router library that treats routing state like any application state.
 Combined with MobX, you can have a store that will contain the routing state trivially without any framework.
-I couldn't find an up to date TypeScript definition for router5 so I [made one](https://gist.github.com/Keats/1b8833b581d01e751048e1f51041817f). 
+I couldn't find an up to date TypeScript definition for router5 so I [made one](https://gist.github.com/Keats/1b8833b581d01e751048e1f51041817f).
 I'm not entirely sure whether this is the correct way to write a definition file though so I will wait a bit before making a PR to [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/).
 
 ### Routing setup
@@ -61,7 +61,7 @@ export type Routes =
 As you can see, nothing magical going on: `routes` is simply an array of routes, which are plain JavaScript objects themselves.
 The `Routes` type has to be manually updated to match the routes but allows compile-time checking of the routes: a worthy trade-off in my eyes.
 
-The `canActivate` key corresponds to a [lifecycle function](http://router5.github.io/docs/preventing-navigation.html) of router5. 
+The `canActivate` key corresponds to a [lifecycle function](http://router5.github.io/docs/preventing-navigation.html) of router5.
 router5 will call this function before transitioning to the new state, preventing the transition if necessary.
 In that case it is simply the following:
 
@@ -103,7 +103,7 @@ class RouterStore {
 const routerStore = new RouterStore();
 export default routerStore;
 ```
-If you haven't used MobX before, I heavily recommend it and [wrote an introduction to it](./post/explaining-mobx/index.md) before. In a nutshell,
+If you haven't used MobX before, I heavily recommend it and [wrote an introduction to it](./blog/explaining-mobx/index.md) before. In a nutshell,
 think of the code above as a simple class that has 2 observable values: `current` and `asyncInProgress`.
 
 Ok we got our routes and store, we now need to create a router:
@@ -139,7 +139,7 @@ export function mobxRouterPlugin(router: Router) {
 ```
 How errors are handled is really up to you, I'm focusing on the happy path for that article.
 
-Next up is the `asyncMiddleware` that handles any pre-loading we need to do. 
+Next up is the `asyncMiddleware` that handles any pre-loading we need to do.
 If a `onActivate` function on a route is found a route, it assumes it is an async call that returns a promise:
 
 ```tsx
@@ -161,13 +161,13 @@ const asyncMiddleware = (routes: Array<any>) => (router: Router) => (toState: an
 };
 ```
 
-In practice, the `onActivate` method of the `home` route will be called before transitioning and will only be completed if the call succeeded. 
+In practice, the `onActivate` method of the `home` route will be called before transitioning and will only be completed if the call succeeded.
 The store will automatically be notified of the start of an async call and of any successful transition: displaying a loading progress becomes straightforward.
 
 Finally, we start the router which will automatically use the current URL as the current state as we are using the Browser plugin.
 
 ### Integrating React
-Now that we have the routing is up and running, we need to be able to render components depending on the URL and navigate between pages. 
+Now that we have the routing is up and running, we need to be able to render components depending on the URL and navigate between pages.
 Since all the routing state is in a MobX store, this is simply a matter of having a component observe it:
 
 
@@ -199,11 +199,11 @@ class App extends React.Component<{}, {}> {
     );
   }
 ```
-That's it. A simple switch on the name of the current route and we're good to go. 
+That's it. A simple switch on the name of the current route and we're good to go.
 
-There is a small twist for links though: using a basic `<a href="/forgot-password">Forgot?</a>` will trigger a full reload, unless there's an option I missed. 
-You will need to use the `router.navigate` method to navigate instead. 
-If you are using React you might have a `Link` component in your project to standardize how links are made and the various styles it can have. 
+There is a small twist for links though: using a basic `<a href="/forgot-password">Forgot?</a>` will trigger a full reload, unless there's an option I missed.
+You will need to use the `router.navigate` method to navigate instead.
+If you are using React you might have a `Link` component in your project to standardize how links are made and the various styles it can have.
 Here's an example for a basic one:
 
 ```tsx
@@ -259,10 +259,10 @@ Which can be used like so:
 The route name will be checked at compile time as well, no more typos!
 
 ## The end
-Will this work for complex apps? 
+Will this work for complex apps?
 I don't know but I will certainly try it and report!
 
 Edit: It looks like TypeScript 2.4 will support [string enums](https://github.com/Microsoft/TypeScript/pull/15486)!
 This means we will be able to not duplicate the `Routes` content and use an enum instead!
 
-Edit2: This approach is now in production! Read up on [the follow-up article](./post/testing-a-different-spa-routing-update.md).
+Edit2: This approach is now in production! Read up on [the follow-up article](./blog/testing-a-different-spa-routing-update.md).

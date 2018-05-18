@@ -10,7 +10,6 @@ tags = ["javascript", "typescript"]
 
 > This article was originally posted on [my company's blog](https://blog.wearewizards.io/a-mobx-introduction-and-case-study).
 
-
 [MobX](https://mobxjs.github.io/mobx/) (previously mobservable) is a state management library for JavaScript frontend application. This article introduces it with examples as well as showing how it works in a real app with TypeScript. It is based on a talk I gave at the Osaka Web designers and developers meetup recently.
 
 ## What is MobX and why should I look into it
@@ -18,10 +17,9 @@ tags = ["javascript", "typescript"]
 ### MobX?
 Let's start by explaining what is MobX and how it works. It's presented as using Transparent Functional Reactive Programming.
 
-Now, FRP is a very controversial term as everyone seems to have their own definition so let's forget about that and look at a illustration from the MobX docs (click on it to open in a new tab and get full size or open [this link](../images/mobx-flow.png)).
+Now, FRP is a very controversial term as everyone seems to have their own definition so let's forget about that and look at a illustration from the MobX docs (click on it to open in a new tab and get full size or open [this link](mobx-flow.png)).
 
-
-<a href="mobx-flow.png" target="_blank"><img width="100%" src="mobx-flow.png"></a>
+{{ image(src="mobx-flow.png", alt="MobX flow") }}
 
 In short, actions modify the state, which triggers reactions. Part of the state can be derived automatically, such as the number of tasks left to do in a TODO list to take the example of the picture above.
 What sets MobX apart from other Observable implementations is the transparent part. Reactions observe which observables you are using and subscribe to them automatically, without you having to explicitely subscribe to those.
@@ -277,7 +275,7 @@ Doing so gives us the same thing as the `autorun` in the MobX by example section
 
 Since we don't do server side rendering, we can directly import a store and call its function directly. Here's a slightly modified code sample for the Settings>Clients page:
 
-```js
+```tsx
 import * as React  from "react";
 import { observer } from "mobx-react";
 import { observable } from "mobx";
@@ -348,7 +346,7 @@ Another neat thing about using MobX for state is that changes will be logged if 
 ### Dev tools
 For React, `mobx-react-devtools` is available and is pretty great. See the gif below from its repo to have an overview of the 3 features.
 
-![React MobX devtools](https://github.com/mobxjs/mobx-react-devtools/blob/02f8371dea637b0aa819a78286cbcc464265707b/devtools.gif?raw=true)
+{{ image(src="devtools.gif", alt="React MobX devtools") }}
 
 I have mostly used the logging to inspect action and state changes while debugging and to spot erroneous updates and the re-rendering highlighter to figure out if some of our components were re-rendering too often.
 

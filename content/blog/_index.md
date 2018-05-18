@@ -1,4 +1,4 @@
 +++
 sort_by = "date"
-render = false
+template = "blog.html"
 +++
