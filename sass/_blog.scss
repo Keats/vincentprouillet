@@ -1,5 +1,16 @@
 .post-list {
+  h1 {
+    text-align: center;
+  }
 
+  max-width: $container-width;
+  margin-left: auto;
+  margin-right: auto;
+
+  li {
+    margin-bottom: 1rem;
+    list-style-type: circle;
+  }
 }
 
 .post {

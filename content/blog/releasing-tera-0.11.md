@@ -1,6 +1,5 @@
 +++
 title = "Tera 0.11 is released"
-path = "releasing-tera-0.11"
 description = "Tera 0.11 is out with whitespace handling and more"
 date = 2018-01-22
 category = "Programming"

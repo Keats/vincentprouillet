@@ -1,13 +1,12 @@
 +++
 title = "This month in my Rust projects"
-path = "working-on-rust-projects-in-april-2017"
 description = "Progress of my Rust projects in April 2017"
 date = 2017-04-23
 category = "Programming"
 tags = ["rust"]
 +++
 
-I have just released v2 of [jsonwebtoken](https://github.com/Keats/jsonwebtoken) and 
+I have just released v2 of [jsonwebtoken](https://github.com/Keats/jsonwebtoken) and
 thought a blog post would be a good way to talk about the progress of jsonwebtoken, Tera and Gutenberg this month.
 
 ## jsonwebtoken
@@ -27,8 +26,8 @@ The signature is:
 
 ```rust
 pub fn decode<T: DeserializeOwned>(
-    token: &str, 
-    key: &[u8], 
+    token: &str,
+    key: &[u8],
     validation: &Validation
 ) -> Result<TokenData<T>>
 ```
@@ -36,8 +35,8 @@ But I expect `Validation` to be the default most of the time so the ideal signat
 
 ```rust
 pub fn decode<T: DeserializeOwned>(
-    token: &str, 
-    key: &[u8], 
+    token: &str,
+    key: &[u8],
     validation = &Validation::default() // or whatever the syntax would be
 ) -> Result<TokenData<T>>
 ```
@@ -59,7 +58,7 @@ Thanks a lot to [Mike Engel](https://github.com/mike-engel) for all the feedback
 
 > [Tera](https://github.com/Keats/tera) is a template engine based on Jinja2/Django templates
 
-Tera has gone through 2 versions in April: 0.9.0 and now 0.10. 
+Tera has gone through 2 versions in April: 0.9.0 and now 0.10.
 
 0.9 fixed a major bug on Windows and 0.10 updated `serde` to 1.0, no major changes otherwise: Tera is pretty stable now.
 
@@ -67,7 +66,7 @@ Tera has gone through 2 versions in April: 0.9.0 and now 0.10.
 
 > [Gutenberg](https://github.com/Keats/gutenberg) is a static site engine
 
-Lots of progress this month on Gutenberg! 
+Lots of progress this month on Gutenberg!
 
 A short list of the biggest new features:
 
@@ -79,7 +78,7 @@ A short list of the biggest new features:
 Next up is [sorting by weight/order](https://github.com/Keats/gutenberg/issues/14) and finishing up
 [pagination](https://github.com/Keats/gutenberg/issues/7).
 
-Once those features are in, I will probably spend some time making an actual documentation site to ensure it works for sites 
+Once those features are in, I will probably spend some time making an actual documentation site to ensure it works for sites
 more complex than this blog.
 
 If anyone is knowledgeable about [Live Reload](http://livereload.com/), I'd like some help tracking down [this issue](https://github.com/Keats/gutenberg/issues/10).

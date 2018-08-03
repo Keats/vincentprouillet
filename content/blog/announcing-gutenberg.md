@@ -1,6 +1,5 @@
 +++
 title = "Announcing Gutenberg, a static site engine"
-path = "announcing-gutenberg"
 description = "Introducing Gutenberg, an opinionated static site engine written in Rust"
 date = 2017-03-25
 +++
@@ -21,7 +20,7 @@ Those are all using [Hugo](https://gohugo.io/), except the blog you're reading
 that moved to Gutenberg a couple of days ago.
 
 Hugo in itself is pretty great: I switched from Pelican for the speed and the stand-alone binary and
-stayed for the instant live reload. The huge pain point for me with Hugo is the Go template 
+stayed for the instant live reload. The huge pain point for me with Hugo is the Go template
 engine: I find it so bad that it turns a great experience into a, well, sad experience.
 
 When I first looked at Rust a couple of years ago, I thought that a static site engine could be a nice first
@@ -36,8 +35,8 @@ It seems AppVeyor is running into some issue with curl so I haven't been able to
 it should work on Linux and OSX. Binaries are built using the very nice [trust](https://github.com/japaric/trust) project.
 
 ## The features
-Gutenberg is opinionated (only TOML for configuration, only Tera for templates, only CommonMark for content) but is flexible 
-enough to let you build all kinds of sites, from landing pages to knowledge bases, not only blogs. 
+Gutenberg is opinionated (only TOML for configuration, only Tera for templates, only CommonMark for content) but is flexible
+enough to let you build all kinds of sites, from landing pages to knowledge bases, not only blogs.
 
 Features in no particular order are:
 
@@ -73,7 +72,7 @@ And for after the 0.1 release:
 
 The current blocker to parallelization is that [syntect](https://github.com/trishume/syntect), the
 great library I'm using for syntax highlighting is not thread-safe. There is an [issue](https://github.com/trishume/syntect/issues/20) open
-but I haven't had the time or energy to look/fix that yet. 
+but I haven't had the time or energy to look/fix that yet.
 It should be fairly straightforward to add Rayon once it's fixed, if the benchmarks show a significant difference.
 
 ## How does it look in practice

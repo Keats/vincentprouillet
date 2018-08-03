@@ -1,6 +1,5 @@
 +++
 title = "Python testing: Factory Boy or Model Mommy"
-path = " using-factory-boy-or-model-mommy"
 description = "Pros/cons of each"
 date = 2014-04-05
 category = "Programming"
@@ -11,16 +10,16 @@ updated = "2014-07-25"
 +++
 
 
-Writing tests is necessary.  
-Whether you write them before the code itself (TDD, BDD) or after, it allows you to refactor and change your code with confidence (nobody wants to refactor a critical feature with no coverage).  
-One thing you need very frequently in tests is objects.  
+Writing tests is necessary.
+Whether you write them before the code itself (TDD, BDD) or after, it allows you to refactor and change your code with confidence (nobody wants to refactor a critical feature with no coverage).
+One thing you need very frequently in tests is objects.
 There's several choices when it comes to how you can create objects for your tests:
 
 - Fixtures: objects are stored as json or another filetype and loaded for tests. This is a bad idea as you need to update your fixtures everytime you modify your models
 - ORM: you could for example use MyModel.objects.create in Django to create your object in the database. Much cleaner than fixtures but you will repeat yourself quite a bit.
 - Factories: that's what the article is about, define a template once (or not at all with Model Mommy) and you can use the factory in all your tests.
 
-You could create your own factory system based on the ORM but there are libraries that already do that, and do it well so there's no point reinventing the wheel.  
+You could create your own factory system based on the ORM but there are libraries that already do that, and do it well so there's no point reinventing the wheel.
 All the examples below will be for Django tests and we are going to make factories for the following models:
 
 ```python
@@ -38,9 +37,9 @@ class Owner(object):
 ```
 
 ## Factory Boy
- is based on factory_girl for those of you that used it in Ruby.  
-Using it is very simple, define your factory by creating a class that inherits from the class you want to use (it supports several ORM, mainly Django and SQLAlchemy).  
-It brings lots of cool features like lazy attributes, fuzzy attributes,  sequences and more.  
+ is based on factory_girl for those of you that used it in Ruby.
+Using it is very simple, define your factory by creating a class that inherits from the class you want to use (it supports several ORM, mainly Django and SQLAlchemy).
+It brings lots of cool features like lazy attributes, fuzzy attributes,  sequences and more.
 
 Let's see how the factories would work for our models:
 
@@ -80,7 +79,7 @@ Now, to use it in your tests, it's very simple:
 Factory boy also provides hooks if you need to modify the object or save some properties in another database.
 
 ## Model Mommy
-[Model Mommy](https://github.com/vandersonmota/model_mommy) is an extremely simple way to create objects for tests in Django (and Django only).  
+[Model Mommy](https://github.com/vandersonmota/model_mommy) is an extremely simple way to create objects for tests in Django (and Django only).
 Look at that:
 
 ```python
@@ -89,8 +88,8 @@ Look at that:
 >>> mommy.prepare(Owner) # create but not save in the database
 ```
 
-And yes, there's nothing else to define. Model mommy will automatically fill the objects attributes with random data corresponding to the type of column in the ORM.  
-You can obviously define the attributes manually if you want, even for related objects:  
+And yes, there's nothing else to define. Model mommy will automatically fill the objects attributes with random data corresponding to the type of column in the ORM.
+You can obviously define the attributes manually if you want, even for related objects:
 
 ```python
 >>> mommy.make(Owner, first_name='Malcolm')
@@ -98,12 +97,12 @@ You can obviously define the attributes manually if you want, even for related o
 >>> mommy.make(Teashop, _quantity=7) # creates and return 7 teashop objects, everyone gets a teashop!
 ```
 
-You might be thinking that having random data in your tests can be a bad idea (I tend to agree) and annoying to track down bugs (it's hard to see that sdawrewaev is a first name).  
-Thankfully, Model Mommy provides a way to set predefined data called recipes, with several examples in the [doc](https://github.com/vandersonmota/model_mommy#recipes).  
-It doesn't have lazy attributes though.  
+You might be thinking that having random data in your tests can be a bad idea (I tend to agree) and annoying to track down bugs (it's hard to see that sdawrewaev is a first name).
+Thankfully, Model Mommy provides a way to set predefined data called recipes, with several examples in the [doc](https://github.com/vandersonmota/model_mommy#recipes).
+It doesn't have lazy attributes though.
 
 ## Which one should I use?
-If you are using something other than Django, the choice is easy and you should use Factory Boy if possible.  
-If you are using Django, things are pretty much down to your personal preference as both do a good job providing models for your tests.  
-I really like how simple it is to use Model Mommy and the ORM syntax to edit relationship attributes but since I don't want random data, I would always use recipes and I might as well use Factory Boy.  
-In the end I use Factory Boy, the explicit declaration and the possibility of using the same tool on a Flask or Pyramid project makes it very attractive.  
+If you are using something other than Django, the choice is easy and you should use Factory Boy if possible.
+If you are using Django, things are pretty much down to your personal preference as both do a good job providing models for your tests.
+I really like how simple it is to use Model Mommy and the ORM syntax to edit relationship attributes but since I don't want random data, I would always use recipes and I might as well use Factory Boy.
+In the end I use Factory Boy, the explicit declaration and the possibility of using the same tool on a Flask or Pyramid project makes it very attractive.

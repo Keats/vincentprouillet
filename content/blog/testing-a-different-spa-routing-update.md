@@ -1,6 +1,5 @@
 +++
 title = "A different approach to routing in Single-Page Applications: now in production"
-path = "testing-a-different-spa-routing-update"
 description = "A framework agnostic approach to routing for SPA: now in production"
 date = 2017-05-24
 category = "Programming"

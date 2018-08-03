@@ -1,6 +1,5 @@
 +++
 title = "Migrating to gulp 4"
-path = "migrating-to-gulp-4"
 description = "Migrating my ng-boilerplate to gulp4"
 date = 2015-03-20
 category = "Programming"
@@ -24,13 +23,13 @@ Nothing fancy here, just updating our npm and bower dependencies, including poin
 ```bash
 $ npm install --save-dev gulpjs/gulp.git#4.0
 ```
-The boilerplate demo tests are going to fail at that point because of changes in the api of gulp and probably some in other libraries we just updated as well.  
+The boilerplate demo tests are going to fail at that point because of changes in the api of gulp and probably some in other libraries we just updated as well.
 
 You can see the commit [here](https://github.com/Keats/ng-boilerplate/commit/49a339cc5cbde8f5374b8f4c915a548dc2916cc4).
 
 ## Migrating the gulpfile
 ### Calling gulp
-The first thing we need to do is ensure that we are using the right version of gulp.  You might have another version installed globally or nothing installed globally like me.  
+The first thing we need to do is ensure that we are using the right version of gulp.  You might have another version installed globally or nothing installed globally like me.
 The easiest way (at least to me) to deal with that issue is the [npm scripts](https://docs.npmjs.com/misc/scripts) part of the package.json.
 
 ```js
@@ -44,7 +43,7 @@ npm run gulp
 ```
 
 The downside is that you will get npm errors instead of the regular ones but that's only an issue when building your gulpfile.
-Let's not forget to update the travis.yml to use that npm script too.  
+Let's not forget to update the travis.yml to use that npm script too.
 
 You can see the commit [here](https://github.com/Keats/ng-boilerplate/commit/ef30315f43580e8b3c1ba85d4536c7fe0d69365d).
 
@@ -82,8 +81,8 @@ gulp.task(
 );
 ```
 
-In that case we first want to run build, and then browser-sync, watch and karma-watch in parallel. 
-If you look at the commit below, you will be able to spot an easy mistake: browser-sync is in the `gulp.series` despite being blocking. In short, don't put blocking tasks in a series.  
+In that case we first want to run build, and then browser-sync, watch and karma-watch in parallel.
+If you look at the commit below, you will be able to spot an easy mistake: browser-sync is in the `gulp.series` despite being blocking. In short, don't put blocking tasks in a series.
 
 Now trying to run the build task, I get another error:
 
@@ -118,9 +117,9 @@ gulp.task(
 ```
 
 > Note: I had to modify some tasks like the browser-sync since its API changed.
-I also had to make a [patch](https://github.com/dlmanning/gulp-sass/pull/207) to gulp-sass to update the node-sass version.  
+I also had to make a [patch](https://github.com/dlmanning/gulp-sass/pull/207) to gulp-sass to update the node-sass version.
 
-You can see the commit [here](https://github.com/Keats/ng-boilerplate/commit/91a05401c6ea532467bc00b5a6e54fd95b6b0eaf).  
+You can see the commit [here](https://github.com/Keats/ng-boilerplate/commit/91a05401c6ea532467bc00b5a6e54fd95b6b0eaf).
 
 Looking at the [build](https://travis-ci.org/Keats/ng-boilerplate/builds/54274589), it still fails because of a missing selenium jar which means a protractor error.
 My elegant solution was the [following](https://github.com/Keats/ng-boilerplate/commit/d999db2442ac72fc440e8ff9cccd8348c533c72d), as in removing protractor from travis because I'm not using it right now anyway.
@@ -139,7 +138,7 @@ plugins.ngAnnotate = require('gulp-ng-annotate');
 Another thing to examine is whether some of the gulp plugins you're using actually bring any values compared to using the actual npm module directly.
 In my boilerplate, gulp-karma is not doing anything special and was only necessary while the karma team was fixing some of the issues the plugin was solving.
 
-While going through the file, I also realised I didn't test the watch process at all and that it didn't work (surprising eh).  
+While going through the file, I also realised I didn't test the watch process at all and that it didn't work (surprising eh).
 
 The fix was easy and I included it in the [clean up commit](https://github.com/Keats/ng-boilerplate/commit/bee9fba6e9ee2602e96c8d735d409b31a267d655).
 
@@ -148,9 +147,9 @@ Maybe it makes more sense if you have very long files but all of mine are betwee
 
 
 ## Wrap up
-Some functions from gulp 3 such a `gulp.start` and `gulp.run` were deprecated and are not covered in this article since I never used them in any of my gulpfiles.  
+Some functions from gulp 3 such a `gulp.start` and `gulp.run` were deprecated and are not covered in this article since I never used them in any of my gulpfiles.
 
 There is also a bunch of new functions that I haven't used yet. To have a complete overview of what's new, you can check the [gulp 4 changelog](https://github.com/gulpjs/gulp/blob/4.0/CHANGELOG.md).
-Gulp 4 is still in alpha so I'll update this article if any breaking change happens.  
+Gulp 4 is still in alpha so I'll update this article if any breaking change happens.
 
 A question often asked is why use gulp when you have things like [webpack](http://webpack.github.io/) around but that's out of scope for this article but will probably be part of another one.

@@ -1,6 +1,5 @@
 +++
 title = "Handling errors in Rust"
-path = "handling-errors-in-rust"
 description = "Handling errors in Rust and making it easier with error-chain"
 date = 2016-12-15
 category = "Programming"
@@ -8,7 +7,7 @@ tags = ["rust"]
 +++
 
 
-Error handling in Rust is pretty straightforward. 
+Error handling in Rust is pretty straightforward.
 
 The standard library comes with the `Result` type which has the following definition:
 
@@ -127,7 +126,7 @@ If you want to read more on that, the [error handling section](https://doc.rust-
 The interesting part in that code is the body of the `do_something` function which showcases the various ways of
 handling `Result`.
 
-You can be in 2 situations when handling errors: 
+You can be in 2 situations when handling errors:
 
 - you want to handle them immediately
 - you want to do an early return and pass them back to the caller
@@ -158,7 +157,7 @@ As you saw from the example above, defining your own errors is very verbose.
 
 After experimenting on my own at first, I found the [quick-error](https://crates.io/crates/quick-error) crate which
 makes creating your own error and extending built-in ones like the `io::Error` in the previous section a breeze.
-This was my go-to crate for error handling, until reading [this article](http://brson.github.io/2016/11/30/starting-with-error-chain) 
+This was my go-to crate for error handling, until reading [this article](http://brson.github.io/2016/11/30/starting-with-error-chain)
 about [error-chain](https://crates.io/crates/error-chain).
 
 `error-chain` builds on `quick-error` and makes it even more painless.
@@ -166,7 +165,7 @@ about [error-chain](https://crates.io/crates/error-chain).
 I have switched [Tera](https://github.com/Keats/tera) 0.5 to use [error-chain](https://crates.io/crates/error-chain) and am very
 happy about the end result.
 
-The `errors.rs` file in Tera went from [~80 lines](https://github.com/Keats/tera/blob/3471df41ab454c60a85ec271a945f7123705e49a/src/errors.rs) 
+The `errors.rs` file in Tera went from [~80 lines](https://github.com/Keats/tera/blob/3471df41ab454c60a85ec271a945f7123705e49a/src/errors.rs)
 and lots of custom errors to:
 
 ```rust
@@ -180,7 +179,7 @@ Using the `error_chain!` macro gives me `Result`, `ResultExt` (a trait), `ErrorK
 custom errors myself.
 
 It's obviously not always empty though, here's the `errors.rs` of a static site engine using Tera:
- 
+
 ```rust
 use tera;
 
@@ -206,8 +205,8 @@ error_chain! {
 }
 ```
 
-The article linked previously made me realise that you need custom errors in 2 occasions: the user of the library will pattern match on them or you want 
-to avoid repeating yourself like the `InvalidConfig` above. 
+The article linked previously made me realise that you need custom errors in 2 occasions: the user of the library will pattern match on them or you want
+to avoid repeating yourself like the `InvalidConfig` above.
 
 In Tera case, I was able to replace all the errors with `bail!` macro that comes with `error-chain`.
 This is a very simple macro that works similarly to `println!` except it returns an error with the text given:
@@ -222,11 +221,11 @@ if something_is_wrong {
     return Err(format!("Something wrong happened while doing {:?}", action).into());
 }
 ```
-It doesn't look like much but using stringly typed errors saves a lot of time and makes you write better errors 
+It doesn't look like much but using stringly typed errors saves a lot of time and makes you write better errors
 at the same time as you can write very specific errors without any boilerplate.
 
-But the killer feature of `error-chain` is to chain errors, as its name implies. 
-You often want to add context to errors and chaining allows just that. 
+But the killer feature of `error-chain` is to chain errors, as its name implies.
+You often want to add context to errors and chaining allows just that.
 
 The easiest example is a function to open a file: Rust doesn't include the filename in the error but you usually want it if
 you are going to display it.

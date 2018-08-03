@@ -1,23 +1,22 @@
 +++
 title = "My current frontend setup is pretty neat"
-path = "happy-with-frontend-setup"
 description = "Showing my current frontend setup"
 date = 2017-01-28
 category = "Programming"
 tags = ["javascript", "typescript"]
 +++
 
-From time to time, I see someone on Github forking or starring the Angular boilerplate I made and was using 2 years ago. 
+From time to time, I see someone on Github forking or starring the Angular boilerplate I made and was using 2 years ago.
 As everyone knows, time in JavaScript-land tends to operate in a different scale: something done 2 years ago
 is prehistoric and a generation or two of frameworks went by.
 
 I have been using [React](https://facebook.github.io/react/) for about a year now, mainly for the frontend
 of [Proppy](https://proppy.io) and some experiments on the side. While the churn for the libraries during that year
-reached a level I had never seen before, it seems to have stabilised a bit. 
+reached a level I had never seen before, it seems to have stabilised a bit.
 That or I stopped trying to follow JS news, who knows.
 
 Since many people might suffer from [analysis paralysis](https://en.wikipedia.org/wiki/Analysis_paralysis), I decided to document
-my own choices to help. It will also provide a good laugh for people find that article in a few months/years, missing the date 
+my own choices to help. It will also provide a good laugh for people find that article in a few months/years, missing the date
 and thinking "people are STILL using X?".
 
 
@@ -26,23 +25,23 @@ Yes, you can even choose your package manager in JavaScript!
 
 `npm` is fine as long as you remember to [shrinkwrap](https://docs.npmjs.com/cli/shrinkwrap) and don't mind slow installs.
 
-I settled on [yarn](https://yarnpkg.com/), which does the right thing by default: a lock file and deterministic installs. 
+I settled on [yarn](https://yarnpkg.com/), which does the right thing by default: a lock file and deterministic installs.
 Installing packages is also faster than `npm`, which is a nice bonus. Despite how recent it is, I haven't run into bugs yet.
 
 ## Module bundler
-I use [Webpack](https://webpack.github.io/). 
-Not much to say here, once you understand how to configure it - and it might take a while - it 
+I use [Webpack](https://webpack.github.io/).
+Not much to say here, once you understand how to configure it - and it might take a while - it
 is easy to get going (AKA `cp ../previous_project/webpack.config.js .`).
 
 I also like to use [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin).
 
 ## Language
-I use [TypeScript](http://www.typescriptlang.org/). 
+I use [TypeScript](http://www.typescriptlang.org/).
 If you are using plain Javascript or just Babel, I strongly encourage you
 to try something that adds types, be it [Elm](http://elm-lang.org/), [Flow](https://flowtype.org/), TypeScript or something else like
-ScalaJS. 
+ScalaJS.
 
-Some people view types as hindrance but they make me so much more productive: 
+Some people view types as hindrance but they make me so much more productive:
 
 - Object shapes and function arguments are documented and is enforced by the compiler
 - I can do sweeping changes in a codebase without any trouble
@@ -50,12 +49,12 @@ Some people view types as hindrance but they make me so much more productive:
 
 Elm catch phrase is "no runtime exceptions" but I'd argue it is also valid for anything sufficiently typed.
 
-The big advantage TypeScript has over the alternatives mentioned is the huge community 
+The big advantage TypeScript has over the alternatives mentioned is the huge community
 and type definitions are available for tons of libraries.
 
-If you are planning to use TypeScript, make sure you start your project with a very strict config. 
+If you are planning to use TypeScript, make sure you start your project with a very strict config.
 I use the following for new projects:
- 
+
 ```json
 {
   "compilerOptions": {
@@ -80,7 +79,7 @@ set it to `true` when done.
 I also use [tslint](https://github.com/palantir/tslint) for linting, which comes with a default good config.
 
 ## View
-As mentioned in the introduction, I use React. 
+As mentioned in the introduction, I use React.
 I've also been following/contributing a bit to [Inferno](https://infernojs.org/) as an alternative but it doesn't
 have great type definitions, which is a deal breaker for me.
 
@@ -92,7 +91,7 @@ or any UI library.
 I've settled on [MobX](https://github.com/mobxjs/mobx) and am pretty happy about it.
 I wrote about [MobX and going from Redux](https://vincent.is/talking-about-mobx/) before so I'm not going to repeat myself here.
 
-In short: very simple to use, fully typed and not verbose at all. 
+In short: very simple to use, fully typed and not verbose at all.
 A pleasure after using [Redux](https://github.com/reactjs/redux).
 
 ## Testing
@@ -101,10 +100,10 @@ I have heard good things about recent versions of [Jest](https://facebook.github
 it is the next item on the TO TRY list.
 
 ## CSS
-I am using [Sass](http://sass-lang.com/) with some postcss plugins like [Lost](http://postcss.org/) 
+I am using [Sass](http://sass-lang.com/) with some postcss plugins like [Lost](http://postcss.org/)
 or [Autoprefixer](https://github.com/postcss/autoprefixer). If you are targeting evergreen browsers, `autoprefixer` won't be needed.
 
-I haven't seen a single CSS-in-JS library that convinced me. 
+I haven't seen a single CSS-in-JS library that convinced me.
 The closest was [TypeStyle](https://github.com/typestyle/typestyle) but is ultimately failing because it has a runtime
 overhead. I'll address that in the "What am I missing" section later on.
 
@@ -121,11 +120,11 @@ up-to-date style guide.
 I'm still missing a few things and welcome any input.
 
 ### Compile-time styling
-As mentioned before, TypeStyle is really close to a good solution for styling but for me, 
+As mentioned before, TypeStyle is really close to a good solution for styling but for me,
 a styling tool should have no runtime cost. CSS is working well and having JavaScript do its job doesn't really make sense.
 
 I raised an [issue](https://github.com/typestyle/typestyle/issues/86) for that but it seems rewriting AST is not
-available in TypeScript yet so a TS plugin that extracts those call is not doable for now. 
+available in TypeScript yet so a TS plugin that extracts those call is not doable for now.
 
 ### Animations
 I'm still unsure how to *easily* add animations. [animate](https://github.com/react-component/animate) looks like a good

@@ -1,6 +1,5 @@
 +++
 title = "Releasing Tera 0.4 and state of my other crates"
-path = "releasing-tera-0.4"
 description = "Releasing Tera 0.4 and state of my other crates"
 date = 2016-12-02
 category = "Programming"

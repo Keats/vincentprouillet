@@ -1,6 +1,5 @@
 +++
 title = "Writing my first Rust crate: jsonwebtoken"
-path = "writing-his-first-crate"
 description = "Experience writing a JWT library in Rust"
 date = 2015-11-04
 category = "Programming"
@@ -40,7 +39,7 @@ The first is the header, that typically contains the following:
 }
 ```
 
-The second is the claims object, which contains an arbitrary JSON object. There are 
+The second is the claims object, which contains an arbitrary JSON object. There are
 some reserved claim name such as `exp` for an expiration timestamp but none of them are
 mandatory. Typically in an app, you would store the user id along as some token metadata such as exp mentioned above for example.
 
@@ -49,7 +48,7 @@ The last part is the signature which is obtained the following way in pseudo-cod
 ```python
 payload = base64(header) + "." + base64(claims)
 // "secret" is your secret private key
-signature = Hmac(payload, "secret", Sha256) 
+signature = Hmac(payload, "secret", Sha256)
 ```
 
 As you can see it's quite a convenient way to transfer some data and the signature ensures that the payload was not tampered with (there are some issues though, such as [this vulnerability](https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries/)).

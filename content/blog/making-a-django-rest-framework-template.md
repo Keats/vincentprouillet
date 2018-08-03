@@ -1,6 +1,5 @@
 +++
 title = "A template for Django REST Framework projects"
-path = "making-a-django-rest-framework-template"
 description = "Showing off a django template to kickstart a DRF project"
 date = 2014-05-15
 category = "Programming"
@@ -11,13 +10,13 @@ updated = "2014-05-24"
 +++
 
 
-I made a project template for Django 1.7 + Django REST framework + PostgreSQL containing things I use and find useful.  
-Part of it is based on [Two Scoops of Django template](https://github.com/twoscoops/django-twoscoops-project).  
-You can see the repo on [Github](https://github.com/Keats/django-drf-template).  
+I made a project template for Django 1.7 + Django REST framework + PostgreSQL containing things I use and find useful.
+Part of it is based on [Two Scoops of Django template](https://github.com/twoscoops/django-twoscoops-project).
+You can see the repo on [Github](https://github.com/Keats/django-drf-template).
 
 ## Features
 
-It contains the following things: 
+It contains the following things:
 
 - [Django REST framework](http://www.django-rest-framework.org/): for writing your API
 - [django-model-utils](https://django-model-utils.readthedocs.org/en/latest/): for things like TimestampedModel and other nice things for models
@@ -52,16 +51,16 @@ $ pip install -r requirements/local.txt
 $ python myproject/manage.py migrate
 ```
 
-If you want, you can also add a pre-commit flake8 hook to ensure that commit respects it.  
+If you want, you can also add a pre-commit flake8 hook to ensure that commit respects it.
 
 ```bash
 $ flake8 --install-hook
 ```
 
-By default it will not stop commits because of warning, a quick look at .git/hooks/pre-commit shows that putting an environment variable of FLAKE8_STRICT will stop them.  
+By default it will not stop commits because of warning, a quick look at .git/hooks/pre-commit shows that putting an environment variable of FLAKE8_STRICT will stop them.
 
-And you should be almost good to go. 
-There are a few hardcoded temporary settings that you will want to replace, look for the string 'Ann Onymous' and you should find them.  
-They are in the Sphinx folder and in the base settings file if you're lazy.  
+And you should be almost good to go.
+There are a few hardcoded temporary settings that you will want to replace, look for the string 'Ann Onymous' and you should find them.
+They are in the Sphinx folder and in the base settings file if you're lazy.
 
 Once again, PRs are welcome if there's a bug or want to share something you use all the time that I don't necessarily know about !

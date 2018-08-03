@@ -1,6 +1,5 @@
 +++
 title = "Introducing Tera, a template engine in Rust"
-path = "introducing-tera"
 description = "A template engine in Rust inspired by Jinja2/Django"
 date = 2016-04-15
 category = "Programming"
@@ -67,7 +66,7 @@ Template compilation should only happen once. This can be achieved by using [laz
 Let's see how it's built now!
 
 ## How it's made
-I actually thought of making a template engine after watching the "Lexical Scanning in Go" video by Rob Pike ([youtube link](https://www.youtube.com/watch?v=HxaD_trXwRE)). 
+I actually thought of making a template engine after watching the "Lexical Scanning in Go" video by Rob Pike ([youtube link](https://www.youtube.com/watch?v=HxaD_trXwRE)).
 
 ### Lexer/Parser
 This talk explains how the lexing in the [template package in the Go standard library](https://golang.org/pkg/text/template/) is implemented. I thought it was pretty cool and implemented something similar last summer.

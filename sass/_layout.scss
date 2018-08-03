@@ -18,9 +18,42 @@
   .logo {
     font-size: 2rem;
     margin: 0;
+
+    a {
+      color: black;
+      text-decoration: none;
+      border-bottom: none;
+    }
   }
 }
 
 #content {
   margin: 8rem auto;
+}
+
+.intro {
+  margin: 0 auto;
+  border: 1px solid black;
+  padding: 2rem;
+  font-size: 2rem;
+  max-width: $container-width;
+
+  .social {
+    text-align: center;
+    margin-top: 2rem;
+
+    a {
+      border-bottom: none;
+    }
+
+    svg {
+      width: 30px;
+      height: 30px;
+      margin-right: 1rem;
+
+      &:hover {
+        fill: $link-color;
+      }
+    }
+  }
 }

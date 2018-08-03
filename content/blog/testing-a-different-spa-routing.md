@@ -1,6 +1,5 @@
 +++
 title = "A different approach to routing in Single-Page Applications"
-path = "testing-a-different-spa-routing"
 description = "Trying out a framework agnostic approach to routing for SPA"
 date = 2017-05-08
 category = "Programming"
@@ -103,7 +102,7 @@ class RouterStore {
 const routerStore = new RouterStore();
 export default routerStore;
 ```
-If you haven't used MobX before, I heavily recommend it and [wrote an introduction to it](./blog/explaining-mobx/index.md) before. In a nutshell,
+If you haven't used MobX before, I heavily recommend it and [wrote an introduction to it](./blog/a-mobx-introduction/index.md) before. In a nutshell,
 think of the code above as a simple class that has 2 observable values: `current` and `asyncInProgress`.
 
 Ok we got our routes and store, we now need to create a router:

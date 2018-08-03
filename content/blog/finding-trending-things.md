@@ -1,6 +1,5 @@
 +++
 title = "Finding trending things in Elasticsearch using python and redis"
-path = "finding-trending-things"
 description = "How to calculate trendiness factor from ES and use it in queries"
 date = 2014-09-19
 category = "Programming"

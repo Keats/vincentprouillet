@@ -1,6 +1,5 @@
 +++
 title = "Trying Rust for web services"
-path = "trying-rust-for-web-services"
 description = "I made a very basic Rust backend, here's what I think about it"
 date = 2015-10-01
 category = "Programming"
@@ -39,7 +38,7 @@ Keep in mind I'm a newbie in Rust so there are probably lots of things I'm doing
 ## What I liked
 [Cargo](https://crates.io/), Rust package manager, works pretty damn well and its configuration file `Cargo.toml` is easy to write and understand. It is also used to build and run your package.
 
-The language itself is very nice and easy to get started, granted this demo is very simple and doesn't have a single lifetime. Every single time the compiler didn't complain, whatever I wanted to do was working and whenever it complained, the message was clear enough for me to realize what was happening.  
+The language itself is very nice and easy to get started, granted this demo is very simple and doesn't have a single lifetime. Every single time the compiler didn't complain, whatever I wanted to do was working and whenever it complained, the message was clear enough for me to realize what was happening.
 This is not going to be exhaustive by any means but here are the things I liked and disliked the most.
 
 
@@ -103,7 +102,7 @@ macro_rules! get_pg_connection {
 // we can use the macro that way in a handler, notice the ! to indicate it's a macro
 let conn = get_pg_connection!(req);
 ```
-The last line in the snippet will get a connection or will return a 500 if anything fails in the middle. 
+The last line in the snippet will get a connection or will return a 500 if anything fails in the middle.
 
 You can even have macros checking [SQL syntax](https://github.com/sfackler/rust-postgres-macros) or [HTML one](https://github.com/lfairy/maud) at compile time! Neat!
 
@@ -111,7 +110,7 @@ You can even have macros checking [SQL syntax](https://github.com/sfackler/rust-
 ## What I didn't like
 I think it can be summed up in one word: documentation.
 
-Most of the crates I have looked at (except the postgres one) have next to no real documentation, only a maze of links to click in the generated rustdoc that pulls the in-code documentation into a nice looking website. This is useful if I want to know more details about a type or a trait but doesn't help me understanding how am I supposed to use it. Having to go through the tests or the code directly to see what I am supposed to do for every crate instead of having a "How to use" documentation is annoying. 
+Most of the crates I have looked at (except the postgres one) have next to no real documentation, only a maze of links to click in the generated rustdoc that pulls the in-code documentation into a nice looking website. This is useful if I want to know more details about a type or a trait but doesn't help me understanding how am I supposed to use it. Having to go through the tests or the code directly to see what I am supposed to do for every crate instead of having a "How to use" documentation is annoying.
 
 The provided documentation can also be outdated as it is currently not integrated with Cargo. There is an [open issue](https://github.com/rust-lang/crates.io/issues/91) for that though.
 
