@@ -2,6 +2,7 @@
 title = "Gutenberg 0.4.0: custom taxonomies, image processing and more"
 description = "Gutenberg 0.4.0 is out with custom taxonomies, image processing, improved shortcodes and more"
 date = 2018-08-03
+draft = true
 +++
 
 [Gutenberg](https://github.com/Keats/gutenberg) is a powerful static site engine inspired by [Hugo](https://gohugo.io/) but simpler to use.
