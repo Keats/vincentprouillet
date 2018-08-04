@@ -17,7 +17,7 @@ You can build pretty much any kind of static site with it using markdown:
 You can download built binaries from the [Github releases page](https://github.com/Keats/gutenberg/releases) or install
 it from [one of the installation methods](https://www.getgutenberg.io/documentation/getting-started/installation/).
 
-You should also be able install it on Ubuntu via Snapcraft once [this bug](https://forum.snapcraft.io/t/the-rust-plugin-sets-an-invalid-manifest-path/6565/6)
+You should also be able to install it on Ubuntu via Snapcraft once [this bug](https://forum.snapcraft.io/t/the-rust-plugin-sets-an-invalid-manifest-path/6565/6)
 is resolved.
 
 ## What's new
