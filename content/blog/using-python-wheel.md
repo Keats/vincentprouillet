@@ -1,5 +1,5 @@
 +++
-title = "Python wheel"
+title = "Python wheels"
 description = "What are wheels and why/how should I use them"
 date = 2014-05-24
 category = "Programming"

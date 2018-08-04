@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link href="https://fonts.googleapis.com/css?family=Fira+Mono" rel="stylesheet">
+      <title>Vincent Prouillet</title>
+      <link rel="stylesheet" href="{{ get_url(path="resume.css") }}" />
+    </head>
+  <body>
+    <div class="container meta">
+        <h1>Vincent Prouillet</h1>
+        <div class="tagline">Full Stack Software Engineer</div>
+        <div class="contact">
+            <a href="mailto:hello@vincentprouillet.com">hello@vincentprouillet.com</a> |
+            <a href="https://www.vincentprouillet.com">vincentprouillet.com</a> |
+            <a href="http://github.com/Keats">github.com/Keats</a> <span class="download-resume">
+            | <a href="{{ get_url(path="VincentProuillet.pdf") }}">Download resume</a>
+            </span>
+
+        </div>
+    </div>
+
+    <div class="container intro">
+        <h2>Introduction</h2>
+        <p>
+            I am a developer with an entrepreneurial mind and a good eye for UX.<br>
+            I have experience working remotely and in-house, both as a solo developer and in small teams and can
+            jump in projects quickly.
+        </p>
+    </div>
+
+    <div class="container experiences">
+        <h2>Experiences</h2>
+
+        <div class="timeline">
+            <div class="work">
+                <div class="work__dot"></div>
+                <h3>Freelancer<span class="work__info">— Remote — 2017-Now</span></h3>
+                <ul>
+                    <li>
+                        Stroly.jp: rewrite of map viewer (2/3 lines of code, 1/4 gzipped size), rewrite of Android app in Kotlin,
+                        cleanup and improvement of the main Django site.
+                    </li>
+                </ul>
+            </div>
+
+
+            <div class="work">
+                <div class="work__dot"></div>
+                <h3>Director, We Are Wizards <span class="work__info">— London/Remote — 2014-2018</span></h3>
+                <ul>
+                    <li>Co-founded tech agency making MVPs for clients</li>
+                    <li>
+                        Developed our own product <a href="https://proppy.io">https://proppy.io</a> to make our proposal
+                        writing experience better wearing all hats: user testing, development, customer support.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="work">
+                <div class="work__dot"></div>
+                <h3>Contractor <span class="work__info">— London/Remote — 2014</span></h3>
+                <h4>Django developer, Timetric — London — 6 months</h4>
+                <ul>
+                    <li>Improvement/bug fixing of Excel <=> Postgres data transfers</li>
+                    <li>Optimised a machine learning pipeline and Elasticsearch queries</li>
+                    <li>Postgres tuning</li>
+                </ul>
+
+                <h4>Front-end developer, Service Trade — Remote — 2 months</h4>
+                <ul>
+                    <li>Added features/design to the tablet version of the app in EmberJS</li>
+                </ul>
+            </div>
+
+            <div class="work work--last">
+                <div class="work__dot"></div>
+                <h3>Django/JavaScript/Go developer, Green Man Gaming <span class="work__info">— London — 2013-2014</span></h3>
+                <ul>
+                    <li>Maintained and improved the Green Man Gaming shop and Playfire (Django + jQuery)</li>
+                    <li>
+                        Main developer of Playfire 4 Web: third-party javascript to interact with
+Playfire via widgets such as comments and Want button
+                    </li>
+                    <li>Developed a Steam scraper in Go</li>
+                </ul>
+            </div>
+        </div>
+
+            <div class="container more">
+                More on LinkedIn: <a href="https://www.linkedin.com/in/vincentprouillet">https://www.linkedin.com/in/vincentprouillet</a>
+            </div>
+
+        <div class="container side-projects">
+            <h2>Side projects</h2>
+
+            <p><b>Tera:</b> Template engine based on Jinja2 and Django templates written in Rust</p>
+            <p><b>Gutenberg:</b> Static site engine written in Rust</p>
+        </div>
+
+        <div class="container skills">
+            <h2>Technical skills</h2>
+            <p>Python (Django, Flask), JavaScript/TypeScript (React, Angular), Golang, Rust, Postgres</p>
+        </div>
+    </div>
+  </body>
+</html>
