@@ -1,8 +1,7 @@
 +++
 title = "Gutenberg 0.4.0: custom taxonomies, image processing and more"
 description = "Gutenberg 0.4.0 is out with custom taxonomies, image processing, improved shortcodes and more"
-date = 2018-08-03
-draft = true
+date = 2018-08-04
 +++
 
 [Gutenberg](https://github.com/Keats/gutenberg) is a powerful static site engine inspired by [Hugo](https://gohugo.io/) but simpler to use.
@@ -124,6 +123,12 @@ To make things more explicit two changes have been made:
 
 No more `<a class="previous" href="{{page.next.permalink}}>{{page.next.title}}</a>`!
 
+To fix sites using `order` or `date`, you will need to:
+
+- change `sort_by` of the sections to use `weight`
+- rename `order` to `weight` and invert the order of values if necessary
+- rename `next` and `previous` to `heavier`/`lighter` or `later`/`earlier`
+
 This has been implemented by [Daniel Sockwell](https://github.com/codesections) as his first ever Rust PR!
 Daniel has also made tons of improvements to the documentation, something always appreciated.
 
@@ -136,7 +141,7 @@ In short: you can now resize images from a template and implementing a gallery i
 some image processing not already in!
 
 ### Shortcodes fixes
-In the previous versions, [shortcodes](https://www.getgutenberg.io/documentation/content/shortcodes/) were parsed with a Regex and built up
+In the previous versions, [shortcodes](https://www.getgutenberg.io/documentation/content/shortcodes/) were detected with a Regex and built up
 while parsing the Markdown which ended up being some of the worst spaghetti code I have ever written.
 It lead to numerous bugs as well some valuable features like array arguments to be almost impossible to implement — at least for me.
 
