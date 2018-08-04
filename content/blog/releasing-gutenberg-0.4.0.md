@@ -64,7 +64,7 @@ We need to change two things regarding the taxonomies templates:
  First we need to move the templates their new location:
 
 - `tags.html` -> `tags/list.html`
-- `tag.html` -> `tag/single.html`
+- `tag.html` -> `tags/single.html`
 - `categories.html` -> `categories/list.html`
 - `category.html` -> `categories/single.html`
 
