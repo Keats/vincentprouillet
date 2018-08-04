@@ -26,7 +26,8 @@ Lots of things! You can view the [CHANGELOG](https://github.com/Keats/gutenberg/
 a quick overview: I will look at the biggest changes in more details here including the breaking ones and how to migrate.
 
 ### Breaking: custom taxonomies
-Before 0.4.0, you could only have two kind of taxonomies: `tags` and `categories`. You
+Taxonomies are a way to group content together, the most common one in blogs being tags and categories.
+Before 0.4.0, you could only have those two taxonomies: `tags` and `categories`. You
 couldn't paginate their pages, have a RSS feed for each or create your own taxonomy.
 
 Let's see how to use, and also how to migrate from the point of view of a current user
