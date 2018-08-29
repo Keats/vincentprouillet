@@ -47,12 +47,12 @@ generate_categories_pages = true
 # And define them like so instead
 taxonomies = [
     # each tag will have its own RSS feed
-    {name: "tags", rss: true},
+    {name = "tags", rss = true},
     # 5 items per page for a term, you can also customise the pagination path
     # like for the rest of the paginated content
-    {name: "categories", paginate_by: 5},
+    {name = "categories", paginate_by = 5},
     # Basic definition: no RSS or pagination
-    {name: "authors"},
+    {name = "authors"},
 ]
 ```
 
