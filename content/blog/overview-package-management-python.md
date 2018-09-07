@@ -215,6 +215,7 @@ Let's see how it works in practice.
 The first step is to create a new project: `pipenv --python 3.7`.
 This is a pretty strange command as `pipenv` only displays the help so I would have expected the command to be `pipenv new`
 rather than some flags. Typically flags in this situation are only there to display information, like `pipenv --version`.
+Pipenv will also create a new virtualenv when running `pipenv install` if there isn't one.
 
 To activate the newly created virtualenv, run `pipenv shell`. To exit it, simply type `exit`.
 
@@ -340,8 +341,8 @@ libraries as well which is a big plus if you are a maintainer: one tool for all 
 
 ## My opinion
 
-I have only mentioned 3 tools but there are way more! I wouldn't be surprised if Python had the record of the highest
-number of tools dedicated to package and environment management for a programming language.
+I have only mentioned 3 tools but there are way more! I wouldn't be surprised if Python had the highest
+number of tools dedicated to package and environment management of any programming language.
 Since all those tools are written in Python themselves you still need to use Pip first to install them, globally sometimes. A better solution
 in my opinion would be to write the package manager in a language compiling down to a binary, solving the bootstrapping issue and
 being a good example of https://xkcd.com/927/.
@@ -349,11 +350,11 @@ being a good example of https://xkcd.com/927/.
 To go back to the three tools mentioned in this article, I would recommend either pip-tools or poetry.
 My limited usage of Pipenv had too many WTFs to be considered ready for actual use, not even taking into account
 its extreme slowness. I'm not entirely sure why it is the recommended tool other than the virtualenv setup was easy to do because it feels
-like an alpha version. If you are Docker containers for your development, then I don't see any advantage of Pipenv other pip-tools or Poetry.
+like an alpha version. If you are using Docker containers instead of virtualenvs, I don't see any advantage of Pipenv over pip-tools or Poetry.
 
-I like the simplicity of `pip-tools`. As it is only a small step to take if you are writing `requirements.txt` by hand currently, I
-would probably recommend that right now.
+I like the simplicity of `pip-tools`. If you are currently writing `requirements.txt` by hand, using `pip-tools` to get
+some extra features like hashes is a pretty small step to take which I would recommend right now.
 
 On the other hand, if `pyproject.toml` gets adopted by other tools (Flake8, mypy etc), having everything in one file would be very
 appealing and poetry would become the best choice at that time. I expect `poetry` to work with my current use of `virtualenvwrapper` though,
-I don't want to have to convert all my projects to poetry just to make it happy.
+I don't want to convert all my projects to poetry just to make it happy.
