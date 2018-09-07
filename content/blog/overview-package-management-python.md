@@ -353,7 +353,7 @@ being a good example of https://xkcd.com/927/.
 To go back to the three tools mentioned in this article, I would recommend either pip-tools or poetry.
 My limited usage of Pipenv had too many WTFs to be considered ready for actual use, not even taking into account
 its extreme slowness. I'm not entirely sure why it is the recommended tool other than the virtualenv setup was easy to do because it feels
-like an alpha version.
+like an alpha version. If you are Docker containers for your development, then I don't see any advantage of Pipenv other pip-tools or Poetry.
 
 I like the simplicity of `pip-tools`. As it is only a small step to take if you are writing `requirements.txt` by hand currently, I
 would probably recommend that right now.
