@@ -177,7 +177,7 @@ chardet==3.0.4 \
 ... more lines
 ```
 
-The initial run takes a bit of time but subsequent ones takes under a second.
+The initial run takes a bit of time but subsequent ones take under a second.
 
 The last thing we need for package management is an easy way to upgrade the packages and
 `pip-compile` provides that out of the box:
