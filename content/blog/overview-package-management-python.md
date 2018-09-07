@@ -1,7 +1,7 @@
 +++
 title = "An overview of package management in Python in 2018"
 description = "There are many things happening in package management for Python in 2018!"
-date = 2018-09-10
+date = 2018-09-07
 +++
 
 First of all, this article will only talk about package management in the
