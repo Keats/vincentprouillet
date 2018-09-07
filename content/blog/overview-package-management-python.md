@@ -345,7 +345,7 @@ I have only mentioned 3 tools but there are way more! I wouldn't be surprised if
 number of tools dedicated to package and environment management of any programming language.
 Since all those tools are written in Python themselves you still need to use Pip first to install them, globally sometimes. A better solution
 in my opinion would be to write the package manager in a language compiling down to a binary, solving the bootstrapping issue and
-being a good example of https://xkcd.com/927/.
+being a good example of [https://xkcd.com/927/](https://xkcd.com/927/).
 
 To go back to the three tools mentioned in this article, I would recommend either pip-tools or poetry.
 My limited usage of Pipenv had too many WTFs to be considered ready for actual use, not even taking into account
@@ -357,4 +357,4 @@ some extra features like hashes is a pretty small step to take which I would rec
 
 On the other hand, if `pyproject.toml` gets adopted by other tools (Flake8, mypy etc), having everything in one file would be very
 appealing and poetry would become the best choice at that time. I expect `poetry` to work with my current use of `virtualenvwrapper` though,
-I don't want to convert all my projects to poetry just to make it happy.
+I don't want to convert all my projects to `poetry` just to make it happy.
