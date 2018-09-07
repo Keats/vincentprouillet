@@ -1,6 +1,6 @@
 +++
 title = "An overview of package management in Python in 2018"
-description = "There are tons of things happening in package management for Python in 2018!"
+description = "There are many things happening in package management for Python in 2018!"
 date = 2018-09-10
 +++
 
@@ -43,7 +43,7 @@ social-auth-core==1.7.0
 django-widget-tweaks==1.4.1
 ```
 
-While it is not required, every requirement files I have seen were using `==` to
+While it is not required, every requirement files I have seen were using `==`, also called requirement pinning, to
 depend on the exact versions to ensure reproducibility. Well, as much reproducibility
 as a mutable package index allows anyway as we will see later.
 
@@ -61,7 +61,7 @@ factory_boy==2.10.0
 ```
 
 But wait! Before being able to install the dependencies, you first need to create
-a [virtual environment](https://docs.python.org/3/tutorial/venv.html). Python 3
+a [virtual environment](https://docs.python.org/3/tutorial/venv.html) if you are not using [Docker](https://www.docker.com/). Python 3
 has built-in support for virtualenvs and you can create one simply by running `python3 -m venv tutorial-env`.
 To activate it, you need to execute the `activate` script in the `bin` folder of the virtualenv.
 
@@ -73,7 +73,7 @@ Now that your virtualenv is setup and activated, you can run `pip install -r req
 to install your dependencies.
 
 You can list the currently installed packages by running `pip freeze` in the virtualenv. The downside is that it will also show
-all indirect dependencies as well. You can order that list with the `-r my_file.txt` argument to bubble your explicit dependencies
+all indirect dependencies as well. You can order that list with the `-r my_file.txt` argument to have your explicit dependencies
 at the top but it isn't great.
 
 This process works but is quite manual:
@@ -203,7 +203,7 @@ and `piptools sync`?
 [Pipenv](https://pipenv.readthedocs.io/en/latest/) is developed by the [Python Packaging Authority](https://github.com/pypa),
 responsible for developing [pip](https://github.com/pypa/pip) so I had big expectations.
 
-Its goal is to bring a Cargo/Bundler approach to Python development and it does so by introducing 2 things:
+It is inspired by Cargo/Bundler/Yarn and introduces 2 files that you will recognize if you used any of them before:
 
 - a `Pipfile`: a TOML file listing packages as well as a minimal Python version
 - a `Pipfile.lock`: a lockfile in JSON format listing every dependencies version with their hash
@@ -283,9 +283,9 @@ all of them consolidated in one file would be very valuable.
 
 Poetry uses this file to list the dependencies, keeping everything neatly in place.
 
-There are two ways to get start with poetry:
+There are two ways to get started with poetry:
 
-- `poetry new SOME_NAME`: will create a folder named SOME_NAME with some
+- `poetry new SOME_NAME`: will create a folder named SOME_NAME with some basic structure setup for a Python project
 - `poetry init`: an interactive way to setup your project and some dependencies
 
 The downside of the `poetry init` is that the package search is not that great: searching for `django` will
@@ -345,7 +345,7 @@ libraries as well which is a big plus if you are a maintainer: one tool for all 
 ## My opinion
 
 I have only mentioned 3 tools but there are way more! I wouldn't be surprised if Python had the record of the highest
-number of tools dedicated to package and environment management.
+number of tools dedicated to package and environment management for a programming language.
 Since all those tools are written in Python themselves you still need to use Pip first to install them, globally sometimes. A better solution
 in my opinion would be to write the package manager in a language compiling down to a binary, solving the bootstrapping issue and
 being a good example of https://xkcd.com/927/.
