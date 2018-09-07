@@ -90,8 +90,7 @@ and actually managing the packages.
 
 There are plenty of tools that have been built to fix one or both issues; let's look at a few of them now.
 I will use the list of packages of an actual Django project with about 28 dependencies to test them. While
-speed is not THAT important for a package manager, I will mention how long it took for each tool to resolve dependencies
-for the sake of completeness.
+speed is not THAT important for a package manager, I will only mention it if there is something to be said about it.
 
 ## pip-tools
 
@@ -178,7 +177,7 @@ chardet==3.0.4 \
 ... more lines
 ```
 
-The initial run with hashes took 16s and subsequent runs were below a second.
+The initial run takes a bit of time but subsequent ones takes under a second.
 
 The last thing we need for package management is an easy way to upgrade the packages and
 `pip-compile` provides that out of the box:
@@ -193,7 +192,6 @@ Running `pip-sync requirements.txt` will compare the packages listed in the file
 what is currently installed, installing the missing packages and uninstalling the packages
 not listed. This ensures your virtualenv doesn't have extra dependencies and is representing
 accurately your requirements file.
-A full install after clearing the pip cache took 11s.
 
 The main con I have is pretty silly: why is it `pip-compile` and `pip-sync` instead of `piptools compile`
 and `piptools sync`?
@@ -250,8 +248,6 @@ Pipenv seems extremely slow: running `pipenv install -d` the test project with a
 Almost 3 minutes. Running it again right after took 55s. Any action dealing with packages
 takes a minimum of 30s on my machine. I did say in the introduction that speed is not too important but Pipenv does test the limit
 of that affirmation.
-I also got many errors like `An error occurred while installing django-filter==1.1.0! Will try again.` which I didn't get while
-using the other tools in this article or plain old `pip`.
 
 Lastly, I found the UX of the whole tool to be pretty awkward or buggy:
 
@@ -334,8 +330,8 @@ user like me will not know what argument to give, especially since the command i
 Looking into issues, we can see that we can run `poetry cache:clear --all pypi` but the documentation doesn't even mention `cache:clear` so it's not
 obvious.
 
-In terms of speed, a `poetry install` with the same list of packages as the others was done in 40s.
-Subsequent runs are below a second. The UI is very clean and clear about what was installed and their versions.
+As expected, the initial `poetry install` takes some time but subsequent runs take under a second.
+The UI is very clean and clear about what was installed and their versions.
 
 Poetry also has `poetry update` to update dependencies and once again makes it clear what has changed.
 
