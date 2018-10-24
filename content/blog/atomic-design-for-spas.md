@@ -106,7 +106,7 @@ Let's look at them in the same order.
 
 Atoms are independent components that do not have any dependencies on other components and that exist in isolation: they
 probably don't do anything on their own, are mostly composed of `props` and any action they do is coming from `props`.
-In terms of Redux/MobX, all of those components should be dumb components or presentation-only components.
+In terms of Redux/MobX, all of those components should be dumb/pure/presentational components.
 
 Looking at one private project atoms, I have:
 
