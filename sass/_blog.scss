@@ -34,6 +34,19 @@
     margin-bottom: 1rem;
   }
 
+  h2, h3, h4, h5, h6 {
+    .gutenberg-anchor, .zola-anchor {
+      margin-left: 10px;
+      visibility: hidden;
+    }
+
+    &:hover {
+      .gutenberg-anchor, .zola-anchor {
+        visibility: visible;
+      }
+    }
+  }
+
   h1, h2, h3, h4, h5, h6, blockquote, ul, ol, table, pre, p {
     max-width: $container-width;
     margin-left: auto;
