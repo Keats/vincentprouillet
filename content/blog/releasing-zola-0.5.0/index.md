@@ -4,10 +4,10 @@ description = "Gutenberg changes name to Zola and gets a big release to celebrat
 date = 2018-11-17
 +++
 
-Stop the presses! This is an important update for [Gutenberg]() users - please read on
+Stop the presses! This is an important update for Gutenberg users - please read on
 if you are one of them.
 
-If you are not, Gutenberg/Zola is a powerful static site generator (SSG)
+If you are not, [Gutenberg/Zola](https://www.getzola.org) is a powerful static site generator (SSG)
 inspired by [Hugo](https://gohugo.io/) but simpler to use. One of its goals is to try
 to do as much as possible at built time: anchors, search, Sass, table of contents, syntax highlighting and more.
 It is highly flexible and allows you to do any kind of sites:
@@ -18,7 +18,7 @@ It is highly flexible and allows you to do any kind of sites:
 - a gitbook: see the [book theme](https://github.com/getzola/book)
 - a documentation site for your library like the one for [Zola](https://www.getzola.org)
 
-You can find an up-to-date comparison of Zola with other SSG [on the README](https://github.com/Keats/gutenberg#comparisons-with-other-static-site-generators).
+You can find an up-to-date comparison of Zola with other SSG [on the README](https://github.com/getzola/zola#comparisons-with-other-static-site-generators).
 
 ## A bit of history and changing name to Zola
 
@@ -57,8 +57,8 @@ As the name is brand new, `zola` will not be available immediately in all packag
 version has been so slow to be released is that I wanted to have Netlify support on release since all my sites
 are using it. However, since my [PR](https://github.com/netlify/binrc/pull/19) to add it is not really being looked at, I decided
 to stop waiting and release it now.
-If you are using the current Gutenberg Netlify support, you can either stay on 0.4.1 or 0.4.2 or download the binary manually like
-mentioned in [the documentation](TODO).
+If you are using the current Gutenberg Netlify support, you can either stay on 0.4.1 or 0.4.2 or download the `zola` binary manually like
+mentioned in [the documentation](https://www.getzola.org/documentation/deployment/netlify/#automatic-deploys-for-zola).
 
 With that said, let's have a look at the headlines.
 
@@ -143,7 +143,7 @@ by `/blog/` but paginate it in the homepage? Create a `blog` section, mark it as
 
 ### Bug fixes
 Many bugs were fixed, including the big Tera one with macros that was shipped in 0.4.2.
-Refer to the [changelog](https://github.com/Keats/gutenberg/blob/next/CHANGELOG.md) for a full list.
+Refer to the [changelog](https://github.com/getzola/zola/blob/next/CHANGELOG.md) for a full list.
 
 ## Roadmap
 
@@ -152,7 +152,7 @@ order to keep the GitHub issues for actual bugs.
 The major part of my effort will go towards [Tera 1.0.0](https://github.com/Keats/tera/issues/331), with a beta version shipping in a future version
 of Zola soonish.
 
-I know I keep saying that on every release post but the focus for the next version will be on [i18n support](https://github.com/Keats/gutenberg/pull/111) since some
+I know I keep saying that on every release post but the focus for the next version will be on [i18n support](https://github.com/getzola/zola/pull/111) since some
 of the cleanup needed is now done. The RFC will need to be updated to take into account the new features in the last year once a Discourse instance is live.
 
 Lastly, if you are looking for a place to get started with Rust, Zola is great for that!
