@@ -6,7 +6,7 @@ description = "Gutenberg changes name to Zola and gets a big release to celebrat
 Stop the presses! This is an important update for Gutenberg users - please read on
 if you are one of them.
 
-If you are not, [Gutenberg/Zola](https://www.getzola.org) is a powerful static site generator (SSG)
+[Gutenberg/Zola](https://www.getzola.org) is a powerful static site generator (SSG)
 inspired by [Hugo](https://gohugo.io/) but simpler to use. One of its goals is to try
 to do as much as possible at built time: anchors, search, Sass, table of contents, syntax highlighting and more.
 It is highly flexible and allows you to do any kind of sites:
