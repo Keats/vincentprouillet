@@ -101,7 +101,7 @@ class RouterStore {
 const routerStore = new RouterStore();
 export default routerStore;
 ```
-If you haven't used MobX before, I heavily recommend it and [wrote an introduction to it](./blog/2016-11-01_a-mobx-introduction/index.md) before. In a nutshell,
+If you haven't used MobX before, I heavily recommend it and [wrote an introduction to it](@/blog/2016-11-01_a-mobx-introduction/index.md) before. In a nutshell,
 think of the code above as a simple class that has 2 observable values: `current` and `asyncInProgress`.
 
 Ok we got our routes and store, we now need to create a router:
@@ -263,4 +263,4 @@ I don't know but I will certainly try it and report!
 Edit: It looks like TypeScript 2.4 will support [string enums](https://github.com/Microsoft/TypeScript/pull/15486)!
 This means we will be able to not duplicate the `Routes` content and use an enum instead!
 
-Edit2: This approach is now in production! Read up on [the follow-up article](./blog/2017-05-24_testing-a-different-spa-routing-update.md).
+Edit2: This approach is now in production! Read up on [the follow-up article](@/blog/2017-05-24_testing-a-different-spa-routing-update.md).

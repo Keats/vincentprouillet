@@ -5,7 +5,7 @@ category = "Programming"
 tags = ["javascript"]
 +++
 
-I've recently wrote [an article](./blog/2017-05-08_testing-a-different-spa-routing.md) about a
+I've recently wrote [an article](@/blog/2017-05-08_testing-a-different-spa-routing.md) about a
 framework agnostic routing approach for SPA and promised to post an update once it is a bit more tested.
 I have since moved [Proppy](https://proppy.io) from [react-router](https://github.com/ReactTraining/react-router) v2 to
 the structure described in my article and the result is pretty great!
@@ -65,6 +65,6 @@ the paragraph about `strictQueryParams` got moved to the top in the docs in orde
 Lastly, someone mailed me mentioning [react-mobx-router5](https://github.com/LeonardoGentile/react-mobx-router5) which
 was inspired by [the same article](https://hackernoon.com/how-to-decouple-state-and-ui-a-k-a-you-dont-need-componentwillmount-cc90b787aa37)
 as this serie of posts. I think a library for this routing approach is overkill. Pretty much all the code needed is in
-the [previous article](./blog/2017-05-08_testing-a-different-spa-routing.md) and is less than 100 LOC that you can customise
+the [previous article](@/blog/2017-05-08_testing-a-different-spa-routing.md) and is less than 100 LOC that you can customise
 any way you want since different apps will have different needs.
 

@@ -220,6 +220,6 @@ Overall, this structure has been a big improvement for me:
 
 As mentioned in the introduction, I wrote a [HN clone](https://github.com/Keats/hn-react) as an example for that article.
 It is a basic React app following Atomic Design using TypeScript and MobX, as well as the routing
-method [I wrote about before](./blog/2017-05-24_testing-a-different-spa-routing-update.md) if you are curious about how it looks in practice.
+method [I wrote about before](@/blog/2017-05-24_testing-a-different-spa-routing-update.md) if you are curious about how it looks in practice.
 In my own projects, I also use [StoryBook](https://storybook.js.org/) to easily have a visual overview of every component but I skipped adding it
 for this example app.

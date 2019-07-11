@@ -23,7 +23,7 @@ without respecting SemVer will cause the crate to compile but [fail at runtime](
 - I moved to using a Cargo workspace with many small crates to improve iteration speed
 - with Sass, building Gutenberg has become more involved and it is easier to let user install the already built binary
 
-As mentioned in [my article introducing Gutenberg](./blog/2017-03-25_announcing-gutenberg.md),
+As mentioned in [my article introducing Gutenberg](@/blog/2017-03-25_announcing-gutenberg.md),
 my main issue with Hugo is the extremely poor — and I'm being kind here — template engine it is using.
 This was solved in the first release of Gutenberg by using a template engine similar to Jinja2 I wrote: [Tera](https://github.com/Keats/tera).
 
@@ -38,7 +38,7 @@ Let's have a look at the current set of features - it's pretty packed for a 0.1.
 - **live reload**: when anything changes, Gutenberg will do the minimum work required and will live reload assets (js/css/images/...) if possible
 - **syntax highlighting** built-in via [syntect](https://github.com/trishume/syntect)
 - **pagination**
-- **easy internal linking**: they look like `[my article](./blog/blabla.md)`
+- **easy internal linking**: they look like `[my article](@/blog/blabla.md)`
 - **automatic table of contents**
 - **automatic insertion of anchors on titles**: same as [READMEs on Github](https://github.com/Keats/gutenberg)
 - **shortcodes**: when you want to insert some HTML in a page but don't want to copy the HTML everywhere. For example
