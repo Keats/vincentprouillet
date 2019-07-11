@@ -5,8 +5,6 @@ category = "Programming"
 tags = ["rust"]
 +++
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/trying-rust-for-web-services).
-
 
 Developing web apps in dynamic languages is a breeze when using frameworks like [Django](https://www.djangoproject.com/) for Python.
 The downsides are that software written in dynamic languages is harder, at least in my opinion, to maintain, to refactor and you also need to write tests to cover potential errors that would simply not be possible with a compiler.
@@ -16,7 +14,7 @@ While I would use Flask or Django for a small project, I would definitely prefer
 
 The two choices in my mind right now for a compiled language are Go and Rust. Some (ie Tom) would say Haskell, others would say Scala but in the end it's down to preferences.
 
-I previously used Go for a few projects and I quite liked it despite some annoying quirks such as package management (might be solved by [gb](https://getgb.io/) now) and seeing `interface {}` in some libraries to get around the weak type system. On the other hand, I have been following [Rust](https://www.rust-lang.org/) development for quite a while but didn't play with it more than a couple of toy programs. I was keen to see if it could work as the backend for a web app, which in short means a HTTP server receiving and sending JSON while talking to a Postgres database. There are obviously an awful lot of other things but let's keep it simple for now.
+I previously used Go for a few projects and I quite liked it despite some annoying quirks such as package management (might be solved by `gb` now) and seeing `interface {}` in some libraries to get around the weak type system. On the other hand, I have been following [Rust](https://www.rust-lang.org/) development for quite a while but didn't play with it more than a couple of toy programs. I was keen to see if it could work as the backend for a web app, which in short means a HTTP server receiving and sending JSON while talking to a Postgres database. There are obviously an awful lot of other things but let's keep it simple for now.
 
 
 ## The demo
@@ -27,7 +25,7 @@ For the HTTP framework, I have used [Iron](http://ironframework.io/) which was s
 
 For the postgres side, there is a crate (the term for a package in Rust) called [postgres](https://github.com/sfackler/rust-postgres). I'm also using a pool manager called [r2d2](https://github.com/sfackler/r2d2) because I didn't know about [Arc](https://doc.rust-lang.org/std/sync/struct.Arc.html) and couldn't pass the connection itself as it wasn't thread safe.
 
-The Makefile for Postgres was taken from another Iron + Postgres project I have found on Github: [rustwebapp](https://github.com/superlogical/rustwebapp).
+The Makefile for Postgres was taken from another Iron + Postgres project I have found on Github: rustwebapp (link now dead).
 
 
 Keep in mind I'm a newbie in Rust so there are probably lots of things I'm doing wrong in there, feel free to point them out!

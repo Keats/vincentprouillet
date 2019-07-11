@@ -13,11 +13,11 @@ Or you get a new server and need to make it up and running quickly, are you goin
 Fortunately, lots of tools exist to automate the process : Chef, Puppet, Salt, Ansible and several others.
 Because I don't want to configure my server everytime and would like to automate the whole deploy thing, I chose to use
 Ansible for it.
-We're also using Ansible for [Hizard](http://www.hizard.com/ "Hizard") as well so there's that.
+We're also using Ansible for Hizard as well so there's that.
 
 
 ## Ansible, I choose you!
-I use [Ansible](http://www.ansibleworks.com/ "Ansible") because it's the simplest solution I found.
+I use [Ansible](https://www.ansible.com/ "Ansible") because it's the simplest solution I found.
 Playbooks (Ansible terms for the file that contains the actions to do on a server) are in YAML and configuration files in Jinja2 templates.
 You can't get easier than that, no weird custom ruby stuff.
 Also, it works by just SSHing to the servers, unlike the others that require to have a daemons on every servers.
@@ -146,7 +146,7 @@ Here's the roles/pelican/tasks/main.yml :
 - include: deploy.yml
 ```
 
-This uses several [modules](http://www.ansibleworks.com/docs/modules.html "Ansible modules") but this is really how Ansible works : give a
+This uses several [modules](https://docs.ansible.com/ansible/latest/modules/modules_by_category.html "Ansible modules") but this is really how Ansible works : give a
 name to a task and the command to execute, using a module or a raw command.
 I include the deploy.yml instead of listing the tasks in main.yml because I might want to create another playbook only for deploy and it's clearer
 that way anyway.

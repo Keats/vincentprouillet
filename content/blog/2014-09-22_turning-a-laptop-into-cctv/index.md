@@ -15,7 +15,7 @@ The best way to find out what it is being actually seeing it, we decided to put 
 We don't have a camera but we have webcams on our laptop.
 How hard could it be to create a script to take pictures with it at a set interval ?
 I ended up creating [Rodent](https://github.com/Keats/rodent) to solve that issue.
-One of my flatmates is a designer (Barbara Marcantonio, you can look at her [website](http://grarighe.co.uk/)) and made a logo for it for fun.
+One of my flatmates is a designer (Barbara Marcantonio, you can look at her [website](https://www.pixelspa.com/)) and made a logo for it for fun.
 
 {{ image(src="https://raw.githubusercontent.com/Keats/rodent/master/logo.png", alt="Rodent") }}
 

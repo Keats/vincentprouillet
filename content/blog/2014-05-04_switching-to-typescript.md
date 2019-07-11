@@ -20,7 +20,7 @@ I am not going to detail Typescript too much as there is a complete [handbook](h
 I can see several reasons.
 
 First, it's still mostly javascript, unlike coffeescript which makes it easier to learn (coffeescript is very easy but lots of people will not contribute back if it means having to do it in coffeescript).
-There is a [big thread on Discourse](https://meta.discourse.org/t/is-it-better-for-discourse-to-use-javascript-or-coffeescript/3153/42) about whether to use Javascript or Coffeescript.
+There is a big thread on Discourse (link now dead) about whether to use Javascript or Coffeescript.
 After switching to javascript, more contributions happened so that's definitely something to take into account if you are doing an open source project.
 
 The second is obviously types. Having types (in javascript) is awesome.

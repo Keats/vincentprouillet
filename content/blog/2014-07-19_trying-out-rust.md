@@ -22,7 +22,7 @@ As mentioned above, Rust is a language developed by Mozilla in the open: all the
 A stable release is expected around Q4 of 2014.
 You can follow or even submit/comment on RFCs on the language: [RFCs repo](https://github.com/rust-lang/rfcs), decisions on these RFCs being taken in meetings for which you can find the transcripts on [github as well](https://github.com/rust-lang/meeting-minutes).
 The language itself is also in github in case you didn't guess: [rust repo](https://github.com/rust-lang/rust).
-More discussions also happen on reddit ([/r/rust](http://www.reddit.com/r/rust)) and on the [discourse forum](http://discuss.rust-lang.org/).
+More discussions also happen on reddit ([/r/rust](http://www.reddit.com/r/rust)) and on the [discourse forum](https://users.rust-lang.org/).
 I talked quite a bit about the community because I find looking at the evolution quite fascinating, let's talk a bit about the language itself now.
 
 Let's use bullet points and then go through those individually
@@ -45,7 +45,7 @@ There are 3 types of pointers in Rust:
 - owned pointers: the classic ones, compiler takes care of them automatically
 - borrowed pointers: as the name implies, you can use them when you want to access data, but without taking ownership of it
 
-Ownership (and mainly the lifetimes that go with it) is a major point of Rust and documentation will do a better job than me at explaining them: [The Rust References and Lifetimes Guide](http://static.rust-lang.org/doc/master/guide-lifetimes.html).
+Ownership (and mainly the lifetimes that go with it) is a major point of Rust and documentation will do a better job than me at explaining them: [The Rust References and Lifetimes Guide](https://doc.rust-lang.org/1.36.0/book/ch10-03-lifetime-syntax.html).
 
 ### Easy concurrency with no data race
 Concurrency in Rust is as easy as in Go, here's a very basic example:

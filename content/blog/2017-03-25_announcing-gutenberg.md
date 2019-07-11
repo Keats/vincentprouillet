@@ -8,11 +8,11 @@ That's a very valid question!
 
 I currently have 6 static sites live:
 
-- [wearewizards.io](https://wearewizards.io)
-- [blog.wearewizards.io](https://blog.wearewizards.io)
-- [vincent.is](https://vincent.is)
-- [proppy.io](https://proppy.io)
-- [proppy.io/blog](https://proppy.io/blog)
+- wearewizards.io (link now dead)
+- blog.wearewizards.io (link now dead)
+- vincent.is (link now dead; redirecting to vincentprouillet.com)
+- proppy.io  (link now dead)
+- proppy.io/blog (link now dead)
 - [pixelspa.com](https://pixelspa.com)
 
 Those are all using [Hugo](https://gohugo.io/), except the blog you're reading

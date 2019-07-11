@@ -5,8 +5,6 @@ category = "Business"
 tags = ["business"]
 +++
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/where-to-incorporate-if-you-are-a-eu-citizen).
-
 
 We are very lucky as EU citizens to have access to 28 (well, soon 27 apparently) countries.
 To give a bit of context to this blog post, We Are Wizards is currently a company based in the UK, founded by 2 French and one German, all living in London at the moment.
@@ -26,7 +24,7 @@ To sum it up, our requirements are:
 - we need to be able to incorporate without living there
 - we want its government to be privacy friendly and not authoritarian
 
-Your own requirements will obviously differ and some countries that we disregard in the next section might be the perfect fit for you. Or you might want to get out of the EU to not deal with [VAT MOSS](https://blog.wearewizards.io/looking-at-payments-solution-for-saas-in-europe) like [Ghost](https://blog.ghost.org/moving-to-singapore/) for example.
+Your own requirements will obviously differ and some countries that we disregard in the next section might be the perfect fit for you. Or you might want to get out of the EU to not deal with [VAT MOSS](@/blog/2015-12-10_looking-at-payments-in-europe.md) like [Ghost](https://blog.ghost.org/moving-to-singapore/) for example.
 
 ## Countries selection
 
@@ -93,17 +91,15 @@ I'll be the first one to say I don't know much about Estonia. According to [Ente
 
 The political environment seems pretty quiet and the current leading political party, the [Estonia Reform Party](https://en.wikipedia.org/wiki/Estonian_Reform_Party) is advocating for even more liberalism when it comes to companies.
 
-Estonia ranks 1st on the [Barclays Digital Development index](https://digitalindex.uk.barclays/ranking) and 16th on the [Doing Business ranking](http://www.doingbusiness.org/rankings)
+Estonia ranks 1st on the Barclays Digital Development index and 16th on the [Doing Business ranking](http://www.doingbusiness.org/rankings)
 
-Do note that Stripe is not available in Estonia yet so it might be a deal breaker if your business depends on it, which might be our case depending on what payment provider we choose for [Proppy](https://proppy.io) (article on that coming soon). There is no timeline for it as well:
+Do note that Stripe is not available in Estonia yet so it might be a deal breaker if your business depends on it, which might be our case depending on what payment provider we choose for Proppy(article on that coming soon). There is no timeline for it as well:
 
 <blockquote class="twitter-tweet" data-lang="en-gb"><p lang="en" dir="ltr"><a href="https://twitter.com/WeAreWizardsIO">@WeAreWizardsIO</a> No timeline as of yet, sorry! Feel free to sign up here and we&#39;ll notify you as soon as we&#39;re ready <a href="https://t.co/vbuzSSxceJ">https://t.co/vbuzSSxceJ</a></p>&mdash; Stripe (@stripe) <a href="https://twitter.com/stripe/status/757525171943120896">25 July 2016</a></blockquote>
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 #### Taxes
 Estonia has a very competitive tax system. The corporation tax is **0%** as long as the money stays into the company bank account. Once you take dividends, those are taxed at a flat **20%** rate.
-
-A more detailed write-up on taxes in Estonia is available [on eResNetwork](https://community.eresnetwork.eu/topic/92/estonia-107-paying-taxes).
 
 #### How to incorporate/open bank account
 Estonia is at the forefront of e-residency.

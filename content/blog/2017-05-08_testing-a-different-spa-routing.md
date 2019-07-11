@@ -16,7 +16,7 @@ Routing is a big part of most SPA:
 ## The problem
 In the React world, [React-Router](https://github.com/ReactTraining/react-router) is the standard.
 It is a bit infamous as its API has changed drastically for each major version.
-[Proppy](https://proppy.io) is still using v2 as updating it didn't seem to bring much benefit and would take time.
+Proppy is still using v2 as updating it didn't seem to bring much benefit and would take time.
 Our only issue with our current setup is that we are not able to make the async transitions the way we would like them to be, but it is
 an annoying one from a UX point of view.
 

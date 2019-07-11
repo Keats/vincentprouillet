@@ -5,7 +5,6 @@ category = "Business"
 tags = ["business"]
 +++
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/looking-at-payments-solution-for-saas-in-europe).
 
 As we are working on our product (if you work in an agency, we'd love to have a chat with you! send us a mail at team AT wearewizards.io), I was curious to see the payments landscape in Europe, having read so much about [#VATMESS](https://twitter.com/hashtag/vatmess).
 

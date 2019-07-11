@@ -5,10 +5,8 @@ category = "Programming"
 tags = ["rust"]
 +++
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/introducing-tera-a-template-engine-in-rust).
 
-
-Back in October 2015, I tried [Rust for web services](https://blog.wearewizards.io/trying-rust-for-web-services) and found the ecosystem lacking at the time. That's why I've been working on porting some of the tools we use in [Proppy](https://proppy.io/) to Rust: [jwt](https://crates.io/crates/jsonwebtoken), [bcrypt](https://crates.io/crates/bcrypt) (granted that Argon2 seems superior) and a [migration tool](https://crates.io/crates/dbmigrate). While I mostly do SPAs these days and don't write many templates in the backend, I still need one for some occasions. When using Python, I like [Jinja2](http://jinja.pocoo.org/docs/dev/) and [Django templates](https://docs.djangoproject.com/en/1.9/topics/templates/#the-django-template-language). Here's how I attempted to port them to Rust and the result is [Tera](https://github.com/Keats/tera/).
+Back in October 2015, I tried [Rust for web services](@/blog/2015-10-01_trying-rust-for-web-services.md) and found the ecosystem lacking at the time. That's why I've been working on porting some of the tools we use in [Proppy](https://github.com/wearewizards/proppyweb) to Rust: [jwt](https://crates.io/crates/jsonwebtoken), [bcrypt](https://crates.io/crates/bcrypt) (granted that Argon2 seems superior) and a [migration tool](https://crates.io/crates/dbmigrate). While I mostly do SPAs these days and don't write many templates in the backend, I still need one for some occasions. When using Python, I like [Jinja2](http://jinja.pocoo.org/docs/dev/) and [Django templates](https://docs.djangoproject.com/en/1.9/topics/templates/#the-django-template-language). Here's how I attempted to port them to Rust and the result is [Tera](https://github.com/Keats/tera/).
 
 
 ## Goals and philosophy
@@ -150,6 +148,6 @@ Error messages are usually very good and are getting [even better soon](https://
 ## What's next
 The main things Tera are missing right now are filters and a way to add custom tag blocks. If anyone thinks that it is 2016 and therefore should use a parser combinator, feel free to submit a PR! I also welcome any feedback on Tera design as it doesn't have to be a clone of Jinja2 or Django.
 
-Since I am quite busy with our first product [Proppy](https://proppy.io/), I won't have a huge amount of time so any help is welcome.
+Since I am quite busy with our first product [Proppy](https://github.com/wearewizards/proppyweb), I won't have a huge amount of time so any help is welcome.
 
 To finish on a "Rust for web" note, the last main thing I would miss to try it for real is a validation crate that would work [like this gist](https://gist.github.com/Keats/32d26f699dcc13ebd41b). We use [marshmallow](https://marshmallow.readthedocs.org/en/latest/) in proppy and it makes validation API data a breeze. Unfortunately, with compiler plugins being still unstable, I don't think I will start working on that. There is a RFC for stabilization though: [Procedural macros](https://github.com/rust-lang/rfcs/pull/1566).

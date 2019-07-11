@@ -5,8 +5,6 @@ category = "Data science"
 tags = ["python", "notebook"]
 +++
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/comparing-the-weather-of-places-ive-lived-in).
-
 
 ```python
 %matplotlib inline

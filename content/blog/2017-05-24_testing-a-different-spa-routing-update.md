@@ -7,7 +7,7 @@ tags = ["javascript"]
 
 I've recently wrote [an article](@/blog/2017-05-08_testing-a-different-spa-routing.md) about a
 framework agnostic routing approach for SPA and promised to post an update once it is a bit more tested.
-I have since moved [Proppy](https://proppy.io) from [react-router](https://github.com/ReactTraining/react-router) v2 to
+I have since moved Proppy from [react-router](https://github.com/ReactTraining/react-router) v2 to
 the structure described in my article and the result is pretty great!
 
 I did change a few things from it though.
@@ -57,7 +57,7 @@ sessions, I noticed something in the [router5 documentation](http://router5.gith
 the `strictQueryParams`.
 
 By default in `router5`, a route with a path of `/` will not be matched by the URL `/?_ga=blabla`:
-turns out this was exactly what was happening for [Proppy](https://proppy.io). I
+turns out this was exactly what was happening for Proppy. I
 [opened an issue](https://github.com/router5/router5/issues/137) to change the default to a saner one and it seems
 it will happen, but in the next major version as this is a breaking change. In the meantime,
 the paragraph about `strictQueryParams` got moved to the top in the docs in order to be more visible.

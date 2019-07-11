@@ -39,7 +39,7 @@ Since I like organising code properly, I looked around to see what was the recom
 
 
 ### ng-boilerplate by Josh David Miller
-While I didn't find THE answer (there's no imposed structure like in many server-side frameworks so everyone do their own thing, which can be great), I found [ng-boilerplate](http://joshdmiller.github.io/ng-boilerplate/#/home "ng-boilerplate").
+While I didn't find THE answer (there's no imposed structure like in many server-side frameworks so everyone do their own thing, which can be great), I found ng-boilerplate by joshdmiller (link now dead).
 This boilerplate separates code by feature, containing all the code (including css/html) for that particular feature.
 It also uses [ui-router](https://github.com/angular-ui/ui-router "ui-router") which is quite awesome.
 It also comes with a whole lot of grunt tasks to automate dev/test/release cycle: everytime you save a file, it runs the associated task with this type of file and reloads your page.

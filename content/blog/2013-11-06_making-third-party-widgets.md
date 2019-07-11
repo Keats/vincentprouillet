@@ -16,7 +16,7 @@ named [Third-party JavaScript](http://thirdpartyjs.com/ "Third-party JavaScript"
 Here are some examples of the widgets I made:
 
 - disqus-like comments on the playfire blog: example [here](http://blog.playfire.com/2013/11/bf-vs-cod-which-do-you-want.html "Link to blog article")
-- Want button, to add a game to their wishlist from the GreenManGaming website: example [here](http://www.greenmangaming.com/s/gb/en/pc/games/strategy/football-manager-2014/ "GMG")
+- Want button, to add a game to their wishlist from the GreenManGaming website
 
 ## The theory
 Let's define some terms first.

@@ -10,7 +10,7 @@ As everyone knows, time in JavaScript-land tends to operate in a different scale
 is prehistoric and a generation or two of frameworks went by.
 
 I have been using [React](https://facebook.github.io/react/) for about a year now, mainly for the frontend
-of [Proppy](https://proppy.io) and some experiments on the side. While the churn for the libraries during that year
+of Proppy and some experiments on the side. While the churn for the libraries during that year
 reached a level I had never seen before, it seems to have stabilised a bit.
 That or I stopped trying to follow JS news, who knows.
 
@@ -107,7 +107,7 @@ The closest was [TypeStyle](https://github.com/typestyle/typestyle) but is ultim
 overhead. I'll address that in the "What am I missing" section later on.
 
 ## Prototyping
-I recently discovered [react-storybook](https://getstorybook.io/). If you are using React and didn't hear about it or tried it,
+I recently discovered [storybook](https://storybook.js.org/). If you are using React and didn't hear about it or tried it,
 stop reading this article and go play with it. It's that glorious.
 
 Rather than explaining how it works, have a look at [Airbnb date picker storybook](http://airbnb.io/react-dates/).

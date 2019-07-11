@@ -6,10 +6,7 @@ tags = ["rust"]
 +++
 
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/writing-my-first-rust-crate-jsonwebtoken).
-
-
-After [looking into Rust for webservices](https://blog.wearewizards.io/trying-rust-for-web-services), I concluded that, while it was not mature enough yet in my opinion, the language itself is quite nice and I would be interested in writing more of it. So here it is, my first crate (the name for packages in Rust): [jsonwebtoken](https://crates.io/crates/jsonwebtoken) (code on [github](https://github.com/keats/rust-jwt)).
+After [looking into Rust for webservices](@/blog/2015-10-01_trying-rust-for-web-services.md), I concluded that, while it was not mature enough yet in my opinion, the language itself is quite nice and I would be interested in writing more of it. So here it is, my first crate (the name for packages in Rust): [jsonwebtoken](https://crates.io/crates/jsonwebtoken) (code on [github](https://github.com/keats/rust-jwt)).
 
 
 ## What are JWTs

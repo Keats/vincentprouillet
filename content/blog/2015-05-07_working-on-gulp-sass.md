@@ -5,7 +5,6 @@ category = "Programming"
 tags = ["css", "sass"]
 +++
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/gulp-sass-v2-released).
 
 [gulp-sass](https://github.com/dlmanning/gulp-sass) v2 was released today!
 In itself, this is not a big change as this is simply a wrapper for node-sass which uses libsass so, while this version is a complete rewrite this is not the important news. The important news is that it ships with [node-sass](https://github.com/sass/node-sass) v3 which is using [libsass](http://libsass.org/) 3.2.2.

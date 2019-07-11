@@ -5,9 +5,8 @@ category = "Programming"
 tags = ["javascript"]
 +++
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/migrating-to-gulp-4-by-example).
 
-Last year I wrote a blog post on my personal website (you can see it here [Gulp by example ](http://vincent.is/introducing-people-to-gulp/)) showing what [gulp](http://gulpjs.com/) was and making a demo project using it.
+Last year I wrote a blog post on my personal website (you can see it here [Gulp by example ](@/blog/2014-02-17_introducing-people-to-gulp.md)) showing what [gulp](http://gulpjs.com/) was and making a demo project using it.
 Since then, the team behind it did a lot of work on v4 of gulp which, while not released as of the writing of the post, is stable enough to be used.
 
 Rather than going through a list of new features, let's update my [angular boilerplate](https://github.com/Keats/ng-boilerplate) to use gulp4.
@@ -148,7 +147,7 @@ Maybe it makes more sense if you have very long files but all of mine are betwee
 ## Wrap up
 Some functions from gulp 3 such a `gulp.start` and `gulp.run` were deprecated and are not covered in this article since I never used them in any of my gulpfiles.
 
-There is also a bunch of new functions that I haven't used yet. To have a complete overview of what's new, you can check the [gulp 4 changelog](https://github.com/gulpjs/gulp/blob/4.0/CHANGELOG.md).
+There is also a bunch of new functions that I haven't used yet. To have a complete overview of what's new, you can check the [gulp 4 changelog](https://github.com/gulpjs/gulp/blob/master/CHANGELOG.md#400).
 Gulp 4 is still in alpha so I'll update this article if any breaking change happens.
 
 A question often asked is why use gulp when you have things like [webpack](http://webpack.github.io/) around but that's out of scope for this article but will probably be part of another one.

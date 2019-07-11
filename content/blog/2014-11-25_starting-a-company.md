@@ -5,8 +5,6 @@ category = "Business"
 tags = ["business"]
 +++
 
-TL;DR: started a tech agency, visit [https://wearewizards.io](https://wearewizards.io)
-
 I have been wanting to create my own company for a very long time, even before I graduated.
 
 While it would have sucked an awful lot if I did it at that time for multiple reasons — lack of skills and experience mainly — it became more achievable recently.
@@ -25,7 +23,7 @@ That's how we decided to create an agency/tech consultancy focusing on backends 
 
 The company was incorporated last week and its name is __We Are Wizards__, which was actually the name of my limited company as a contractor.
 
-The website is at [https://wearewizards.io](https://wearewizards.io) and the twitter handle is @WeAreWizardsIO.
+The website is at https://wearewizards.io (link now dead) and the twitter handle is @WeAreWizardsIO.
 
 You can contact us through twitter or send an email to __vincent@wearewizards.io__ if you want to talk about some projects you have.
 

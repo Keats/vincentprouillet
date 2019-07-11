@@ -5,10 +5,9 @@ category = "Data Science"
 tags = ["python", "notebook"]
 +++
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/the-hacker-news-effect-examined).
+> Note: the original article was published on my old company blog which is no longer live. I've changed the URLs so they don't 404
 
-
-Last week my article [Using Protobuf instead of JSON to communicate with a frontend](https://blog.wearewizards.io/using-protobuf-instead-of-json-to-communicate-with-a-frontend) ended up being number one on [Hacker News](https://news.ycombinator.com) and we saw a crazy amount of traffic coming on this blog.
+Last week my article [Using Protobuf instead of JSON to communicate with a frontend](@/blog/2015-06-14_trying-to-replace-json-with-protobuf.md) ended up being number one on [Hacker News](https://news.ycombinator.com) and we saw a crazy amount of traffic coming on this blog.
 
 I thought that it would be interesting to analyze some of that data so here it is.
 
@@ -80,13 +79,13 @@ for (date, title, offset) in articles:
 
 Here are the links of the articles for reference (I'll refer to them by their number in the list below from now on):
 
-1. [Berg's Little Printer](https://blog.wearewizards.io/bergs-little-printer)
-2. [Comparing the weather of places I've lived in](https://blog.wearewizards.io/comparing-the-weather-of-places-ive-lived-in)
-3. [My experience of using NixOps as an Ansible user](https://blog.wearewizards.io/my-experience-of-using-nixops-as-an-ansible-user)
-4. [Using Protobuf instead of JSON to communicate with a frontend](https://blog.wearewizards.io/using-protobuf-instead-of-json-to-communicate-with-a-frontend)
+1. Berg's Little Printer (not live anymore)
+2. [Comparing the weather of places I've lived in](@/blog/2015-05-22_comparing-weathers/index.md)
+3. My experience of using NixOps as an Ansible user (not live anymore)
+4. [Using Protobuf instead of JSON to communicate with a frontend](@/blog/2015-06-14_trying-to-replace-json-with-protobuf.md)
 
 We always tweet when we post an article but only post to HN/Reddit the ones we feel are interesting enough. Article 1 has not been posted anywhere, number 2 has been posted on [r/python](https://www.reddit.com/r/python) and number 3 and 4 were both on the front page of HackerNews, with number 4 being at the top for some time.
-From that graph and my experience with my [previous blog](http://vincent.is/), HN brings way more readers than reddit or twitter.
+From that graph and my experience with my [previous blog](https://www.vincentprouillet.com/), HN brings way more readers than reddit or twitter.
 
 Let's have a look to see if I'm right.
 

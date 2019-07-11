@@ -6,7 +6,6 @@ tags = ["javascript", "typescript"]
 +++
 
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/a-mobx-introduction-and-case-study).
 
 [MobX](https://mobxjs.github.io/mobx/) (previously mobservable) is a state management library for JavaScript frontend application. This article introduces it with examples as well as showing how it works in a real app with TypeScript. It is based on a talk I gave at the Osaka Web designers and developers meetup recently.
 
@@ -29,7 +28,7 @@ Before we continue, a few more things:
 - the learning curve is very small and you will be able to start an app by the end of that article
 
 ### Why would I use it instead of Redux/ImmutableJS or library X?
-This part is written from my experience using both Redux/ImmutableJS and MobX with React in [Proppy](https://proppy.io), our app to write proposals for freelancers and small agencies/companies. Its frontend is written in TypeScript, which was one of a big reason to moving to MobX as we will see in a bit.
+This part is written from my experience using both Redux/ImmutableJS and MobX with React in Proppy, our app to write proposals for freelancers and small agencies/companies. Its frontend is written in TypeScript, which was one of a big reason to moving to MobX as we will see in a bit.
 
 Our issues with Redux/ImmutableJS were twofold.
 
@@ -198,7 +197,7 @@ We don't use the strict mode ourselves
 
 ## MobX in real life
 Now that you know the basics of MobX, it's time to see how it looks in production.
-It's currently the backbone of our frontend app in [Proppy](https://proppy.io) so we will use examples from it.
+It's currently the backbone of our frontend app in Proppy so we will use examples from it.
 
 If you are doing SSR, be aware that the way we handle stores shown below will not work for you.
 

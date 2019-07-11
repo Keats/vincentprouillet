@@ -14,7 +14,7 @@ You can build pretty much any kind of static site with it using markdown:
 - all of the above combined
 
 You can download built binaries from the [Github releases page](https://github.com/Keats/gutenberg/releases) or install
-it from [one of the installation methods](https://www.getgutenberg.io/documentation/getting-started/installation/).
+it from [one of the installation methods](https://www.getzola.org/documentation/getting-started/installation/).
 
 You should also be able to install it on Ubuntu via Snapcraft once [this bug](https://forum.snapcraft.io/t/the-rust-plugin-sets-an-invalid-manifest-path/6565/6)
 is resolved.
@@ -32,7 +32,7 @@ couldn't paginate their pages, have a RSS feed for each or create your own taxon
 Let's see how to use, and also how to migrate from the point of view of a current user
 already using tags/categories.
 
-If you are looking for more information, the [docs](https://www.getgutenberg.io/documentation/content/taxonomies/) have been updated — look
+If you are looking for more information, the [docs](https://www.getzola.org/documentation/content/taxonomies/) have been updated — look
 for the various taxonomies pages in the side menu.
 
 #### Updating the configuration
@@ -135,13 +135,13 @@ Daniel has also made tons of improvements to the documentation, something always
 ### Image processing
 
 This is the amazing work of [Vojtech Kral](https://github.com/vojtechkral) who also wrote
-a thorough [documentation page](https://www.getgutenberg.io/documentation/content/image-processing/) explaining it in detail.
+a thorough [documentation page](https://www.getzola.org/documentation/content/image-processing/) explaining it in detail.
 
 In short: you can now resize images from a template and implementing a gallery is trivial. Open an issue if you have an idea for
 some image processing not already in!
 
 ### Shortcodes fixes
-In the previous versions, [shortcodes](https://www.getgutenberg.io/documentation/content/shortcodes/) were detected with a Regex and built up
+In the previous versions, [shortcodes](https://www.getzola.org/documentation/content/shortcodes/) were detected with a Regex and built up
 while parsing the Markdown which ended up being some of the worst spaghetti code I have ever written.
 It lead to numerous bugs as well some valuable features like array arguments to be almost impossible to implement — at least for me.
 

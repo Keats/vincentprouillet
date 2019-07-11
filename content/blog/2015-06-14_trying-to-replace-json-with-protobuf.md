@@ -6,8 +6,6 @@ tags = ["javascript"]
 +++
 
 
-> This article was originally posted on [my company's blog](https://blog.wearewizards.io/using-protobuf-instead-of-json-to-communicate-with-a-frontend).
-
 Protocol buffers (or other binary serialization formats like Thrift) are widely used to communicate between services. JSON is overwhelmingly used for backend <-> frontend communication and for APIs.
 Let's see what a client/server using Protobuf would look like.
 <!-- PELICAN_END_SUMMARY -->

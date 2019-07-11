@@ -134,7 +134,7 @@ It is definitely more verbose than what Jekyll or Hugo (setting `/:year/:month/:
 As far as I'm aware, you have no way of selecting the intermediate templates in alternatives or they are sometimes not rendered at all.
 
 For example, if I'm on [https://intellij-rust.github.io/2018/11/07/changelog-86.html](https://intellij-rust.github.io/2018/11/07/changelog-86.html) and try
-to want to see all the posts in 2018 ([https://intellij-rust.github.io/2018/](https://intellij-rust.github.io/2018/), I get a 404. I would be very surprised
+to want to see all the posts in 2018 (https://intellij-rust.github.io/2018/), I get a 404. I would be very surprised
 if Jekyll doesn't handle that but it looks optional at least.
 
 Another advantage is that it isn't limited to the data in the front-matter: you can organise it however you want. Want to have a blog, prefix all the blog posts

@@ -36,7 +36,7 @@ I am not using any of those in my own projects but anyone wanting to discuss the
 
 
 ## Validation crate
-I've been working through the `requirements.txt` of [Proppy](https://proppy.io) to decide what crate to work on in Rust.
+I've been working through the `requirements.txt` of Proppy to decide what crate to work on in Rust.
 
 The next one will probably be a crate similar to the [marshmallow](https://marshmallow.readthedocs.io/en/latest/index.html) library.
 Since Serde can handle the serialization/deserialization aspect already, it will focus only on actual validation with an API looking like
