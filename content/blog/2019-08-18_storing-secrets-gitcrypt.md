@@ -34,9 +34,16 @@ secrets/**/* filter=git-crypt diff=git-crypt
 This means that everything inside a folder named `secrets` will be encrypted. It is recommended to use the `**/*` approach as
 it would be easy to forget to encrypt some files otherwise.
 Now that your `.gitattributes` file is in place, you can start adding secrets in that folder. Since you have the secrets
-already unlocked, you will see the file in your `git diff` or `git show`. If you push it to a remote repository and try
-to view a file in that directory using the web browser for example, you will notice they are just binary data. Anyone getting access
-to the repository will not be able to see them unless they can unlock git-crypt. That also includes you working from
+already unlocked, you will see the file in your `git diff` or `git show`.
+You can check which files are encrypted before pushing by running the `git-crypt status -e` command:
+
+```bash
+~/C/p/gitcrypttest (master|…) [1] $ git-crypt status -e
+    encrypted: secrets/.envrc
+```
+
+If you push it to a remote repository and try to view a file in that directory using the web browser for example, you will notice they are just binary data. 
+Anyone getting access to the repository will not be able to see them unless they can unlock git-crypt. That also includes you working from
 a different computer or your team members.
 
 Clearly, we need to be able to unlock the secrets in more than one computer. There are two ways to go about it:
