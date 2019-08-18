@@ -3,8 +3,7 @@ title = "Storing secrets in a git repository with git-crypt"
 description = "It is possible to store secrets securely in a git repository; here's how"
 +++
 
-One of the most common issues working on a web service of some kinds is where to
-store your secrets for various environments. When just starting, it's likely that
+One of the most common issues working on a web service is where to store your secrets. When just starting, it's likely that
 they will be directly in the repository itself whether it happens accidentally or not. Having your production secrets
  in the clear in the repository is obviously a bad thing and all those secrets should be rotated.
 
@@ -45,8 +44,10 @@ Clearly, we need to be able to unlock the secrets in more than one computer. The
 - GPG
 - creating a symmetric key
 
-You can read more about the GPG on the [README](https://github.com/AGWA/git-crypt#using-git-crypt), I will use the symmetric
+You can read more about the GPG on the [git-crypt's README](https://github.com/AGWA/git-crypt#using-git-crypt), I will use the symmetric
 key for this article.
+
+Here's how you generate a symmetric key:
 
 ```
 $ git-crypt export-key /path/to/output/file
