@@ -1,6 +1,6 @@
 +++
-title = "A boilerplate for a React+TypeScript frontend: part 1"
-description = "How to quickly get started with a React/TypeScript project with Webpack"
+title = "A boilerplate for a React+TypeScript frontend — Part 1"
+description = "How to quickly get started with a React/TypeScript project using Webpack"
 +++
 
 Starting a new frontend project is tiresome. My usual process is to look at the last project I worked on, 
