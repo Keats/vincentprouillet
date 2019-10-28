@@ -76,7 +76,7 @@ All the other options are adding some additional checks, such as not allowing un
 of all the options can be found in [TypeScript documentation](https://www.typescriptlang.org/docs/handbook/compiler-options.html).
 Lastly, we set up an include path containing `"./src/**/*"`: we will put all our code in a `src` folder.
 
-In this setup, we will only use TypeScript and not [Babel](https://babeljs.io/). Is it possible to use TypeScript for
+In this setup, we will only use TypeScript and not [Babel](https://babeljs.io/). It is possible to use TypeScript for
 typechecking only and pass the code to Babel for transpilation but, unless you need a specific Babel plugin, there are no 
 reasons to do that nowadays. You will have to wait a few more months before getting stage 3 features - not a big deal.
 
@@ -141,7 +141,7 @@ index eb50375..1bc2df7 100644
 ```
 
 Running that script (`yarn build`) will create the `dist` folder containing a file with a name like `app.5730f5cdf8cb70458282.js`.
-Since we didn't write any code yet, it currently only contains Webpack own code.
+Since we didn't write any code yet, it currently only contains Webpack's own code.
 
 The commit for those changes is in <https://github.com/Keats/webpack-react-typescript/commit/48fc3f342c3f4f53c30af1b457d90351f442b4f0>.
 
