@@ -173,6 +173,9 @@ There is a plugin that will handle the HTML for us: [html-webpack-plugin](https:
 $ yarn add html-webpack-plugin --dev
 ```
 
+We are using this plugin here because we do not need to display dynamic `<meta>` attributes depending on the page. If you
+need it for SEO or other reasons, you will need to use another approach, likely involving some kind of SSR.
+
 Enabling it in our `webpack.config.js` is trivial:
 
 ```diff
