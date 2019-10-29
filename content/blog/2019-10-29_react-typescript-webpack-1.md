@@ -26,7 +26,7 @@ You can view the end result in <https://github.com/Keats/webpack-react-typescrip
 
 ## TypeScript setup
 [TypeScript](https://www.typescriptlang.org/) is the most important tool for me in the frontend world. I first talked about 
-it on this blog [in 2014](@./blog/2014-5-4_switching-to-typescript.md) and it only got better with time. This is a superset of JavaScript, simply adding 
+it on this blog [in 2014](@/blog/2014-05-04_switching-to-typescript.md) and it only got better with time. This is a superset of JavaScript, simply adding 
 types to it. I don't think static typing in dynamic languages are controversial anymore, seeing how [many](https://sorbet.org/) [languages](http://mypy-lang.org/) adopt it.
 Static typing is the ultimate form of documentation as it HAS to be correct.
 
@@ -380,8 +380,7 @@ The commit is <https://github.com/Keats/webpack-react-typescript/commit/a464f58d
 
 ## Linting
 The last code quality tooling we are going to add is [ESLint](https://eslint.org/). Setting it up requires a few more 
-dependencies than the other tools as we need to make it work with React, Prettier and Typescript and that is split in
-several packages.
+dependencies than the other tools as we need to make it work with React, Prettier and Typescript.
 
 ```bash
 $ yarn add eslint eslint-config-prettier eslint-plugin-react @typescript-eslint/eslint-plugin @typescript-eslint/parser --dev
@@ -452,7 +451,7 @@ As you might have understood already, we need to add some _loaders_ to handle Sa
 ```
 
 And then you need to tell Webpack to load the root file by importing it into your `index.tsx` file, in my case 
-`import "../style/app.scss";`. If you added `scss` to `resolve.extensions` in the Webpack configuration, you can skip the `.scss`.
+`import "./style/app.scss";`. If you added `scss` to `resolve.extensions` in the Webpack configuration, you can skip the `.scss`.
 Live reload will continue to work with Sass editing: you can change the background colour and see it immediately reflected
 in your browser.
 
@@ -460,7 +459,10 @@ This setup will not solve the classic CSS specificity issues where some changes 
 you are well disciplined with naming classes such as using [BEM](http://getbem.com/). One nice automatic solution to that
 are [CSS modules](https://github.com/css-modules/css-modules) but that will likely be a separate article.
 
-The commit is <https://github.com/Keats/webpack-react-typescript/commit/3d74c80168c18c2a6eef75d6b66a7dd9befa167c>.
+Prettier also works with Sass so we can just add `.scss` file to the format script and it will work automatically.
+
+The commit is <https://github.com/Keats/webpack-react-typescript/commit/055c4785da3d167a18137a90c4ca887fddf7feed>, I've also
+run Prettier manually on the configuration files to have consistent formatting throughout the project.
 
 ## What's next
 With that, we have a working development setup. It is not production and deployment ready however and that is what we will look at
