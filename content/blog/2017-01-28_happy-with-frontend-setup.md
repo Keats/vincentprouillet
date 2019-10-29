@@ -88,7 +88,7 @@ or any UI library.
 
 ## State management
 I've settled on [MobX](https://github.com/mobxjs/mobx) and am pretty happy about it.
-I wrote about [MobX and going from Redux](https://vincent.is/talking-about-mobx/) before so I'm not going to repeat myself here.
+I wrote about [MobX and going from Redux](@/blog/2016-11-01_a-mobx-introduction/index.md) before so I'm not going to repeat myself here.
 
 In short: very simple to use, fully typed and not verbose at all.
 A pleasure after using [Redux](https://github.com/reactjs/redux).

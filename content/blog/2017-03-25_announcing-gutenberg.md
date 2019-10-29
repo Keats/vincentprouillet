@@ -60,7 +60,7 @@ to be done before being ready for a 0.1 though:
 - Find and fix bugs, add tests and benchmarks
 - Make it faster: parallelize if possible
 - Pagination: still debating the best way to set up that up in a [Github issue](https://github.com/Keats/gutenberg/issues/7)
-- Add an equivalent to [Hugo shortcodes](https://gohugo.io/extras/shortcodes#shortcodes-with-markdown): they make it easy to embed
+- Add an equivalent to [Hugo shortcodes](https://gohugo.io/content-management/shortcodes/#shortcodes-with-markdown): they make it easy to embed
 some HTML in your markdown without repeating HTML all the time, e.g. a youtube video could be added to a page like so `{{ youtube(id=87238) }}`
 and the renderer will insert whatever template we defined for the `youtube` shortcode.
 

@@ -11,7 +11,7 @@ Since then, the team behind it did a lot of work on v4 of gulp which, while not 
 
 Rather than going through a list of new features, let's update my [angular boilerplate](https://github.com/Keats/ng-boilerplate) to use gulp4.
 
-You can have a look at the [Goal section of the README](https://github.com/Keats/ng-boilerplate#goal) to know what this boilerplate does but for those not wanting to open the link: Typescript, Sass, automatic DI, template preloading, testing with Karma and Protractor, live reload with browser-sync.
+You can have a look at the [Goal section of the README](https://github.com/Keats/ng-boilerplate#user-content-goal) to know what this boilerplate does but for those not wanting to open the link: Typescript, Sass, automatic DI, template preloading, testing with Karma and Protractor, live reload with browser-sync.
 > Note: I'm not using this boilerplate personally anymore since I don't really do vanilla angular anymore.
 
 Here's the [starting commit](https://github.com/Keats/ng-boilerplate/tree/87e75551651e94dfc1aa6135e1ea7cb5bd61cf0f).
@@ -147,7 +147,7 @@ Maybe it makes more sense if you have very long files but all of mine are betwee
 ## Wrap up
 Some functions from gulp 3 such a `gulp.start` and `gulp.run` were deprecated and are not covered in this article since I never used them in any of my gulpfiles.
 
-There is also a bunch of new functions that I haven't used yet. To have a complete overview of what's new, you can check the [gulp 4 changelog](https://github.com/gulpjs/gulp/blob/master/CHANGELOG.md#400).
+There is also a bunch of new functions that I haven't used yet. To have a complete overview of what's new, you can check the [gulp 4 changelog](https://github.com/gulpjs/gulp/blob/master/CHANGELOG.md#user-content-400).
 Gulp 4 is still in alpha so I'll update this article if any breaking change happens.
 
 A question often asked is why use gulp when you have things like [webpack](http://webpack.github.io/) around but that's out of scope for this article but will probably be part of another one.

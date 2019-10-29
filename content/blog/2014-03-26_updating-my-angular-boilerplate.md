@@ -5,7 +5,7 @@ category = "Programming"
 tags = ["javascript"]
 +++
 
-I made a post about starting an angular project a few months ago ([there](http://vincent.is/starting-an-angularjs-project/)) and I kept updating the boilerplate to adapt to my workflow.
+I made a post about starting an angular project a few months ago ([there](@/blog/2013-10-23_starting-an-angularjs-project.md)) and I kept updating the boilerplate to adapt to my workflow.
 Here's what's different from that time (spoiler: mostly the build system).
 
 ## Structure

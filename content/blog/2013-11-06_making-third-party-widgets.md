@@ -9,7 +9,7 @@ tags = ["javascript"]
 By third-party widgets, I mean javascript that you load on an external website and
 that talks to your website, think Facebook Like button or Disqus comments.
 Since I didn't find a lot of resources explaining how to create them (except the excellent book simply
-named [Third-party JavaScript](http://thirdpartyjs.com/ "Third-party JavaScript")), I will give some details on how I did the widgets for
+named [Third-party JavaScript](https://www.manning.com/books/third-party-javascript "Third-party JavaScript")), I will give some details on how I did the widgets for
 [Playfire](https://www.playfire.com/ "Playfire")).
 
 ## Examples

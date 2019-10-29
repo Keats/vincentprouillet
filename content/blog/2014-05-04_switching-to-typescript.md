@@ -38,7 +38,7 @@ I am confident they will adapt to whatever standard has been adopted, unless the
 I finished switching my [ng-boilerplate](https://github.com/Keats/ng-boilerplate) to Typescript and it works pretty well.
 Since I use AngularJS with REST APIs, I can define the types I will receive in the API, methods on controllers/scopes and have some robust code that ensure I didn't call a made-up function or made a typo in an object attribute immediately.
 The interfaces you define can also serve as a very good documentation and helps if you're dealing with a huge codebase (which is the goal of Typescript).
-I made a simple [invoice app](http://vincent.is/working-on/invoicing/#/) (github [link](https://github.com/Keats/invoicer)) when I was trying it out and it caught many errors before I even opened the page.
+I made a simple invoice app (github [link](https://github.com/Keats/invoicer)) when I was trying it out and it caught many errors before I even opened the page.
 
 ## Conclusion
 While Typescript is not the Holy Grail of Javascript, it makes writing it as nice as coffeescript (coffeescript will be more concise imo though) while having types.
