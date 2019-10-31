@@ -187,7 +187,7 @@ The commit is <https://github.com/Keats/webpack-react-typescript/commit/e97a368d
 
 ## Conclusion
 
-If you followed the articles or just cloned the repository, you should in a good place to start actually building your project.
+If you followed the articles or just cloned the repository, you should be in a good place to start actually building your project.
 It might look complicated compared to [create-react-app](https://github.com/facebook/create-react-app) but this is a minimal setup
 that you understand and that only has things what you need. Well, being a JavaScript project it still pulls way too many dependencies just for that but 
 it's a good start.
