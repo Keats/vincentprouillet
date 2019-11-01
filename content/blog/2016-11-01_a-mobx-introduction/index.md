@@ -350,7 +350,7 @@ I have mostly used the logging to inspect action and state changes while debuggi
 ## Useful links
 
 - [Official docs](https://mobxjs.github.io/mobx/) and in particular [Common pitfalls & best practices](https://mobxjs.github.io/mobx/best/pitfalls.html) and [What does MobX reacts to?](https://mobxjs.github.io/mobx/best/react.html)
-- [In-depth explanation of MobX](https://medium.com/@mweststrate/becoming-fully-reactive-an-in-depth-explanation-of-mobservable-55995262a254#.9aufnt6up)
+- [In-depth explanation of MobX](https://medium.com/@mweststrate/becoming-fully-reactive-an-in-depth-explanation-of-mobservable-55995262a254)
 - [Understanding MobX and when to use it](https://github.com/mobxjs/mobx/issues/199)
 - [Example: real-life with router/ajax etc](https://github.com/mobxjs/mobx/issues/104)
 

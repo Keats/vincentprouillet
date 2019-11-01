@@ -13,7 +13,7 @@ to make some changes and understanding [Webpack](https://webpack.js.org/) goes a
 The article is split in two parts: 
 
 1. Getting a local dev environment set up: this article
-2. Making it production ready: an upcoming article
+2. Making it production ready: [part 2](@/blog/2019-11-01_react-typescript-webpack-2.md)
 
 The focus for these article is to set up a build process for modern browsers with TypeScript: I am not going to pick any library other than React.
 State management, testing framework etc are all up to you. The slight
@@ -465,5 +465,6 @@ The commit is <https://github.com/Keats/webpack-react-typescript/commit/055c4785
 run Prettier manually on the configuration files to have consistent formatting throughout the project.
 
 ## What's next
+
 With that, we have a working development setup. It is not production and deployment ready however and that is what we will look at
-in the second part.
+in [the second part](@/blog/2019-11-01_react-typescript-webpack-2.md).

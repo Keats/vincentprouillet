@@ -97,7 +97,7 @@ You can obviously define the attributes manually if you want, even for related o
 ```
 
 You might be thinking that having random data in your tests can be a bad idea (I tend to agree) and annoying to track down bugs (it's hard to see that sdawrewaev is a first name).
-Thankfully, Model Mommy provides a way to set predefined data called recipes, with several examples in the [doc](https://github.com/vandersonmota/model_mommy#recipes).
+Thankfully, Model Mommy provides a way to set predefined data called recipes, with several examples in the https://github.com/vandersonmota/model_mommy#recipes (link now dead).
 It doesn't have lazy attributes though.
 
 ## Which one should I use?

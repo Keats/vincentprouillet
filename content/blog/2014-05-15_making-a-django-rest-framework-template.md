@@ -28,7 +28,7 @@ There are also goodies on dev and test environments:
 - [ipdb](https://pypi.python.org/pypi/ipdb): pdb in ipython. Awesome
 - [django-extensions](https://github.com/django-extensions/django-extensions): adds some useful management commands
 - [coverage](http://nedbatchelder.com/code/coverage/): measures code coverage
-- [factory-boy](https://factoryboy.readthedocs.org/en/latest/): my library of choice to create objects in tests, I go more into details in my article [Python testing: Factory Boy or Model Mommy](http://vincent.is/using-factory-boy-or-model-mommy/)
+- [factory-boy](https://factoryboy.readthedocs.org/en/latest/): my library of choice to create objects in tests, I go more into details in my article [Python testing: Factory Boy or Model Mommy](@/blog/2014-04-05_factory-boy-or-model-mommy.md)
 - [flake8](https://flake8.readthedocs.org): ensures code quality, respect of pep8 and other nice things, it can easily be installed as a git/mercurial hook
 
 ## Install

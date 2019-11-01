@@ -163,7 +163,7 @@ print zscore([0, 0, 0, 0, 0, 0, 0, 0, 20, 20, 20, 20, 20, 20], 20)
 Our guts tell us that the first one is more unusual than the second one and thus should have a higher rating than the second (imagine similar series containing hundred of points rather than this small example) if we are only looking at the last few days.
 When we are looking at trending things, recent values are more important than old ones right?
 We need to somehow depreciate the previous values as we move forward in the history.
-This is called a rolling zscore and unfortunately Pandas doesn't [have one for zscore](http://pandas.pydata.org/pandas-docs/stable/api.html#standard-moving-window-functions).  I could have probably used rolling_apply but where would be the fun in that and it is pretty easy to implement anyway !
+This is called a rolling zscore and unfortunately Pandas doesn't [have one for zscore](https://pandas.pydata.org/pandas-docs/stable/reference/window.html#standard-moving-window-functions).  I could have probably used rolling_apply but where would be the fun in that and it is pretty easy to implement anyway !
 
 #### Rolling z-score
 We got the formula and the code for the normal z-score above.

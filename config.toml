@@ -7,5 +7,10 @@ compile_sass = true
 # check_external_links = true
 highlight_theme = "cheerfully-light"
 
+[link_checker]
+skip_anchor_prefixes = [
+    "https://github.com/",
+]
+
 [extra]
 author = "Vincent Prouillet"

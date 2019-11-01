@@ -57,7 +57,7 @@ version has been so slow to be released is that I wanted to have Netlify support
 are using it. However, since my [PR](https://github.com/netlify/binrc/pull/19) to add it is not really being looked at, I decided
 to stop waiting and release it now.
 If you are using the current Gutenberg Netlify support, you can either stay on 0.4.1 or 0.4.2 or download the `zola` binary manually like
-mentioned in [the documentation](https://www.getzola.org/documentation/deployment/netlify/#automatic-deploys-for-zola).
+mentioned in [the documentation](https://www.getzola.org/documentation/deployment/netlify/#automatic-deploys).
 
 With that said, let's have a look at the headlines.
 
