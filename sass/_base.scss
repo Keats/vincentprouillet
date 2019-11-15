@@ -6,6 +6,14 @@ $code-font: Consolas,Monaco,'Ubuntu Mono',monospace;
 
 $container-width: 700px;
 
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("Rubik-Regular.ttf");
+}
+
 
 body {
   font-family: $body-font;

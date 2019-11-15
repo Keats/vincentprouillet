@@ -1,10 +1,10 @@
 title = "Vincent Prouillet: Developer & Entrepreneur"
 base_url = "https://www.vincentprouillet.com"
+description = "Vincent Prouillet blog"
 
 generate_rss = true
 highlight_code = true
 compile_sass = true
-# check_external_links = true
 highlight_theme = "cheerfully-light"
 
 [link_checker]
