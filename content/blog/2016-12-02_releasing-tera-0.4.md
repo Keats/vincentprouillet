@@ -14,9 +14,9 @@ to use the same syntax highlighting.
 
 This version introduces the last big features:
 
-- [Macros](https://tera.netlify.com/docs/templates/#macros)
-- [Multiple level extend, super() and nested blocks](https://tera.netlify.com/docs/templates/#inheritance)
-- [Autoescape](https://tera.netlify.com/docs/usage/#auto-escaping)
+- [Macros](https://tera.netlify.com/docs/#macros)
+- [Multiple level extend, super() and nested blocks](https://tera.netlify.com/docs/#inheritance)
+- [Autoescape](https://tera.netlify.com/docs/#auto-escaping)
 
 It also adds the `filesizeformat` filter thanks to the [humansize crate](https://crates.io/crates/humansize).
 

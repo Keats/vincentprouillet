@@ -9,10 +9,12 @@ It is also similar to [Twig](https://twig.symfony.com/) and [Liquid](https://sho
 The last release, 0.11.20, was released back in November 2018 and the first v1 alpha was released in January 2019. During 2019,
 the [Zola](https://www.getzola.org/) static engine has been keeping up with each Tera release and has therefore been tested quite a bit.
 
-If you want to see the TL;DR of all the changes since 0.11.20, you can have a look at the [changelog](https://github.com/Keats/tera/blob/master/CHANGELOG.md#100-2019-12-05).
+If you want to see the TL;DR of all the changes since 0.11.20, you can have a look at the [changelog](https://github.com/Keats/tera/blob/master/CHANGELOG.md#100-2019-12-07).
 
 In most cases, the upgrade to v1 should be painless: unless you are using the error-chain part of Tera errors it might
 even work without any changes.
+
+Before going further, a huge thank you to everyone that [contributed](https://github.com/Keats/tera/graphs/contributors).
 
 Let's look at some of main changes in a bit more details now.
 
@@ -22,7 +24,7 @@ At the time of 0.11, [error-chain](https://github.com/rust-lang-nursery/error-ch
 soon as I ported all of my code to use it, [failure](https://github.com/rust-lang-nursery/failure/) became the go-to crate. Since then,
 some of `failure` features made their way into the standard `Error` trait including the one I am using: the [`source`](https://doc.rust-lang.org/std/error/trait.Error.html#method.source) method.
 
-I have pretty much given up on any error handling crate and just use `std::Error` for everything, including that new version of Tera.
+I have pretty much given up on any error handling crate for the time being and just use `std::Error` for everything, including in this new version of Tera.
 
 ## Traits for filter, tests and functions
 Previously, the type for each was a simple function. It has now been changed to a trait, allowing for each of them to have a context for example.
@@ -45,7 +47,7 @@ The whole rendering code has been rewritten to be more performant.
 
 The bottleneck is still converting the context to JSON since it needs to clone the data. 
 This is unlikely to change until we move to a borrowed approach but I do not know how to approach that. If
-anyone can figure out a way to solve this issue and still be ergonomic, that would be amazing.
+anyone can figure out a way to solve this issue and still be ergonomic, that would be amazing; please chim in the [related issue](https://github.com/Keats/tera/issues/469).
 
 How does it compare with other Rust template engine? There is a [benchmark](https://github.com/djc/template-benchmarks-rs) testing just that.
 Before showing the results, it is important to understand the difference between the compiled templates and interpreted templates:
@@ -79,13 +81,13 @@ Big table/Handlebars    time:   [83.598 ms 86.947 ms 90.391 ms]
 ```
 
 As you can see, this is a bad case for interpreted template engine. Tera is the fastest among them but is still up to 10x slower than some compiled engines.
-The result from Handlebars are particularly odd, I do not see why it would be 23x slower than Tera.
+The result from Handlebars are particularly odd: I do not see why it would be 23x slower than Tera.
 
 Considering those results, you should probably use a compiled template engine if you are trying to render some context
 requiring a lot of allocations like in that benchmark.
 
 ### Teams benchmark
-This is rendering a small array of structs.
+This is rendering a template with a small array of structs as context, a more realistic average workload.
 
 ```bash
 Teams/Askama            time:   [1.1503 us 1.2120 us 1.2800 us] 
@@ -112,15 +114,10 @@ From `1.0.0`, a new active-by-default feature named `builtins` has been introduc
 depend on the crates needed for parsing and rendering and all the filters and functions that were depending on those
 dependencies will not be present anymore.
 
-## Known issues
+## Known issue
 
 Due to a bug in [pest](https://pest.rs/), the parser generator used by Tera, some template parsing might timeout. There 
 are more details in the [issue](https://github.com/Keats/tera/issues/436) but since the pest contributors are working on v3, 
 it doesn't seem worth it to hold on releasing Tera 1.0 for an unknown amount of time until its release.
 This issue was found while fuzzing but I've been running into <https://github.com/rust-lang/rust/issues/66140> when trying
 to run the fuzzer again on OSX.
-
-## Contributors
-Most of the work that went into 1.0.0 came from contributors. A huge thanks to:
-
--
