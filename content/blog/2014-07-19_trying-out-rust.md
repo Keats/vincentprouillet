@@ -133,7 +133,7 @@ After reading a bit of code from experience devs, I realised you could do some n
 Fibonacci::new().take_while(|&i| i <= 4000000).filter(|&i| i % 2 == 0).sum();
 ```
 
-# What do I think of it?
+## What do I think of it?
 As you saw from the previous part, I'm quite enthusiastic about it.
 It's still too much in flux to be used seriously but I think that it could become a pretty big thing.
 Again, talking from the point of view of websites/services, it could become a nice alternative to Go (as more and more companies start using it for services).
