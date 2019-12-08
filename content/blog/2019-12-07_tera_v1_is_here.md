@@ -40,7 +40,7 @@ hello
 !
 ```
 
-will render `hellovincent!` if `username` is `vincent`. Please see the [documentation]() for more details.
+will render `hellovincent!` if `username` is `vincent`. Please see the [documentation](https://tera.netlify.com/docs/#whitespace-control) for more details.
 
 ## Increased rendering performance
 The whole rendering code has been rewritten to be more performant.
