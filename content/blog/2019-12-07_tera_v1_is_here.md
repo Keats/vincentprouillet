@@ -11,24 +11,24 @@ the [Zola](https://www.getzola.org/) static engine has been keeping up with each
 
 If you want to see the TL;DR of all the changes since 0.11.20, you can have a look at the [changelog](https://github.com/Keats/tera/blob/master/CHANGELOG.md#100-2019-12-07).
 
-In most cases, the upgrade to v1 should be painless: unless you are using the error-chain part of Tera errors it might
+In most cases, the upgrade to v1 should be painless: unless you are using the error-chain part of Tera errors, it might
 even work without any changes.
 
 Before going further, a huge thank you to everyone that [contributed](https://github.com/Keats/tera/graphs/contributors).
 
-Let's look at some of main changes in a bit more details now.
+Let's look at some of the main changes in a bit more detail now.
 
 ## Error handling
 Error handling is a [hot topic](https://blog.yoshuawuyts.com/error-handling-survey/) in Rust and has been for quite some time. 
 At the time of 0.11, [error-chain](https://github.com/rust-lang-nursery/error-chain) was the recommended approach but pretty much as
 soon as I ported all of my code to use it, [failure](https://github.com/rust-lang-nursery/failure/) became the go-to crate. Since then,
-some of `failure` features made their way into the standard `Error` trait including the one I am using: the [`source`](https://doc.rust-lang.org/std/error/trait.Error.html#method.source) method.
+some of `failure`'s features made their way into the standard `Error` trait including the one I am using: the [`source`](https://doc.rust-lang.org/std/error/trait.Error.html#method.source) method.
 
 I have pretty much given up on any error handling crate for the time being and just use `std::Error` for everything, including in this new version of Tera.
 
 ## Traits for filter, tests and functions
-Previously, the type for each was a simple function. It has now been changed to a trait, allowing for each of them to have a context for example.
-Zola for example uses structs for some of the functions in order to hold the site data. The trait is automatically implemented for the previous function
+Previously, the type for each was a simple function. It has now been changed to a trait, allowing for each of them to have a context, for example.
+Zola, for example, uses structs for some of the functions in order to hold the site data. The trait is automatically implemented for the previous function
 type so if you had defined your own they should continue to work, as soon as you change their arguments to be borrowed instead of owned.
 
 ## Whitespace management
@@ -47,12 +47,12 @@ The whole rendering code has been rewritten to be more performant.
 
 The bottleneck is still converting the context to JSON since it needs to clone the data. 
 This is unlikely to change until we move to a borrowed approach but I do not know how to approach that. If
-anyone can figure out a way to solve this issue and still be ergonomic, that would be amazing; please chim in the [related issue](https://github.com/Keats/tera/issues/469).
+anyone can figure out a way to solve this issue and still be ergonomic, that would be amazing; please chime in on the [related issue](https://github.com/Keats/tera/issues/469).
 
-How does it compare with other Rust template engine? There is a [benchmark](https://github.com/djc/template-benchmarks-rs) testing just that.
+How does it compare with other Rust template engines? There is a [benchmark](https://github.com/djc/template-benchmarks-rs) testing just that.
 Before showing the results, it is important to understand the difference between the compiled templates and interpreted templates:
 
-- compiled template engines: [askama](https://crates.io/crates/askama), [horroshow](https://crates.io/crates/horrorshow) and most of the ones
+- compiled template engines: [askama](https://crates.io/crates/askama), [horrorshow](https://crates.io/crates/horrorshow) and most of the ones
 in that benchmark are generating Rust code through macros. The big upsides of this are performance and being able to typecheck your templates.
 The big downsides are compilation time and not being able to handle dynamic templates: you cannot render an arbitrary template file.
 - interpreted template engines: [Liquid](https://crates.io/crates/liquid), [Handlebars](https://crates.io/crates/handlebars) and Tera are in this category.
@@ -103,7 +103,7 @@ Teams/Liquid            time:   [12.858 us 12.909 us 12.960 us]
 Teams/Handlebars        time:   [70.150 us 75.716 us 81.926 us]
 ```
 
-Tera is again the fastest interpreted template engine but the numbers are small enough that any engine will do the job.
+Tera is again the fastest interpreted template engine, but the numbers are small enough that any engine will do the job.
 
 ## Glob patterns now supported
 You can now pass patterns to `Tera::new` like `templates/**/*{html,xml}` to load exactly the type of files you want.
