@@ -75,7 +75,7 @@ but I haven't had the time or energy to look/fix that yet.
 It should be fairly straightforward to add Rayon once it's fixed, if the benchmarks show a significant difference.
 
 ## How does it look in practice
-You can have a look at the source of [this site](https://gitlab.com/Keats/vincent.is).
+You can have a look at the source of [this site](https://github.com/Keats/vincentprouillet).
 
 This site is very simple: a blog and a couple of other pages but it should give some ideas.
 
