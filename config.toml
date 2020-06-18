@@ -2,7 +2,9 @@ title = "Vincent Prouillet: Developer & Entrepreneur"
 base_url = "https://www.vincentprouillet.com"
 description = "Vincent Prouillet blog"
 
-generate_rss = true
+generate_feed = true
+feed_filename = "rss.xml"
+
 highlight_code = true
 compile_sass = true
 highlight_theme = "cheerfully-light"
