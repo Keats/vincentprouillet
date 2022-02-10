@@ -5,6 +5,7 @@ category = "Programming"
 tags = ["python"]
 +++
 
+
 During the night of the 14th to the 15th of September, a glorious looking BBQ pulled pork sandwich I had put on my kitchen table was half eaten.
 The bite was seriously huge, think a good 100g of bread + meat.
 A previous accident, garbage bag being torn, suggested we might have a rodent issue in the house (or anything else really).
@@ -17,7 +18,8 @@ How hard could it be to create a script to take pictures with it at a set interv
 I ended up creating [Rodent](https://github.com/Keats/rodent) to solve that issue.
 One of my flatmates is a designer (Barbara Marcantonio, you can look at her [website](https://www.pixelspa.com/)) and made a logo for it for fun.
 
-{{ image(src="https://raw.githubusercontent.com/Keats/rodent/master/logo.png", alt="Rodent") }}
+![Rodent](https://raw.githubusercontent.com/Keats/rodent/master/logo.png)
+
 
 Below is an explanation of how it works, this is pretty basic but that was new to me !
 
