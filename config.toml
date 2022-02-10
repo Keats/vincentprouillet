@@ -5,8 +5,10 @@ description = "Vincent Prouillet blog"
 generate_feed = true
 feed_filename = "rss.xml"
 
-highlight_code = true
 compile_sass = true
+
+[markdown]
+highlight_code = true
 highlight_theme = "cheerfully-light"
 
 [link_checker]
