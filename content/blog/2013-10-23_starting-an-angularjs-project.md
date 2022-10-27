@@ -105,7 +105,7 @@ Here is the layout of the project I'm working on (this is still very early, prob
 All of the different 'features' are nicely placed under the app folder and each file in it has a unique function.
 The module.coffee under each looks something like the following:
 
-```coffeescript
+```
 modules = [
   'ui.router.state',
 
