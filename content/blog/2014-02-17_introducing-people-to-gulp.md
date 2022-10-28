@@ -89,7 +89,7 @@ $ npm install gulp-sass browser-sync gulp-coffeelint gulp-coffee gulp-concat gul
 
 No need to load task the Grunt way, we can just require those the node way:
 
-```coffeescript
+```
 gulp = require 'gulp'
 gutil = require 'gulp-util'
 
@@ -103,7 +103,7 @@ uglify = require 'gulp-uglify'
 
 I like to define the sources/destinations paths right at the beginning, works for me but everyone will do that differently.
 
-```coffeescript
+```
 sources =
   sass: 'sass/**/*.scss'
   html: 'index.html'
@@ -119,7 +119,7 @@ Gulp has a very simple API and we are going to use 4 methods from it: task, src,
 
 The first task will be to set the server for the dev environment with the autoreload.
 
-```coffeescript
+```
 # Reloads the page for us
 gulp.task 'browser-sync', ->
     browserSync.init null,
@@ -132,7 +132,7 @@ gulp.task 'browser-sync', ->
 There are several plugins that reload the page but this one is the simplest I found, simply defines the files you want to watch and it will reload for you, no need for additional config.
 This task is not a really good example of what gulp does so let's move to a more exciting one, the sass task.
 
-```coffeescript
+```
 gulp.task 'style', ->
   gulp.src(sources.sass) # we defined that at the top of the file
   .pipe(sass({outputStyle: 'compressed', errLogToConsole: true}))
@@ -144,7 +144,7 @@ gulp.src finds the files that matches the glob, pipe them to the sass plugin tha
 
 The HTML task just copies the index.html file to the dist folder and reloads the server, you should be able to follow the code by now.
 
-```coffeescript
+```
 gulp.task 'html', ->
   gulp.src(sources.html)
   .pipe(gulp.dest(destinations.html))
@@ -153,7 +153,7 @@ gulp.task 'html', ->
 Now the coffeescript task is more interesting because it really highlights the difference between Grunt and Gulp.
 With Grunt you would need to put your files into temporary folders, for example after compiling the .coffee files.
 
-```coffeescript
+```
 # I put linting as a separate task so we can run it by itself if we want to
 gulp.task 'lint', ->
   gulp.src(sources.coffee)
@@ -171,7 +171,7 @@ gulp.task 'src', ->
 I find this system quite brilliant, no need to go through temp folders just to be able to run all your tasks and it's WAY more readable than going through the config for each of these plugins you would do in Grunt.
 
 The last bit to do is the watch task, ie the one used in dev to do all these things when a file changes.
-```coffeescript
+```
 gulp.task 'watch', ->
   gulp.watch sources.sass, ['style']
   gulp.watch sources.app, ['lint', 'src', 'html']
@@ -198,7 +198,7 @@ We need to install a few additional plugins and add a few tasks:
 $ npm install gulp-clean run-sequence --save-dev
 ```
 
-```coffeescript
+```
 gulp.task 'clean', ->
   gulp.src(['dist/'], {read: false}).pipe(clean())
 
@@ -216,7 +216,7 @@ $ gulp --type prod
 
 And then retrieve that value using gulp-util and use it in the tasks:
 
-```coffee
+```
 isProd = gutil.env.type is 'prod'
 
 # Do your if statements in the tasks
