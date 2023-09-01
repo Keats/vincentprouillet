@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Why use TypeScript
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Switching to TypeScript</h1>
+            <div class="post__meta">
+                2014-05-04
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>Until a few weeks ago, I was a convinced user of coffeescript: significant whitespace, no curly braces, list comprehensions, classes, thick arrow, chained comparisons, etc.
+The list of good things coffeescript brings to the table is quite long, just have a look the <a href="http://coffeescript.org/">coffeescript website</a>.</p>
+<p>Then, Microsoft announed <a href="http://www.typescriptlang.org/">Typescript 1.0</a> and that made me give a second look to it.</p>
+<p>My initial reaction the first time I heard about it was something along the line of: eh, they are probably going to stop working on it in a year or so, like lots of their projects.
+Turns out I was wrong !
+I am not going to detail Typescript too much as there is a complete <a href="http://www.typescriptlang.org/Handbook">handbook</a> available.</p>
+<h2 id="why-would-i-use-typescript">Why would I use Typescript ?<a class="zola-anchor" href="#why-would-i-use-typescript" aria-label="Anchor link for: why-would-i-use-typescript">🔗</a></h2>
+<p>I can see several reasons.</p>
+<p>First, it's still mostly javascript, unlike coffeescript which makes it easier to learn (coffeescript is very easy but lots of people will not contribute back if it means having to do it in coffeescript).
+There is a big thread on Discourse (link now dead) about whether to use Javascript or Coffeescript.
+After switching to javascript, more contributions happened so that's definitely something to take into account if you are doing an open source project.</p>
+<p>The second is obviously types. Having types (in javascript) is awesome.
+All the typescript type checking only happens for the developer, nothing will be left in the compiled js (which is perfectly readable javascript by the way).
+Having types also mean that you can have autocompletion available, even for your custom types, which is pretty cool.
+Keep in mind that types are optional, no one forces you to use them if you don't want to.
+If you decide to use them though, a vital resource for Typescript is <a href="https://github.com/borisyankov/DefinitelyTyped">DefinitelyTyped</a> which contains definitions for most of the JS libraries.</p>
+<p>The third would be all the other features that Typescript brings: modules, classes, arrow functions, etc.
+Their goal is to have an interface similar to what we will have in ES6 but, as ES6 is still changing a lot (for example the module implementation), it can differ quite a bit right now.
+I am confident they will adapt to whatever standard has been adopted, unless they decide to somehow abandon their goal of sticking to ES6.</p>
+<h2 id="how-am-i-using-it">How am I using it<a class="zola-anchor" href="#how-am-i-using-it" aria-label="Anchor link for: how-am-i-using-it">🔗</a></h2>
+<p>I finished switching my <a href="https://github.com/Keats/ng-boilerplate">ng-boilerplate</a> to Typescript and it works pretty well.
+Since I use AngularJS with REST APIs, I can define the types I will receive in the API, methods on controllers/scopes and have some robust code that ensure I didn't call a made-up function or made a typo in an object attribute immediately.
+The interfaces you define can also serve as a very good documentation and helps if you're dealing with a huge codebase (which is the goal of Typescript).
+I made a simple invoice app (github <a href="https://github.com/Keats/invoicer">link</a>) when I was trying it out and it caught many errors before I even opened the page.</p>
+<h2 id="conclusion">Conclusion<a class="zola-anchor" href="#conclusion" aria-label="Anchor link for: conclusion">🔗</a></h2>
+<p>While Typescript is not the Holy Grail of Javascript, it makes writing it as nice as coffeescript (coffeescript will be more concise imo though) while having types.
+I can see it working very well once a project gets big but I would use it even for small projects.
+Try it out and see for yourself !</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

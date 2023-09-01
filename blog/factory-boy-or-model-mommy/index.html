@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Pros&#x2F;cons of each
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Python testing: Factory Boy or Model Mommy</h1>
+            <div class="post__meta">
+                2014-04-05
+                (last updated: 2014-07-25)
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>Writing tests is necessary.
+Whether you write them before the code itself (TDD, BDD) or after, it allows you to refactor and change your code with confidence (nobody wants to refactor a critical feature with no coverage).
+One thing you need very frequently in tests is objects.
+There's several choices when it comes to how you can create objects for your tests:</p>
+<ul>
+<li>Fixtures: objects are stored as json or another filetype and loaded for tests. This is a bad idea as you need to update your fixtures everytime you modify your models</li>
+<li>ORM: you could for example use MyModel.objects.create in Django to create your object in the database. Much cleaner than fixtures but you will repeat yourself quite a bit.</li>
+<li>Factories: that's what the article is about, define a template once (or not at all with Model Mommy) and you can use the factory in all your tests.</li>
+</ul>
+<p>You could create your own factory system based on the ORM but there are libraries that already do that, and do it well so there's no point reinventing the wheel.
+All the examples below will be for Django tests and we are going to make factories for the following models:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#7f8989;"># This is pseudocode, in reality that would be your django or SQLAlchemy models
+</span><span style="color:#72ab00;">class </span><span style="color:#c23f31;">Teashop</span><span>(</span><span style="font-style:italic;color:#b06936;">object</span><span>):
+</span><span>    name </span><span style="color:#72ab00;">= </span><span>string
+</span><span>    address </span><span style="color:#72ab00;">= </span><span>string
+</span><span>    owner </span><span style="color:#72ab00;">= </span><span>Owner
+</span><span>
+</span><span style="color:#72ab00;">class </span><span style="color:#c23f31;">Owner</span><span>(</span><span style="font-style:italic;color:#b06936;">object</span><span>):
+</span><span>    first_name </span><span style="color:#72ab00;">= </span><span>string
+</span><span>    last_name </span><span style="color:#72ab00;">= </span><span>string
+</span><span>    email </span><span style="color:#72ab00;">= </span><span>string
+</span><span>    age </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">int
+</span></code></pre>
+<h2 id="factory-boy">Factory Boy<a class="zola-anchor" href="#factory-boy" aria-label="Anchor link for: factory-boy">🔗</a></h2>
+<p>is based on factory_girl for those of you that used it in Ruby.
+Using it is very simple, define your factory by creating a class that inherits from the class you want to use (it supports several ORM, mainly Django and SQLAlchemy).
+It brings lots of cool features like lazy attributes, fuzzy attributes,  sequences and more.</p>
+<p>Let's see how the factories would work for our models:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">class </span><span style="color:#c23f31;">OwnerFactory</span><span>(</span><span style="font-style:italic;color:#b06936;">factory.django.DjangoModelFactory</span><span>):
+</span><span>    </span><span style="color:#72ab00;">class </span><span style="color:#c23f31;">Meta</span><span>:
+</span><span>        model </span><span style="color:#72ab00;">= </span><span>models.Owner
+</span><span>
+</span><span>    first_name </span><span style="color:#72ab00;">= </span><span style="color:#d07711;">&#39;bobby&#39;
+</span><span>    last_name </span><span style="color:#72ab00;">= </span><span style="color:#d07711;">&#39;D&#39;
+</span><span>    </span><span style="color:#7f8989;"># age will be somewhere between 25 and 42
+</span><span>    age </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">FuzzyInteger</span><span>(</span><span style="color:#b3933a;">25</span><span>, </span><span style="color:#b3933a;">42</span><span>)
+</span><span>    </span><span style="color:#7f8989;"># email will use first_name and last_name (the default or the one you provide)
+</span><span>    email </span><span style="color:#72ab00;">= </span><span>factory.</span><span style="color:#5597d6;">LazyAttribute</span><span>(</span><span style="color:#72ab00;">lambda </span><span style="color:#5597d6;">a</span><span>: </span><span style="color:#d07711;">&#39;</span><span style="color:#aeb52b;">{0}</span><span style="color:#d07711;">.</span><span style="color:#aeb52b;">{1}</span><span style="color:#d07711;">@example.com&#39;</span><span>.</span><span style="color:#5597d6;">format</span><span>(a.first_name, a.last_name).</span><span style="color:#5597d6;">lower</span><span>())
+</span><span>
+</span><span style="color:#72ab00;">class </span><span style="color:#c23f31;">TeashopFactory</span><span>(</span><span style="font-style:italic;color:#b06936;">factory.django.DjangoModelFactory</span><span>):
+</span><span>    </span><span style="color:#72ab00;">class </span><span style="color:#c23f31;">Meta</span><span>:
+</span><span>        model </span><span style="color:#72ab00;">= </span><span>models.Teashop
+</span><span>
+</span><span>    name </span><span style="color:#72ab00;">= </span><span style="color:#d07711;">&#39;Tea-Bone&#39;
+</span><span>    </span><span style="color:#7f8989;"># the first teashop will be 0 Downing street, the second 1 Downing Street etc
+</span><span>    address </span><span style="color:#72ab00;">= </span><span>factory.</span><span style="color:#5597d6;">Sequence</span><span>(</span><span style="color:#72ab00;">lambda </span><span style="color:#5597d6;">n</span><span>: </span><span style="color:#d07711;">&#39;</span><span style="color:#aeb52b;">{0}</span><span style="color:#d07711;"> Downing Street&#39;</span><span>.</span><span style="color:#5597d6;">format</span><span>(n))
+</span><span>    owner </span><span style="color:#72ab00;">= </span><span>factory.</span><span style="color:#5597d6;">SubFactory</span><span>(OwnerFactory)
+</span></code></pre>
+<p>Now, to use it in your tests, it's very simple:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">&gt;&gt;&gt; </span><span style="color:#5597d6;">OwnerFactory</span><span>() </span><span style="color:#7f8989;"># will save into database and return an instance of the model
+</span><span style="color:#72ab00;">&gt;&gt;&gt; </span><span>OwnerFactory.</span><span style="color:#5597d6;">create</span><span>() </span><span style="color:#7f8989;"># same as above
+</span><span style="color:#72ab00;">&gt;&gt;&gt; </span><span>OwnerFactory.</span><span style="color:#5597d6;">build</span><span>() </span><span style="color:#7f8989;"># will create the object but not save it in database, very cool for unit tests
+</span><span style="color:#72ab00;">&gt;&gt;&gt; </span><span style="color:#5597d6;">OwnerFactory</span><span>(</span><span style="color:#5597d6;">first_name</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;Malcom&#39;</span><span>) </span><span style="color:#7f8989;"># override the default first name we defined in the factory
+</span><span style="color:#72ab00;">&gt;&gt;&gt; </span><span style="color:#5597d6;">TeashopFactory</span><span>() </span><span style="color:#7f8989;"># will create both a teashop and an associated owner model and return the teashop
+</span><span style="color:#72ab00;">&gt;&gt;&gt; </span><span style="color:#5597d6;">TeashopFactory</span><span>(</span><span style="color:#5597d6;">owner</span><span style="color:#72ab00;">=</span><span>my_owner_object) </span><span style="color:#7f8989;"># will use the Owner object provided instead of creating one
+</span></code></pre>
+<p>Factory boy also provides hooks if you need to modify the object or save some properties in another database.</p>
+<h2 id="model-mommy">Model Mommy<a class="zola-anchor" href="#model-mommy" aria-label="Anchor link for: model-mommy">🔗</a></h2>
+<p><a href="https://github.com/vandersonmota/model_mommy">Model Mommy</a> is an extremely simple way to create objects for tests in Django (and Django only).
+Look at that:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">&gt;&gt;&gt; </span><span>mommy.</span><span style="color:#5597d6;">make</span><span>(Owner) </span><span style="color:#7f8989;"># identical to .create() in factory boy
+</span><span style="color:#72ab00;">&gt;&gt;&gt; </span><span>mommy.</span><span style="color:#5597d6;">make</span><span>(Teashop) </span><span style="color:#7f8989;"># will create and save the teashop and the owner
+</span><span style="color:#72ab00;">&gt;&gt;&gt; </span><span>mommy.</span><span style="color:#5597d6;">prepare</span><span>(Owner) </span><span style="color:#7f8989;"># create but not save in the database
+</span></code></pre>
+<p>And yes, there's nothing else to define. Model mommy will automatically fill the objects attributes with random data corresponding to the type of column in the ORM.
+You can obviously define the attributes manually if you want, even for related objects:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">&gt;&gt;&gt; </span><span>mommy.</span><span style="color:#5597d6;">make</span><span>(Owner, </span><span style="color:#5597d6;">first_name</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;Malcolm&#39;</span><span>)
+</span><span style="color:#72ab00;">&gt;&gt;&gt; </span><span>mommy.</span><span style="color:#5597d6;">make</span><span>(Teashop, </span><span style="color:#5597d6;">owner__first_name</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;Malcom&#39;</span><span>) </span><span style="color:#7f8989;"># AWESOME
+</span><span style="color:#72ab00;">&gt;&gt;&gt; </span><span>mommy.</span><span style="color:#5597d6;">make</span><span>(Teashop, </span><span style="color:#5597d6;">_quantity</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">7</span><span>) </span><span style="color:#7f8989;"># creates and return 7 teashop objects, everyone gets a teashop!
+</span></code></pre>
+<p>You might be thinking that having random data in your tests can be a bad idea (I tend to agree) and annoying to track down bugs (it's hard to see that sdawrewaev is a first name).
+Thankfully, Model Mommy provides a way to set predefined data called recipes, with several examples in the https://github.com/vandersonmota/model_mommy#recipes (link now dead).
+It doesn't have lazy attributes though.</p>
+<h2 id="which-one-should-i-use">Which one should I use?<a class="zola-anchor" href="#which-one-should-i-use" aria-label="Anchor link for: which-one-should-i-use">🔗</a></h2>
+<p>If you are using something other than Django, the choice is easy and you should use Factory Boy if possible.
+If you are using Django, things are pretty much down to your personal preference as both do a good job providing models for your tests.
+I really like how simple it is to use Model Mommy and the ORM syntax to edit relationship attributes but since I don't want random data, I would always use recipes and I might as well use Factory Boy.
+In the end I use Factory Boy, the explicit declaration and the possibility of using the same tool on a Flask or Pyramid project makes it very attractive.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    A Boilerplate for a complete dev environment using AngularJS
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Starting an AngularJS project</h1>
+            <div class="post__meta">
+                2013-10-23
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>I don't think there is any need to introduce <a href="http://angularjs.org/" title="AngularJS">AngularJS</a> anymore, but here's a (very) small introduction of it to make sure everyone knows the basics.</p>
+<p>AngularJS is a client-side framework, replacing the jquery code usually present on most sites.
+Instead of modifying the DOM on events manually (like displaying a div on a click event), AngularJS takes a declarative approach.</p>
+<p>The following examples show the difference in paradigm between these two.</p>
+<pre data-lang="javascript" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-javascript "><code class="language-javascript" data-lang="javascript"><span style="color:#7f8989;">// jQuery version
+</span><span style="color:#c23f31;">$</span><span>(</span><span style="color:#d07711;">&#39;my-button&#39;</span><span>).</span><span style="color:#b39f04;">click</span><span>(</span><span style="color:#668f14;">function</span><span>() {
+</span><span>  </span><span style="color:#c23f31;">$</span><span>(</span><span style="color:#d07711;">&#39;my-div&#39;</span><span>).</span><span style="color:#c23f31;">show</span><span>();
+</span><span>});
+</span></code></pre>
+<pre data-lang="html" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-html "><code class="language-html" data-lang="html"><span style="color:#7f8989;">&lt;!-- AngularJS version --&gt;
+</span><span style="color:#7f902a;">&lt;button ng-click=</span><span style="color:#d07711;">&quot;showDiv = !showDiv&quot;</span><span style="color:#7f902a;">&gt;</span><span>Click me</span><span style="color:#7f902a;">&lt;/button&gt;
+</span><span style="color:#6486ab;">&lt;div ng-show=</span><span style="color:#d07711;">&quot;showDiv&quot;</span><span style="color:#6486ab;">&gt;</span><span>Hidden by default</span><span style="color:#6486ab;">&lt;/div&gt;
+</span></code></pre>
+<p>Some people will not like the fact that you're putting logic in the HTML, I personally much prefer this kind of approach to a
+jquery based one, and I find it much easier to organise your code using directives, controllers, services than the usual jquery
+spaghetti.</p>
+<p>For a real overview, please check the official website.</p>
+<h2 id="starting-a-new-project">Starting a new project<a class="zola-anchor" href="#starting-a-new-project" aria-label="Anchor link for: starting-a-new-project">🔗</a></h2>
+<p>A problem new developers encounter is how to organise their code.
+For simple (and I mean -learning how it works- kind of simple only), putting everything in one file is file but obviously does not work once you start working on bigger projects.
+Since I like organising code properly, I looked around to see what was the recommended way for that in AngularJS project.</p>
+<h3 id="ng-boilerplate-by-josh-david-miller">ng-boilerplate by Josh David Miller<a class="zola-anchor" href="#ng-boilerplate-by-josh-david-miller" aria-label="Anchor link for: ng-boilerplate-by-josh-david-miller">🔗</a></h3>
+<p>While I didn't find THE answer (there's no imposed structure like in many server-side frameworks so everyone do their own thing, which can be great), I found ng-boilerplate by joshdmiller (link now dead).
+This boilerplate separates code by feature, containing all the code (including css/html) for that particular feature.
+It also uses <a href="https://github.com/angular-ui/ui-router" title="ui-router">ui-router</a> which is quite awesome.
+It also comes with a whole lot of grunt tasks to automate dev/test/release cycle: everytime you save a file, it runs the associated task with this type of file and reloads your page.
+I used this boilerplate for a learning project, <a href="https://github.com/Keats/kCalculator" title="kCalculator">kCalculator</a> and while it is a very good start, I found it not that practical for my own use (I use Sass, it uses LESS for example) and it had lots of things that I didn't really want.</p>
+<h3 id="my-own-ng-boilerplate">My own ng-boilerplate<a class="zola-anchor" href="#my-own-ng-boilerplate" aria-label="Anchor link for: my-own-ng-boilerplate">🔗</a></h3>
+<p>Since I wanted to start a new project (which will be much more complex than kCalculator), I decided that this time I would use something tailored for me.
+Rather than forking and changing most of the code of the original, I started from scratch and added feature by feature what I needed.
+Result is <a href="https://github.com/Keats/ng-boilerplate" title="ng-boilerplate">ng-boilerplate</a> (yes the name is lazy).
+The end results differs quite a bit from the original :</p>
+<ul>
+<li>no ng-min in the build (since you can do it by hand in your code)</li>
+<li>coffeescript only</li>
+<li>Sass with Foundation</li>
+<li>templates and css in their own directory instead of inside their small 'feature app'</li>
+<li>reorganised grunt tasks</li>
+<li>not concatenating dist libs with app libs (need to implement using CDN for dist libs on release task)</li>
+</ul>
+<h2 id="architecture-example">Architecture example<a class="zola-anchor" href="#architecture-example" aria-label="Anchor link for: architecture-example">🔗</a></h2>
+<p>Here is the layout of the project I'm working on (this is still very early, probably going to change some things later on) :</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#b39f04;">.
+</span><span style="color:#5597d6;">├──</span><span> app
+</span><span style="color:#5597d6;">│</span><span>   ├── app.coffee
+</span><span style="color:#5597d6;">│</span><span>   ├── app.tests.coffee
+</span><span style="color:#5597d6;">│</span><span>   ├── home
+</span><span style="color:#5597d6;">│</span><span>   │   └── home.coffee
+</span><span style="color:#5597d6;">│</span><span>   ├── teams
+</span><span style="color:#5597d6;">│</span><span>   │   ├── list.coffee
+</span><span style="color:#5597d6;">│</span><span>   │   ├── module.coffee
+</span><span style="color:#5597d6;">│</span><span>   │   ├── service.coffee
+</span><span style="color:#5597d6;">│</span><span>   │   └── tests
+</span><span style="color:#5597d6;">│</span><span>   │       └── list.tests.coffee
+</span><span style="color:#5597d6;">│</span><span>   └── users
+</span><span style="color:#5597d6;">│</span><span>       ├── module.coffee
+</span><span style="color:#5597d6;">│</span><span>       ├── new.coffee
+</span><span style="color:#5597d6;">│</span><span>       └── service.coffee
+</span><span style="color:#5597d6;">├──</span><span> assets
+</span><span style="color:#5597d6;">│</span><span>   └── img
+</span><span style="color:#5597d6;">│</span><span>   └── fonts
+</span><span style="color:#5597d6;">├──</span><span> common
+</span><span style="color:#5597d6;">│</span><span>   └── form
+</span><span style="color:#5597d6;">│</span><span>       └── directives.coffee
+</span><span style="color:#5597d6;">├──</span><span> index.html
+</span><span style="color:#5597d6;">├──</span><span> style
+</span><span style="color:#5597d6;">│</span><span>   ├── app.scss
+</span><span style="color:#5597d6;">│</span><span>   ├── _forms.scss
+</span><span style="color:#5597d6;">│</span><span>   ├── _normalize.scss
+</span><span style="color:#5597d6;">│</span><span>   └── _settings.scss
+</span><span style="color:#5597d6;">└──</span><span> templates
+</span><span>    </span><span style="color:#5597d6;">├──</span><span> home
+</span><span>    </span><span style="color:#5597d6;">│</span><span>   └── index.html
+</span><span>    </span><span style="color:#5597d6;">├──</span><span> teams
+</span><span>    </span><span style="color:#5597d6;">│</span><span>   └── list.html
+</span><span>    </span><span style="color:#5597d6;">└──</span><span> users
+</span><span>        </span><span style="color:#5597d6;">├──</span><span> main.html
+</span><span>        </span><span style="color:#5597d6;">├──</span><span> new.html
+</span><span>        </span><span style="color:#5597d6;">└──</span><span> verification.html
+</span><span>
+</span></code></pre>
+<p>All of the different 'features' are nicely placed under the app folder and each file in it has a unique function.
+The module.coffee under each looks something like the following:</p>
+<pre style="background-color:#f5f5f5;color:#1f1f1f;"><code><span>modules = [
+</span><span>  &#39;ui.router.state&#39;,
+</span><span>
+</span><span>  &#39;users.new&#39;
+</span><span>]
+</span><span>
+</span><span>users = angular.module &#39;arena.users&#39;, modules
+</span><span>
+</span><span>users.config [&#39;$stateProvider&#39;, ($stateProvider) -&gt;
+</span><span>  $stateProvider.state &#39;users&#39;,
+</span><span>    abstract: true
+</span><span>    url: &#39;/users&#39;
+</span><span>    views:
+</span><span>      main:
+</span><span>        template: &#39;&lt;ui-view/&gt;&#39;
+</span><span>
+</span><span>  $stateProvider.state &#39;users.new&#39;,
+</span><span>    url: &#39;/new&#39;
+</span><span>    templateUrl: &#39;users/new.html&#39;
+</span><span>    controller: &#39;NewUserCtrl&#39;
+</span><span>    data:
+</span><span>      pageTitle: &#39;Register&#39;
+</span><span>
+</span><span>    $stateProvider.state &#39;users.verification&#39;,
+</span><span>      url: &#39;/verification&#39;
+</span><span>      templateUrl: &#39;users/verification.html&#39;
+</span><span>      data:
+</span><span>        pageTitle: &#39;Check your emails&#39;
+</span></code></pre>
+<p>This file is the entry point of the feature, injecting all the different modules (list, create, etc) and defining the views (using ui-router).
+All of the other files are standard AngularJS controllers, services, directives.
+If I think something can be reused in another feature/project, it goes in the common directory.</p>
+<h2 id="conclusion">Conclusion<a class="zola-anchor" href="#conclusion" aria-label="Anchor link for: conclusion">🔗</a></h2>
+<p>So far I really like this organisation, and this is working well for now.
+I will update it as the project grows bigger since I will probably find flaws by then.</p>
+<h2 id="how-to-learn-angularjs">How to learn AngularJS<a class="zola-anchor" href="#how-to-learn-angularjs" aria-label="Anchor link for: how-to-learn-angularjs">🔗</a></h2>
+<ul>
+<li><a href="http://egghead.io/" title="egghead.io">egghead.io</a>: short videos explaining very well everything</li>
+<li><a href="http://www.thinkster.io/" title="thinkster.io">thinkster.io</a>: explains lots of concept using egghead videos as a base and expand on them</li>
+</ul>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

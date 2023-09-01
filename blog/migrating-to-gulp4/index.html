@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Migrating my ng-boilerplate to gulp4
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Migrating to gulp 4</h1>
+            <div class="post__meta">
+                2015-03-20
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>Last year I wrote a blog post on my personal website (you can see it here <a href="https://www.vincentprouillet.com/blog/introducing-people-to-gulp/">Gulp by example </a>) showing what <a href="http://gulpjs.com/">gulp</a> was and making a demo project using it.
+Since then, the team behind it did a lot of work on v4 of gulp which, while not released as of the writing of the post, is stable enough to be used.</p>
+<p>Rather than going through a list of new features, let's update my <a href="https://github.com/Keats/ng-boilerplate">angular boilerplate</a> to use gulp4.</p>
+<p>You can have a look at the <a href="https://github.com/Keats/ng-boilerplate#user-content-goal">Goal section of the README</a> to know what this boilerplate does but for those not wanting to open the link: Typescript, Sass, automatic DI, template preloading, testing with Karma and Protractor, live reload with browser-sync.</p>
+<blockquote>
+<p>Note: I'm not using this boilerplate personally anymore since I don't really do vanilla angular anymore.</p>
+</blockquote>
+<p>Here's the <a href="https://github.com/Keats/ng-boilerplate/tree/87e75551651e94dfc1aa6135e1ea7cb5bd61cf0f">starting commit</a>.</p>
+<h2 id="updating-dependencies">Updating dependencies<a class="zola-anchor" href="#updating-dependencies" aria-label="Anchor link for: updating-dependencies">🔗</a></h2>
+<p>Nothing fancy here, just updating our npm and bower dependencies, including pointing to the gulp4 branch on github. To use npm install from a github repo, you can use:</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">$</span><span> npm install</span><span style="color:#5597d6;"> --save-dev</span><span> gulpjs/gulp.git#4.0
+</span></code></pre>
+<p>The boilerplate demo tests are going to fail at that point because of changes in the api of gulp and probably some in other libraries we just updated as well.</p>
+<p>You can see the commit <a href="https://github.com/Keats/ng-boilerplate/commit/49a339cc5cbde8f5374b8f4c915a548dc2916cc4">here</a>.</p>
+<h2 id="migrating-the-gulpfile">Migrating the gulpfile<a class="zola-anchor" href="#migrating-the-gulpfile" aria-label="Anchor link for: migrating-the-gulpfile">🔗</a></h2>
+<h3 id="calling-gulp">Calling gulp<a class="zola-anchor" href="#calling-gulp" aria-label="Anchor link for: calling-gulp">🔗</a></h3>
+<p>The first thing we need to do is ensure that we are using the right version of gulp.  You might have another version installed globally or nothing installed globally like me.
+The easiest way (at least to me) to deal with that issue is the <a href="https://docs.npmjs.com/misc/scripts">npm scripts</a> part of the package.json.</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#7f8989;">// package.json
+</span><span style="color:#d07711;">&quot;scripts&quot;</span><span>: {
+</span><span>  </span><span style="color:#d07711;">&quot;gulp&quot;</span><span>: </span><span style="color:#d07711;">&quot;./node_modules/gulp/bin/gulp.js&quot;
+</span><span>},
+</span><span>
+</span><span style="color:#7f8989;">// in your terminal, instead of using gulp, use npm run gulp
+</span><span style="color:#5597d6;">npm run gulp
+</span></code></pre>
+<p>The downside is that you will get npm errors instead of the regular ones but that's only an issue when building your gulpfile.
+Let's not forget to update the travis.yml to use that npm script too.</p>
+<p>You can see the commit <a href="https://github.com/Keats/ng-boilerplate/commit/ef30315f43580e8b3c1ba85d4536c7fe0d69365d">here</a>.</p>
+<h3 id="fixing-the-errors-we-re-getting">Fixing the errors we're getting<a class="zola-anchor" href="#fixing-the-errors-we-re-getting" aria-label="Anchor link for: fixing-the-errors-we-re-getting">🔗</a></h3>
+<p>If you run the gulpfile locally or look at the <a href="https://travis-ci.org/Keats/ng-boilerplate/builds/54252789">travis build</a>, you will notice we get the following error:</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">assert.js:87
+</span><span>  </span><span style="color:#5597d6;">throw</span><span> new assert.AssertionError({
+</span><span>        ^
+</span><span>AssertionError: Task function must be specified
+</span><span>    at Gulp.set (/home/vincent/Code/ng-boilerplate/node_modules/gulp/node_modules/undertaker/lib/set.js:14:3)
+</span><span>    at Gulp.task (/home/vincent/Code/ng-boilerplate/node_modules/gulp/node_modules/undertaker/lib/task.js:14:8)
+</span><span>....
+</span></code></pre>
+<p>This comes from the fact that gulp.task changed and the 3 parameters signature was removed.
+In short, tasks that look like the one below will need to be changed to remove the <code>[]</code> parameter:</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#5597d6;">gulp</span><span>.</span><span style="color:#c23f31;">task</span><span>(</span><span style="color:#d07711;">&#39;default&#39;</span><span>, [</span><span style="color:#d07711;">&#39;build&#39;</span><span>], </span><span style="color:#668f14;">function </span><span>() {
+</span><span>  </span><span style="color:#72ab00;">return </span><span style="color:#c23f31;">runSequence</span><span>([</span><span style="color:#d07711;">&#39;watch&#39;</span><span>, </span><span style="color:#d07711;">&#39;karma-watch&#39;</span><span>]);
+</span><span>});
+</span></code></pre>
+<p>To give a quick background to people not familiar with gulp, the list parameter is a list of tasks that need to be run before running that task.
+In this case it will call the build task before running watch and karma-watch in order (runSequence is another thing that can be changed but we will get back to that later).
+To solve that very common issue of task dependencies, two methods were added:</p>
+<ul>
+<li><code>gulp.series</code>: will run the tasks in order</li>
+<li><code>gulp.parallel</code>: will run the tasks in parallel</li>
+</ul>
+<p>Let's fix our error by replacing those dependent tasks, for example for the default task:</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#5597d6;">gulp</span><span>.</span><span style="color:#c23f31;">task</span><span>(
+</span><span>  </span><span style="color:#d07711;">&#39;default&#39;</span><span>,
+</span><span>  </span><span style="color:#5597d6;">gulp</span><span>.</span><span style="color:#c23f31;">series</span><span>(</span><span style="color:#d07711;">&#39;build&#39;</span><span>, </span><span style="color:#5597d6;">gulp</span><span>.</span><span style="color:#c23f31;">parallel</span><span>(</span><span style="color:#d07711;">&#39;browser-sync&#39;</span><span>, </span><span style="color:#d07711;">&#39;watch&#39;</span><span>, </span><span style="color:#d07711;">&#39;karma-watch&#39;</span><span>))
+</span><span>);
+</span></code></pre>
+<p>In that case we first want to run build, and then browser-sync, watch and karma-watch in parallel.
+If you look at the commit below, you will be able to spot an easy mistake: browser-sync is in the <code>gulp.series</code> despite being blocking. In short, don't put blocking tasks in a series.</p>
+<p>Now trying to run the build task, I get another error:</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span>[</span><span style="color:#b3933a;">15</span><span>:</span><span style="color:#b3933a;">09</span><span>:</span><span style="color:#b3933a;">07</span><span>] </span><span style="color:#c23f31;">TypeError</span><span>: </span><span style="color:#b3933a;">undefined </span><span style="color:#5597d6;">is not a </span><span style="color:#668f14;">function
+</span><span>    </span><span style="color:#c23f31;">at</span><span> /</span><span style="color:#c23f31;">home</span><span>/</span><span style="color:#c23f31;">vincent</span><span>/</span><span style="color:#c23f31;">Code</span><span>/</span><span style="color:#c23f31;">ng</span><span>-</span><span style="color:#c23f31;">boilerplate</span><span>/</span><span style="color:#c23f31;">node_modules</span><span>/</span><span style="color:#c23f31;">run</span><span>-</span><span style="color:#c23f31;">sequence</span><span>/</span><span style="color:#c23f31;">index</span><span>.</span><span style="color:#c23f31;">js</span><span>:18:22
+</span><span>    </span><span style="color:#c23f31;">at Array</span><span>.</span><span style="color:#c23f31;">forEach </span><span>(</span><span style="color:#5597d6;">native</span><span>)
+</span><span>    </span><span style="color:#c23f31;">at verifyTaskSets </span><span>(/</span><span style="color:#5597d6;">home</span><span>/</span><span style="color:#5597d6;">vincent</span><span>/</span><span style="color:#5597d6;">Code</span><span>/</span><span style="color:#5597d6;">ng</span><span>-</span><span style="color:#5597d6;">boilerplate</span><span>/</span><span style="color:#5597d6;">node_modules</span><span>/</span><span style="color:#5597d6;">run</span><span>-</span><span style="color:#5597d6;">sequence</span><span>/index.js</span><span style="color:#72ab00;">:</span><span style="color:#b3933a;">12</span><span style="color:#72ab00;">:</span><span style="color:#b3933a;">11</span><span>)
+</span></code></pre>
+<p>Since gulp 4 has a method to run things sequentially, let's use it.</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#7f8989;">// before
+</span><span style="color:#5597d6;">gulp</span><span>.</span><span style="color:#c23f31;">task</span><span>(</span><span style="color:#d07711;">&#39;build&#39;</span><span>, </span><span style="color:#668f14;">function</span><span>(){
+</span><span>  </span><span style="color:#72ab00;">return </span><span style="color:#c23f31;">runSequence</span><span>(
+</span><span>    </span><span style="color:#d07711;">&#39;clean&#39;</span><span>,
+</span><span>    [</span><span style="color:#d07711;">&#39;sass&#39;</span><span>, </span><span style="color:#d07711;">&#39;copy-assets&#39;</span><span>, </span><span style="color:#d07711;">&#39;ts-compile&#39;</span><span>, </span><span style="color:#d07711;">&#39;templates&#39;</span><span>, </span><span style="color:#d07711;">&#39;copy-vendor&#39;</span><span>],
+</span><span>    </span><span style="color:#d07711;">&#39;index&#39;
+</span><span>  );
+</span><span>)};
+</span><span>
+</span><span style="color:#7f8989;">// after
+</span><span style="color:#5597d6;">gulp</span><span>.</span><span style="color:#c23f31;">task</span><span>(
+</span><span>  </span><span style="color:#d07711;">&#39;build&#39;</span><span>,
+</span><span>  </span><span style="color:#5597d6;">gulp</span><span>.</span><span style="color:#c23f31;">series</span><span>(
+</span><span>    </span><span style="color:#d07711;">&#39;clean&#39;</span><span>,
+</span><span>    </span><span style="color:#5597d6;">gulp</span><span>.</span><span style="color:#c23f31;">parallel</span><span>(</span><span style="color:#d07711;">&#39;sass&#39;</span><span>, </span><span style="color:#d07711;">&#39;copy-assets&#39;</span><span>, </span><span style="color:#d07711;">&#39;ts-compile&#39;</span><span>, </span><span style="color:#d07711;">&#39;templates&#39;</span><span>, </span><span style="color:#d07711;">&#39;copy-vendor&#39;</span><span>),
+</span><span>    </span><span style="color:#d07711;">&#39;index&#39;
+</span><span>  )
+</span><span>);
+</span></code></pre>
+<blockquote>
+<p>Note: I had to modify some tasks like the browser-sync since its API changed.
+I also had to make a <a href="https://github.com/dlmanning/gulp-sass/pull/207">patch</a> to gulp-sass to update the node-sass version.</p>
+</blockquote>
+<p>You can see the commit <a href="https://github.com/Keats/ng-boilerplate/commit/91a05401c6ea532467bc00b5a6e54fd95b6b0eaf">here</a>.</p>
+<p>Looking at the <a href="https://travis-ci.org/Keats/ng-boilerplate/builds/54274589">build</a>, it still fails because of a missing selenium jar which means a protractor error.
+My elegant solution was the <a href="https://github.com/Keats/ng-boilerplate/commit/d999db2442ac72fc440e8ff9cccd8348c533c72d">following</a>, as in removing protractor from travis because I'm not using it right now anyway.</p>
+<h3 id="small-cleanup">Small cleanup<a class="zola-anchor" href="#small-cleanup" aria-label="Anchor link for: small-cleanup">🔗</a></h3>
+<p>The following is not strictly related to gulp4 but contains some of the things I like to do to have a clean gulpfile.
+The config part at the top of the gulpfile (where I am defining all the paths to inject) is quite ugly but I am not going to touch it here, only change the gulp related things.</p>
+<p>First thing, <a href="https://www.npmjs.com/package/gulp-load-plugins">gulp-load-plugins</a> makes things quite simple but the prefix I had chosen, 'plugins', is quite verbose and takes up space. Recently I've started using <code>$</code> which works quite well.
+Something that took me way too long to realise is that it auto-camelCases packages names with dash so my following line was useless:</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#5597d6;">plugins</span><span>.</span><span style="color:#5597d6;">ngAnnotate </span><span style="color:#72ab00;">= </span><span style="color:#b39f04;">require</span><span>(</span><span style="color:#d07711;">&#39;gulp-ng-annotate&#39;</span><span>);
+</span></code></pre>
+<p>Another thing to examine is whether some of the gulp plugins you're using actually bring any values compared to using the actual npm module directly.
+In my boilerplate, gulp-karma is not doing anything special and was only necessary while the karma team was fixing some of the issues the plugin was solving.</p>
+<p>While going through the file, I also realised I didn't test the watch process at all and that it didn't work (surprising eh).</p>
+<p>The fix was easy and I included it in the <a href="https://github.com/Keats/ng-boilerplate/commit/bee9fba6e9ee2602e96c8d735d409b31a267d655">clean up commit</a>.</p>
+<p>Lastly, I have seen quite a few people dividing their tasks in individual files but that seems like an excessive measure to me.
+Maybe it makes more sense if you have very long files but all of mine are between 50 and 200 lines (this one is actually my longest) so I never felt the need.</p>
+<h2 id="wrap-up">Wrap up<a class="zola-anchor" href="#wrap-up" aria-label="Anchor link for: wrap-up">🔗</a></h2>
+<p>Some functions from gulp 3 such a <code>gulp.start</code> and <code>gulp.run</code> were deprecated and are not covered in this article since I never used them in any of my gulpfiles.</p>
+<p>There is also a bunch of new functions that I haven't used yet. To have a complete overview of what's new, you can check the <a href="https://github.com/gulpjs/gulp/blob/master/CHANGELOG.md#user-content-400">gulp 4 changelog</a>.
+Gulp 4 is still in alpha so I'll update this article if any breaking change happens.</p>
+<p>A question often asked is why use gulp when you have things like <a href="http://webpack.github.io/">webpack</a> around but that's out of scope for this article but will probably be part of another one.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>
