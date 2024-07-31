@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Showing off a django template to kickstart a DRF project
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>A template for Django REST Framework projects</h1>
+            <div class="post__meta">
+                2014-05-15
+                (last updated: 2014-05-24)
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>I made a project template for Django 1.7 + Django REST framework + PostgreSQL containing things I use and find useful.
+Part of it is based on <a href="https://github.com/twoscoops/django-twoscoops-project">Two Scoops of Django template</a>.
+You can see the repo on <a href="https://github.com/Keats/django-drf-template">Github</a>.</p>
+<h2 id="features">Features<a class="zola-anchor" href="#features" aria-label="Anchor link for: features">🔗</a></h2>
+<p>It contains the following things:</p>
+<ul>
+<li><a href="http://www.django-rest-framework.org/">Django REST framework</a>: for writing your API</li>
+<li><a href="https://django-model-utils.readthedocs.org/en/latest/">django-model-utils</a>: for things like TimestampedModel and other nice things for models</li>
+<li><a href="https://github.com/ottoyiu/django-cors-headers">django-cors-headers</a>: automatically allows CORS on local dev and allows for a whitelist in production</li>
+<li>bcrypt: hash password with bcrypt instead of PBKDF2</li>
+</ul>
+<p>There are also goodies on dev and test environments:</p>
+<ul>
+<li><a href="https://github.com/django-debug-toolbar/django-debug-toolbar">django-debug-toolbar</a>: lots of information on request/response and queries</li>
+<li><a href="https://pypi.python.org/pypi/ipdb">ipdb</a>: pdb in ipython. Awesome</li>
+<li><a href="https://github.com/django-extensions/django-extensions">django-extensions</a>: adds some useful management commands</li>
+<li><a href="http://nedbatchelder.com/code/coverage/">coverage</a>: measures code coverage</li>
+<li><a href="https://factoryboy.readthedocs.org/en/latest/">factory-boy</a>: my library of choice to create objects in tests, I go more into details in my article <a href="https://www.vincentprouillet.com/blog/factory-boy-or-model-mommy/">Python testing: Factory Boy or Model Mommy</a></li>
+<li><a href="https://flake8.readthedocs.org">flake8</a>: ensures code quality, respect of pep8 and other nice things, it can easily be installed as a git/mercurial hook</li>
+</ul>
+<h2 id="install">Install<a class="zola-anchor" href="#install" aria-label="Anchor link for: install">🔗</a></h2>
+<p>You will need Postgres installed and the following libs (for ubuntu/debian, for others systems look in your package managers).</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">$</span><span> sudo apt-get install libpq-dev python-dev
+</span></code></pre>
+<p>Create your virtualenv (and virtualenvwrapper in the example case), I will use the name myproject but use your own name.</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">$</span><span> mkdir myproject </span><span style="color:#72ab00;">&amp;&amp; </span><span style="color:#b39f04;">cd</span><span> myproject
+</span><span style="color:#5597d6;">$</span><span> mkvrirtualenv myproject
+</span><span style="color:#5597d6;">$</span><span> pip install django
+</span><span style="color:#5597d6;">$</span><span> django-admin.py startproject myproject</span><span style="color:#5597d6;"> --template</span><span style="color:#72ab00;">=</span><span>https://github.com/Keats/django-drf-template/archive/master.zip
+</span><span style="color:#5597d6;">$</span><span> cd myproject
+</span><span style="color:#5597d6;">$</span><span> pip install</span><span style="color:#5597d6;"> -r</span><span> requirements/local.txt
+</span><span style="color:#5597d6;">$</span><span> python myproject/manage.py migrate
+</span></code></pre>
+<p>If you want, you can also add a pre-commit flake8 hook to ensure that commit respects it.</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">$</span><span> flake8</span><span style="color:#5597d6;"> --install-hook
+</span></code></pre>
+<p>By default it will not stop commits because of warning, a quick look at .git/hooks/pre-commit shows that putting an environment variable of FLAKE8_STRICT will stop them.</p>
+<p>And you should be almost good to go.
+There are a few hardcoded temporary settings that you will want to replace, look for the string 'Ann Onymous' and you should find them.
+They are in the Sphinx folder and in the base settings file if you're lazy.</p>
+<p>Once again, PRs are welcome if there's a bug or want to share something you use all the time that I don't necessarily know about !</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

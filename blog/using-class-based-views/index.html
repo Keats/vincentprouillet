@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    What are the pros&#x2F;cons of CBV and FBV in Django
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Class-based views VS function-based views</h1>
+            <div class="post__meta">
+                2013-10-02
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>The URL gives me away.
+I do prefer class-based views (CBV) over function-based views (FBV) and will try to explain why in this article.</p>
+<h2 id="presentation-of-cbv">Presentation of CBV<a class="zola-anchor" href="#presentation-of-cbv" aria-label="Anchor link for: presentation-of-cbv">🔗</a></h2>
+<p>First thing, a quick introduction of CBV.
+The 'old' way of doings views in django is something like the following:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">def </span><span style="color:#c23f31;">myview</span><span>(</span><span style="color:#5597d6;">request</span><span>):
+</span><span>  </span><span style="color:#72ab00;">if </span><span>request.</span><span style="color:#5597d6;">POST</span><span>:
+</span><span>    </span><span style="color:#7f8989;"># do my POST action (form, saving)
+</span><span>  </span><span style="color:#72ab00;">else</span><span>:
+</span><span>    </span><span style="color:#7f8989;"># do my GET action
+</span><span>
+</span><span>  </span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">render</span><span>(</span><span style="color:#b3933a;">...</span><span>)
+</span></code></pre>
+<p>An identical version using CBV would be:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">class </span><span style="color:#c23f31;">MyView</span><span>(</span><span style="font-style:italic;color:#b06936;">View</span><span>):
+</span><span>  </span><span style="color:#72ab00;">def </span><span style="color:#c23f31;">get</span><span>(</span><span style="color:#5597d6;">self</span><span>, </span><span style="color:#5597d6;">request</span><span>, </span><span style="color:#72ab00;">*</span><span style="color:#5597d6;">args</span><span>, </span><span style="color:#72ab00;">**</span><span style="color:#5597d6;">kwargs</span><span>):
+</span><span>    </span><span style="color:#7f8989;"># do my get action
+</span><span>  </span><span style="color:#72ab00;">def </span><span style="color:#c23f31;">post</span><span>(</span><span style="color:#5597d6;">self</span><span>, </span><span style="color:#5597d6;">request</span><span>, </span><span style="color:#72ab00;">*</span><span style="color:#5597d6;">args</span><span>, </span><span style="color:#72ab00;">**</span><span style="color:#5597d6;">kwargs</span><span>):
+</span><span>    </span><span style="color:#7f8989;"># do my post action
+</span></code></pre>
+<p>The main advantage of using CBV lies in being able to inherit from mixins and making the code much more compact and readable (
+this is obviously from my point of view, some people won't like the fact that they don't see exactly what's happening).
+For example, let's say you want to process a form (very basic one, on GET returns the form, on POST check for errors and show them if
+necessary or do something and redirect to another URL in case of success).</p>
+<p>In a FBV, processing such a form looks like that:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">def </span><span style="color:#c23f31;">myview</span><span>(</span><span style="color:#5597d6;">request</span><span>):
+</span><span>    </span><span style="color:#72ab00;">if </span><span>request.method </span><span style="color:#72ab00;">== </span><span style="color:#d07711;">&#39;POST&#39;</span><span>:
+</span><span>        form </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">MyForm</span><span>(request.</span><span style="color:#5597d6;">POST</span><span>)
+</span><span>        </span><span style="color:#72ab00;">if </span><span>form.</span><span style="color:#5597d6;">is_valid</span><span>():
+</span><span>            </span><span style="color:#5597d6;">do_something</span><span>(form)
+</span><span>            </span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">HttpResponseRedirect</span><span>(</span><span style="color:#5597d6;">reverse</span><span>(</span><span style="color:#d07711;">&#39;success&#39;</span><span>))
+</span><span>    </span><span style="color:#72ab00;">else</span><span>:
+</span><span>        form </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">MyForm</span><span>()
+</span><span>
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">render</span><span>(request, </span><span style="color:#d07711;">&#39;template.html&#39;</span><span>, {</span><span style="color:#d07711;">&#39;form&#39;</span><span>: form})
+</span></code></pre>
+<p>And in a CBV</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">class </span><span style="color:#c23f31;">MyView</span><span>(</span><span style="font-style:italic;color:#b06936;">FormView</span><span>):
+</span><span>  form_class </span><span style="color:#72ab00;">= </span><span>MyForm
+</span><span>  success_url </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">reverse_lazy</span><span>(</span><span style="color:#d07711;">&#39;success&#39;</span><span>)
+</span><span>  template_name </span><span style="color:#72ab00;">= </span><span style="color:#d07711;">&#39;template.html&#39;
+</span><span>
+</span><span>  </span><span style="color:#72ab00;">def </span><span style="color:#c23f31;">form_valid</span><span>(</span><span style="color:#5597d6;">self</span><span>, </span><span style="color:#5597d6;">form</span><span>):
+</span><span>    </span><span style="color:#5597d6;">do_something</span><span>(form)
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#b39f04;">super</span><span>(MyView, </span><span style="color:#5597d6;">self</span><span>).</span><span style="color:#5597d6;">form_valid</span><span>(form)
+</span></code></pre>
+<p>This is so much neater imo.</p>
+<h2 id="go-cbv">Go CBV !<a class="zola-anchor" href="#go-cbv" aria-label="Anchor link for: go-cbv">🔗</a></h2>
+<p>There are generic classes for every CRUD action and it's easy to create your own mixins on top of it.
+The most common would be a LoginRequired one, working like the login_required decorator.
+A JsonResponse one is also a good example of a useful CBV mixin (for more, look at <a href="https://github.com/brack3t/django-braces" title="django-braces">django-braces</a>).</p>
+<p>One pattern that we use all the time in Hizard (and most web app need the same kind of features) is checking that the user is allowed to see/do certains actions.
+In this case, we have mixins like RestrictedDetailView, RestrictedListView, etc that does the check automatically for us, the only thing we have to do is inheriting from them.
+How cool is that ?
+Instead of having huge FBV unorganized (I've seen in the hundreds of line unfortunately), you can divide everything into methods neatly and have much cleaner and easier to read code.</p>
+<h2 id="fbv-is-not-dead">FBV is not dead !<a class="zola-anchor" href="#fbv-is-not-dead" aria-label="Anchor link for: fbv-is-not-dead">🔗</a></h2>
+<p>FBV is the traditional way to represent requests handling in lots of frameworks/languages, making it <em>much</em> easier for a new django dev to understand what's going on.
+On some cases, it even makes more sense to use them rather than FBV (I'm thinking about views with several forms for example).
+You also need to take into account that most current codebase use FBV and lots of developers don't know how/don't want to use CBV.</p>
+<h2 id="conclusion">Conclusion<a class="zola-anchor" href="#conclusion" aria-label="Anchor link for: conclusion">🔗</a></h2>
+<p>Seeing the number of people not liking CBV, I assume I'm in the minority of people that thinks they are a fantastic tool to make your code cleaner, reusable and easier to maintain (you want to add another check on your LoginRequired ? much more annoying to do with decorators and FBV).
+Even if you're not using generic CBV, just using a CBV inheriting from View will cleanly separate GET and POST.
+The main problem with CBV is the documentation I think but once you get the hang of it, it's awesome.
+In the end it's a matter of preference and what the team decides : I use CBV on my own projects and FBV at work.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

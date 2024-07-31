@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Trying out a framework agnostic approach to routing for SPA
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>A different approach to routing in Single-Page Applications</h1>
+            <div class="post__meta">
+                2017-05-08
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>Routing is a big part of most SPA:</p>
+<ul>
+<li>what to render when a user hits a certain URL</li>
+<li>whether the user is allowed to reach that page</li>
+<li>what data do we need to load before rendering</li>
+<li>eventually display some loading screen if necessary.</li>
+</ul>
+<h2 id="the-problem">The problem<a class="zola-anchor" href="#the-problem" aria-label="Anchor link for: the-problem">🔗</a></h2>
+<p>In the React world, <a href="https://github.com/ReactTraining/react-router">React-Router</a> is the standard.
+It is a bit infamous as its API has changed drastically for each major version.
+Proppy is still using v2 as updating it didn't seem to bring much benefit and would take time.
+Our only issue with our current setup is that we are not able to make the async transitions the way we would like them to be, but it is
+an annoying one from a UX point of view.</p>
+<p>After reading <a href="https://hackernoon.com/how-to-decouple-state-and-ui-a-k-a-you-dont-need-componentwillmount-cc90b787aa37">How to decouple state and UI (a.k.a. you don’t need componentWillMount)</a> by the author of <a href="https://mobx.js.org">MobX</a>, I realised that routing should be something that is framework-agnostic.
+After all, isn't routing simply matching a URL state to a function? There is no need for something specific to React, Angular or anything else.</p>
+<p>I recently started experimenting with it and I think I found a nice setup.
+I haven't tried it for a complex app yet though so it is probably lacking in some ways.
+I will write another article on how it works in a real app when I have the time to try it in Proppy.</p>
+<h2 id="the-solution">The solution<a class="zola-anchor" href="#the-solution" aria-label="Anchor link for: the-solution">🔗</a></h2>
+<p>This example will use React, MobX and <a href="http://router5.github.io/">router5</a>.
+router5 is a nice router library that treats routing state like any application state.
+Combined with MobX, you can have a store that will contain the routing state trivially without any framework.
+I couldn't find an up to date TypeScript definition for router5 so I <a href="https://gist.github.com/Keats/1b8833b581d01e751048e1f51041817f">made one</a>.
+I'm not entirely sure whether this is the correct way to write a definition file though so I will wait a bit before making a PR to <a href="https://github.com/DefinitelyTyped/DefinitelyTyped/">DefinitelyTyped</a>.</p>
+<h3 id="routing-setup">Routing setup<a class="zola-anchor" href="#routing-setup" aria-label="Anchor link for: routing-setup">🔗</a></h3>
+<p>Let's take a very simple routing scheme:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#668f14;">const </span><span style="color:#5597d6;">routes</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">Array</span><span>&lt;</span><span style="color:#a2a001;">object</span><span>&gt; </span><span style="color:#72ab00;">= </span><span>[
+</span><span>  </span><span style="color:#7f8989;">// Logged-in routes
+</span><span>  {name: </span><span style="color:#d07711;">&quot;home&quot;</span><span>, path: </span><span style="color:#d07711;">&quot;/&quot;</span><span>, canActivate: </span><span style="color:#5597d6;">loggedInRequired</span><span>, onActivate: </span><span style="color:#5597d6;">dashboardStore</span><span>.</span><span style="color:#5597d6;">fetch</span><span>},
+</span><span>
+</span><span>  </span><span style="color:#7f8989;">// Logged-out routes
+</span><span>  {name: </span><span style="color:#d07711;">&quot;signin&quot;</span><span>, path: </span><span style="color:#d07711;">&quot;/signin&quot;</span><span>},
+</span><span>  {name: </span><span style="color:#d07711;">&quot;signup&quot;</span><span>, path: </span><span style="color:#d07711;">&quot;/signup&quot;</span><span>},
+</span><span>  {name: </span><span style="color:#d07711;">&quot;forgot-password&quot;</span><span>, path: </span><span style="color:#d07711;">&quot;/forgot-password&quot;</span><span>},
+</span><span>];
+</span><span>
+</span><span style="color:#72ab00;">export </span><span style="color:#668f14;">type </span><span style="color:#c23f31;">Routes </span><span style="color:#72ab00;">=
+</span><span>  </span><span style="color:#d07711;">&quot;home&quot;
+</span><span>  </span><span style="color:#72ab00;">| </span><span style="color:#d07711;">&quot;signin&quot;
+</span><span>  </span><span style="color:#72ab00;">| </span><span style="color:#d07711;">&quot;signup&quot;
+</span><span>  </span><span style="color:#72ab00;">| </span><span style="color:#d07711;">&quot;forgot-password&quot;
+</span><span>;
+</span></code></pre>
+<p>As you can see, nothing magical going on: <code>routes</code> is simply an array of routes, which are plain JavaScript objects themselves.
+The <code>Routes</code> type has to be manually updated to match the routes but allows compile-time checking of the routes: a worthy trade-off in my eyes.</p>
+<p>The <code>canActivate</code> key corresponds to a <a href="http://router5.github.io/docs/preventing-navigation.html">lifecycle function</a> of router5.
+router5 will call this function before transitioning to the new state, preventing the transition if necessary.
+In that case it is simply the following:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#668f14;">const </span><span style="color:#c23f31;">loggedInRequired </span><span style="color:#72ab00;">= </span><span>() </span><span style="color:#668f14;">=&gt; </span><span>(</span><span style="color:#5597d6;">toState</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">State</span><span>, </span><span style="color:#5597d6;">fromState</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">State</span><span>, </span><span style="color:#5597d6;">done</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">any</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>  </span><span style="color:#7f8989;">// userIsLoggedIn can be whatever you need it to be
+</span><span>  </span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#c23f31;">userIsLoggedIn</span><span>()) {
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#b3933a;">true</span><span>;
+</span><span>  } </span><span style="color:#72ab00;">else </span><span>{
+</span><span>    </span><span style="color:#7f8989;">// redirect to signin page if the user isn&#39;t logged in
+</span><span>    </span><span style="color:#c23f31;">done</span><span>({redirect: {name: </span><span style="color:#d07711;">&quot;signin&quot;</span><span>}});
+</span><span>  }
+</span><span>};
+</span></code></pre>
+<p><code>onActivate</code> will be explained in a bit.</p>
+<p>Before looking at the router setup, let's have a quick look at the MobX router store:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#72ab00;">import </span><span>{</span><span style="color:#5597d6;">action</span><span>, </span><span style="color:#5597d6;">observable</span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;mobx&quot;</span><span>;
+</span><span style="color:#72ab00;">import </span><span>{</span><span style="color:#5597d6;">State</span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;router5&quot;</span><span>;
+</span><span>
+</span><span style="color:#668f14;">class </span><span style="color:#c23f31;">RouterStore </span><span>{
+</span><span>  @</span><span style="color:#5597d6;">observable current</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">State</span><span>;
+</span><span>  @</span><span style="color:#5597d6;">observable asyncInProgress </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">false</span><span>;
+</span><span>
+</span><span>  </span><span style="color:#7f8989;">// Called after transition
+</span><span>  @</span><span style="color:#5597d6;">action </span><span style="color:#c23f31;">setCurrent</span><span>(</span><span style="color:#5597d6;">state</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">State</span><span>) {
+</span><span>    </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#a2a001;">current </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">state</span><span>;
+</span><span>    </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">asyncInProgress </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">false</span><span>;
+</span><span>  }
+</span><span>
+</span><span>  @</span><span style="color:#5597d6;">action </span><span style="color:#c23f31;">startAsyncLoading</span><span>() {
+</span><span>    </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">asyncInProgress </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">true</span><span>;
+</span><span>  }
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">const </span><span style="color:#5597d6;">routerStore </span><span style="color:#72ab00;">= new </span><span style="color:#c23f31;">RouterStore</span><span>();
+</span><span style="color:#72ab00;">export default </span><span style="color:#5597d6;">routerStore</span><span>;
+</span></code></pre>
+<p>If you haven't used MobX before, I heavily recommend it and <a href="https://www.vincentprouillet.com/blog/a-mobx-introduction/">wrote an introduction to it</a> before. In a nutshell,
+think of the code above as a simple class that has 2 observable values: <code>current</code> and <code>asyncInProgress</code>.</p>
+<p>Ok we got our routes and store, we now need to create a router:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#7f8989;">// Router setup
+</span><span style="color:#668f14;">const </span><span style="color:#5597d6;">router </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">createRouter</span><span>(</span><span style="color:#5597d6;">routes</span><span>);
+</span><span style="color:#5597d6;">router</span><span>.</span><span style="color:#c23f31;">usePlugin</span><span>(</span><span style="color:#c23f31;">browserPlugin</span><span>(), </span><span style="color:#5597d6;">mobxRouterPlugin</span><span>);
+</span><span style="color:#5597d6;">router</span><span>.</span><span style="color:#c23f31;">useMiddleware</span><span>(</span><span style="color:#c23f31;">asyncMiddleware</span><span>(</span><span style="color:#5597d6;">routes</span><span>));
+</span><span style="color:#5597d6;">router</span><span>.</span><span style="color:#c23f31;">start</span><span>();
+</span></code></pre>
+<p>This does a few things. First we create a router using the routes we defined above. We then add 2 plugins:</p>
+<ul>
+<li><code>browser</code>: a built-in plugin that will update the browser URL and state on route change using the HTML5 history API</li>
+<li><code>mobxRouterPlugin</code>: a very simple custom made plugin shown below that will upate the store on transition success and error</li>
+</ul>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#72ab00;">import </span><span style="color:#5597d6;">routerStore </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;./stores/router&quot;</span><span>;
+</span><span>
+</span><span style="color:#7f8989;">// Tell MobX which page we&#39;re on
+</span><span style="color:#72ab00;">export </span><span style="color:#668f14;">function </span><span style="color:#c23f31;">mobxRouterPlugin</span><span>(</span><span style="color:#5597d6;">router</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">Router</span><span>) {
+</span><span>  </span><span style="color:#72ab00;">return </span><span>{
+</span><span>    </span><span style="color:#c23f31;">onTransitionError</span><span>: (</span><span style="color:#5597d6;">toState</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">State</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>      </span><span style="color:#7f8989;">// TODO handle that.
+</span><span>    },
+</span><span>    </span><span style="color:#c23f31;">onTransitionSuccess</span><span>: (</span><span style="color:#5597d6;">toState</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">State</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>      </span><span style="color:#5597d6;">routerStore</span><span>.</span><span style="color:#c23f31;">setCurrent</span><span>(</span><span style="color:#5597d6;">toState</span><span>);
+</span><span>    },
+</span><span>  };
+</span><span>}
+</span><span>(</span><span style="color:#5597d6;">mobxRouterPlugin </span><span style="color:#72ab00;">as </span><span style="color:#c23f31;">PluginFactory</span><span>).</span><span style="color:#5597d6;">pluginName </span><span style="color:#72ab00;">= </span><span style="color:#d07711;">&quot;MOBX_PLUGIN&quot;</span><span>;
+</span></code></pre>
+<p>How errors are handled is really up to you, I'm focusing on the happy path for that article.</p>
+<p>Next up is the <code>asyncMiddleware</code> that handles any pre-loading we need to do.
+If a <code>onActivate</code> function on a route is found a route, it assumes it is an async call that returns a promise:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#668f14;">const </span><span style="color:#c23f31;">asyncMiddleware </span><span style="color:#72ab00;">= </span><span>(</span><span style="color:#5597d6;">routes</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">Array</span><span>&lt;</span><span style="color:#a2a001;">any</span><span>&gt;) </span><span style="color:#668f14;">=&gt; </span><span>(</span><span style="color:#5597d6;">router</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">Router</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>(</span><span style="color:#5597d6;">toState</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">any</span><span>, </span><span style="color:#5597d6;">fromState</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">State</span><span>, </span><span style="color:#5597d6;">done</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">any</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>  </span><span style="color:#668f14;">const </span><span style="color:#5597d6;">route </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">routes</span><span>.</span><span style="color:#b39f04;">find</span><span>((</span><span style="color:#5597d6;">r</span><span>) </span><span style="color:#668f14;">=&gt; </span><span style="color:#5597d6;">r</span><span>.</span><span style="color:#a2a001;">name </span><span style="color:#72ab00;">=== </span><span style="color:#5597d6;">toState</span><span>.</span><span style="color:#a2a001;">name</span><span>);
+</span><span>  </span><span style="color:#7f8989;">// do we have a function to call?
+</span><span>  </span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#5597d6;">route</span><span>.</span><span style="color:#5597d6;">onActivate</span><span>) {
+</span><span>    </span><span style="color:#7f8989;">// Tell the store that will load something, might want to have some visual loading effect
+</span><span>    </span><span style="color:#5597d6;">routerStore</span><span>.</span><span style="color:#c23f31;">startAsyncLoading</span><span>();
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">route</span><span>.</span><span style="color:#b39f04;">onActivate</span><span>(</span><span style="color:#5597d6;">toState</span><span>.</span><span style="color:#5597d6;">params</span><span>)
+</span><span>      .</span><span style="color:#b39f04;">then</span><span>((</span><span style="color:#5597d6;">res</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">any</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#7f8989;">// Fail the transition if the call failed
+</span><span>        </span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#5597d6;">res</span><span>.</span><span style="color:#5597d6;">error</span><span>) {
+</span><span>          </span><span style="color:#72ab00;">return </span><span style="color:#c23f31;">done</span><span>({code: </span><span style="color:#d07711;">&quot;TRANSITION_ERR&quot;</span><span>, error: </span><span style="color:#5597d6;">res</span><span>});
+</span><span>        }
+</span><span>      });
+</span><span>  }
+</span><span>  </span><span style="color:#c23f31;">done</span><span>();
+</span><span>};
+</span></code></pre>
+<p>In practice, the <code>onActivate</code> method of the <code>home</code> route will be called before transitioning and will only be completed if the call succeeded.
+The store will automatically be notified of the start of an async call and of any successful transition: displaying a loading progress becomes straightforward.</p>
+<p>Finally, we start the router which will automatically use the current URL as the current state as we are using the Browser plugin.</p>
+<h3 id="integrating-react">Integrating React<a class="zola-anchor" href="#integrating-react" aria-label="Anchor link for: integrating-react">🔗</a></h3>
+<p>Now that we have the routing is up and running, we need to be able to render components depending on the URL and navigate between pages.
+Since all the routing state is in a MobX store, this is simply a matter of having a component observe it:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span>@</span><span style="color:#5597d6;">observer
+</span><span style="color:#668f14;">class </span><span style="color:#c23f31;">App </span><span style="color:#668f14;">extends </span><span style="color:#c23f31;">React</span><span>.</span><span style="font-style:italic;color:#b06936;">Component</span><span>&lt;{}, {}&gt; {
+</span><span>  </span><span style="color:#c23f31;">render</span><span>() {
+</span><span>    </span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#5597d6;">routerStore</span><span>.</span><span style="color:#a2a001;">current </span><span style="color:#72ab00;">=== </span><span style="color:#b3933a;">null</span><span>) {
+</span><span>      </span><span style="color:#72ab00;">return </span><span style="color:#b3933a;">null</span><span>;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#668f14;">let </span><span style="color:#5597d6;">component </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">null</span><span>;
+</span><span>    </span><span style="color:#72ab00;">switch </span><span>(</span><span style="color:#5597d6;">routerStore</span><span>.</span><span style="color:#a2a001;">current</span><span>.</span><span style="color:#a2a001;">name </span><span style="color:#72ab00;">as </span><span style="color:#c23f31;">Routes</span><span>) {
+</span><span>      </span><span style="color:#72ab00;">case </span><span style="color:#d07711;">&quot;signup&quot;</span><span>:
+</span><span>        </span><span style="color:#5597d6;">component </span><span style="color:#72ab00;">= </span><span style="color:#6486ab;">&lt;</span><span style="color:#a2a001;">SignUp </span><span style="color:#6486ab;">/&gt;</span><span>;
+</span><span>        </span><span style="color:#72ab00;">break</span><span>;
+</span><span>      </span><span style="color:#72ab00;">case </span><span style="color:#d07711;">&quot;signin&quot;</span><span>:
+</span><span>        </span><span style="color:#5597d6;">component </span><span style="color:#72ab00;">= </span><span style="color:#6486ab;">&lt;</span><span style="color:#a2a001;">SignIn </span><span style="color:#6486ab;">/&gt;</span><span>;
+</span><span>        </span><span style="color:#72ab00;">break</span><span>;
+</span><span>      </span><span style="color:#72ab00;">case </span><span style="color:#d07711;">&quot;forgot-password&quot;</span><span>:
+</span><span>        </span><span style="color:#5597d6;">component </span><span style="color:#72ab00;">= </span><span style="color:#6486ab;">&lt;</span><span style="color:#a2a001;">ForgotPassword </span><span style="color:#6486ab;">/&gt;</span><span>;
+</span><span>        </span><span style="color:#72ab00;">break</span><span>;
+</span><span>    }
+</span><span>    </span><span style="color:#7f8989;">// A 404 would be quite blank.
+</span><span>    </span><span style="color:#72ab00;">return </span><span>(
+</span><span>      </span><span style="color:#6486ab;">&lt;</span><span style="color:#7f902a;">div className</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&quot;app-container&quot;</span><span style="color:#6486ab;">&gt;
+</span><span style="color:#6486ab;">        {</span><span style="color:#5597d6;">component</span><span style="color:#6486ab;">}
+</span><span style="color:#6486ab;">      &lt;/</span><span style="color:#7f902a;">div</span><span style="color:#6486ab;">&gt;
+</span><span>    );
+</span><span>  }
+</span></code></pre>
+<p>That's it. A simple switch on the name of the current route and we're good to go.</p>
+<p>There is a small twist for links though: using a basic <code>&lt;a href="/forgot-password"&gt;Forgot?&lt;/a&gt;</code> will trigger a full reload, unless there's an option I missed.
+You will need to use the <code>router.navigate</code> method to navigate instead.
+If you are using React you might have a <code>Link</code> component in your project to standardize how links are made and the various styles it can have.
+Here's an example for a basic one:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#72ab00;">export </span><span style="color:#668f14;">interface </span><span style="color:#c23f31;">ILinkProps </span><span>{
+</span><span>  </span><span style="color:#5597d6;">name</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">Routes</span><span>;
+</span><span>  </span><span style="color:#5597d6;">params</span><span style="color:#72ab00;">?: </span><span style="color:#a2a001;">object</span><span>;
+</span><span>  </span><span style="color:#5597d6;">options</span><span style="color:#72ab00;">?: </span><span>{</span><span style="color:#5597d6;">reload</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">boolean</span><span>, </span><span style="color:#5597d6;">refresh</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">boolean</span><span>};
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">class </span><span style="color:#c23f31;">Link </span><span style="color:#668f14;">extends </span><span style="color:#c23f31;">React</span><span>.</span><span style="font-style:italic;color:#b06936;">Component</span><span>&lt;</span><span style="color:#c23f31;">ILinkProps</span><span>, {}&gt; {
+</span><span>  </span><span style="color:#668f14;">protected static </span><span style="color:#5597d6;">defaultProps </span><span style="color:#72ab00;">= </span><span>{
+</span><span>    options: {},
+</span><span>    params: {},
+</span><span>  };
+</span><span>
+</span><span>  </span><span style="color:#c23f31;">render</span><span>() {
+</span><span>    </span><span style="color:#668f14;">const </span><span>{</span><span style="color:#5597d6;">name</span><span>, </span><span style="color:#5597d6;">params</span><span>} </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">props</span><span>;
+</span><span>
+</span><span>    </span><span style="color:#7f8989;">// Build the end url
+</span><span>    </span><span style="color:#668f14;">const </span><span style="color:#5597d6;">href </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">router</span><span>.</span><span style="color:#c23f31;">buildPath</span><span>(</span><span style="color:#5597d6;">name</span><span>, </span><span style="color:#5597d6;">params </span><span style="color:#72ab00;">as </span><span style="color:#a2a001;">any</span><span>);
+</span><span>    </span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#5597d6;">href </span><span style="color:#72ab00;">=== </span><span style="color:#b3933a;">null</span><span>) {
+</span><span>      </span><span style="color:#7f8989;">// tslint:disable-next-line
+</span><span>      </span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">error</span><span>(</span><span style="color:#d07711;">&quot;&lt;Link&gt; Couldn&#39;t make URL for&quot;</span><span>, </span><span style="color:#5597d6;">name</span><span>, </span><span style="color:#5597d6;">params</span><span>);
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#72ab00;">return </span><span>(
+</span><span>      </span><span style="color:#6486ab;">&lt;</span><span style="color:#7f902a;">a href</span><span style="color:#72ab00;">=</span><span style="color:#6486ab;">{</span><span style="color:#5597d6;">href</span><span style="color:#6486ab;">} </span><span style="color:#7f902a;">onClick</span><span style="color:#72ab00;">=</span><span style="color:#6486ab;">{</span><span style="color:#5597d6;">this</span><span style="color:#6486ab;">.</span><span style="color:#5597d6;">onClick</span><span style="color:#6486ab;">.bind(</span><span style="color:#5597d6;">this</span><span style="color:#6486ab;">)}&gt;
+</span><span style="color:#6486ab;">        {</span><span style="color:#5597d6;">this</span><span style="color:#6486ab;">.</span><span style="color:#5597d6;">props</span><span style="color:#6486ab;">.</span><span style="color:#5597d6;">children</span><span style="color:#6486ab;">}
+</span><span style="color:#6486ab;">      &lt;/</span><span style="color:#7f902a;">a</span><span style="color:#6486ab;">&gt;
+</span><span>    );
+</span><span>  }
+</span><span>
+</span><span>  </span><span style="color:#668f14;">private </span><span style="color:#c23f31;">onClick</span><span>(</span><span style="color:#5597d6;">event</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">React</span><span>.</span><span style="color:#c23f31;">MouseEvent</span><span>&lt;{}&gt;) {
+</span><span>    </span><span style="color:#668f14;">const </span><span>{</span><span style="color:#5597d6;">name</span><span>, </span><span style="color:#5597d6;">params</span><span>, </span><span style="color:#5597d6;">options</span><span>} </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">props</span><span>;
+</span><span>    </span><span style="color:#668f14;">const </span><span style="color:#5597d6;">comboKey </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">event</span><span>.</span><span style="color:#5597d6;">metaKey </span><span style="color:#72ab00;">|| </span><span style="color:#a2a001;">event</span><span>.</span><span style="color:#5597d6;">altKey </span><span style="color:#72ab00;">|| </span><span style="color:#a2a001;">event</span><span>.</span><span style="color:#5597d6;">ctrlKey </span><span style="color:#72ab00;">|| </span><span style="color:#a2a001;">event</span><span>.</span><span style="color:#5597d6;">shiftKey</span><span>;
+</span><span>
+</span><span>    </span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#a2a001;">event</span><span>.</span><span style="color:#5597d6;">button </span><span style="color:#72ab00;">=== </span><span style="color:#b3933a;">0 </span><span style="color:#72ab00;">&amp;&amp; !</span><span style="color:#5597d6;">comboKey</span><span>) {
+</span><span>      </span><span style="color:#a2a001;">event</span><span>.</span><span style="color:#b39f04;">preventDefault</span><span>();
+</span><span>      </span><span style="color:#5597d6;">router</span><span>.</span><span style="color:#b39f04;">navigate</span><span>(</span><span style="color:#5597d6;">name</span><span>, </span><span style="color:#5597d6;">params</span><span>, </span><span style="color:#5597d6;">options</span><span>);
+</span><span>    }
+</span><span>  }
+</span><span>}
+</span><span>
+</span><span style="color:#72ab00;">export default </span><span style="color:#5597d6;">Link</span><span>;
+</span></code></pre>
+<p>Which can be used like so:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#6486ab;">&lt;</span><span style="color:#a2a001;">Link </span><span style="color:#7f902a;">name</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&quot;forgot-password&quot;</span><span style="color:#6486ab;">&gt;Forgotten password?&lt;/</span><span style="color:#a2a001;">Link</span><span style="color:#6486ab;">&gt;
+</span></code></pre>
+<p>The route name will be checked at compile time as well, no more typos!</p>
+<h2 id="the-end">The end<a class="zola-anchor" href="#the-end" aria-label="Anchor link for: the-end">🔗</a></h2>
+<p>Will this work for complex apps?
+I don't know but I will certainly try it and report!</p>
+<p>Edit: It looks like TypeScript 2.4 will support <a href="https://github.com/Microsoft/TypeScript/pull/15486">string enums</a>!
+This means we will be able to not duplicate the <code>Routes</code> content and use an enum instead!</p>
+<p>Edit2: This approach is now in production! Read up on <a href="https://www.vincentprouillet.com/blog/testing-a-different-spa-routing-update/">the follow-up article</a>.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

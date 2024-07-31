@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    A template engine in Rust inspired by Jinja2&#x2F;Django
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Introducing Tera, a template engine in Rust</h1>
+            <div class="post__meta">
+                2016-04-15
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>Back in October 2015, I tried <a href="https://www.vincentprouillet.com/blog/trying-rust-for-web-services/">Rust for web services</a> and found the ecosystem lacking at the time. That's why I've been working on porting some of the tools we use in <a href="https://github.com/wearewizards/proppyweb">Proppy</a> to Rust: <a href="https://crates.io/crates/jsonwebtoken">jwt</a>, <a href="https://crates.io/crates/bcrypt">bcrypt</a> (granted that Argon2 seems superior) and a <a href="https://crates.io/crates/dbmigrate">migration tool</a>. While I mostly do SPAs these days and don't write many templates in the backend, I still need one for some occasions. When using Python, I like <a href="http://jinja.pocoo.org/docs/dev/">Jinja2</a> and <a href="https://docs.djangoproject.com/en/1.9/topics/templates/#the-django-template-language">Django templates</a>. Here's how I attempted to port them to Rust and the result is <a href="https://github.com/Keats/tera/">Tera</a>.</p>
+<h2 id="goals-and-philosophy">Goals and philosophy<a class="zola-anchor" href="#goals-and-philosophy" aria-label="Anchor link for: goals-and-philosophy">🔗</a></h2>
+<p>As mentioned before, the inspiration comes from both Jinja2 and Django templates. As you might know, those two have similar syntax but different philosophies: Django templates are for presentation only and don't allow a lot of logic while Jinja2 has more powerful programming constructs in the templates.
+I side with Django on this one as complex logic is better put in code than in a template but Django goes a bit too far by even not supporting something like <code>{{ count + 1 }}</code>.</p>
+<p>So here are some of the features I want:</p>
+<ul>
+<li>math operations in templates</li>
+<li>no macros or other complex logic in the template</li>
+<li>beautiful html output out of the box (ie no need for the <code>{{-</code> tags)</li>
+<li>simple inheritance</li>
+<li>simple to use filters</li>
+<li>able to register new tags easily like the <code>{% url ... %}</code> in Django</li>
+<li>include partial templates</li>
+</ul>
+<p>While new tags are definitely logic in the template, that logic would have to be written in Rust and not in a template. That limits reusability but is simpler to understand in the end.</p>
+<p>Filters should be kept simple and be limited in scope: variable in, modifier function with optional argument and return a string. The easiest to think of would be uppercase, lowercase, capitalize and more importantly time formatting. Here are some examples of how it should look:</p>
+<pre data-lang="jinja" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-jinja "><code class="language-jinja" data-lang="jinja"><span style="color:#c23f31;">{{ </span><span style="color:#5597d6;">name </span><span>| </span><span style="color:#5597d6;">uppercase </span><span style="color:#c23f31;">}}
+</span><span style="color:#c23f31;">{{ </span><span style="color:#5597d6;">birthday </span><span>| </span><span style="color:#5597d6;">time</span><span>:</span><span style="color:#d07711;">&quot;YYYY-MM-dd&quot; </span><span style="color:#c23f31;">}}
+</span></code></pre>
+<p>Users should be able to add their own filters as well.</p>
+<p>In terms of error handling, we cannot do anything if a template cannot be parsed so panicking when encountering an error is fine and template compilation should be done at rustc compile time to ensure everything works perfectly (more on that on the README.md).
+On the API side, using Tera should be trivial:</p>
+<ul>
+<li>give a glob that will load all the matching files</li>
+<li>register tag/filter to Tera</li>
+<li>parse all templates</li>
+<li>create a context easily (not as simple as a dict obviously though)</li>
+<li>call a render method that returns a <code>Result</code></li>
+</ul>
+<p>In code that would like that:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#7f8989;">// setting up
+</span><span style="color:#668f14;">let mut</span><span> tera </span><span style="color:#72ab00;">= </span><span>Tera::new(</span><span style="color:#d07711;">&quot;./app/**/*.html&quot;</span><span>);
+</span><span>tera.</span><span style="color:#b39f04;">register_tag</span><span>(url_for);
+</span><span>tera.</span><span style="color:#b39f04;">register_tag</span><span>(retina);
+</span><span>tera.</span><span style="color:#b39f04;">register_filter</span><span>(number_format);
+</span><span>tera.</span><span style="color:#b39f04;">parse</span><span>();
+</span><span>
+</span><span style="color:#7f8989;">// rendering
+</span><span style="color:#668f14;">let mut</span><span> context </span><span style="color:#72ab00;">= </span><span>Context::new();
+</span><span>context.</span><span style="color:#b39f04;">add</span><span>(</span><span style="color:#d07711;">&quot;user&quot;</span><span>, </span><span style="color:#72ab00;">&amp;</span><span>user);
+</span><span>
+</span><span>tera.</span><span style="color:#b39f04;">render</span><span>(</span><span style="color:#d07711;">&quot;user/profile.html&quot;</span><span>, context)
+</span></code></pre>
+<p>Template compilation should only happen once. This can be achieved by using <a href="https://crates.io/crates/lazy_static">lazy_static</a>.</p>
+<p>Let's see how it's built now!</p>
+<h2 id="how-it-s-made">How it's made<a class="zola-anchor" href="#how-it-s-made" aria-label="Anchor link for: how-it-s-made">🔗</a></h2>
+<p>I actually thought of making a template engine after watching the "Lexical Scanning in Go" video by Rob Pike (<a href="https://www.youtube.com/watch?v=HxaD_trXwRE">youtube link</a>).</p>
+<h3 id="lexer-parser">Lexer/Parser<a class="zola-anchor" href="#lexer-parser" aria-label="Anchor link for: lexer-parser">🔗</a></h3>
+<p>This talk explains how the lexing in the <a href="https://golang.org/pkg/text/template/">template package in the Go standard library</a> is implemented. I thought it was pretty cool and implemented something similar last summer.
+For those that don't want to watch the video, here's a quick summary.</p>
+<p>The lexer can be in a few states: inside a block, text, space, number, identifier, string for Tera currently and there are actions that represents what we do and result in a new state. In short, that means we have a state function that takes the lexer as an argument and returns a state function. While this is easy to do in Go, you cannot do reference the type while declaring it but it's ok to do so for a struct.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#7f8989;">// working
+</span><span style="color:#668f14;">struct </span><span style="color:#c23f31;">StateFn</span><span>(</span><span style="color:#a2a001;">Option</span><span>&lt;</span><span style="color:#668f14;">fn</span><span>(</span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">mut</span><span> Lexer) -&gt; StateFn</span><span style="color:#72ab00;">&gt;</span><span>);
+</span><span style="color:#7f8989;">// not working
+</span><span style="color:#668f14;">type </span><span style="color:#c23f31;">StateFn </span><span style="color:#72ab00;">= </span><span style="color:#668f14;">fn</span><span>(</span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">mut</span><span> Lexer) -&gt; </span><span style="color:#a2a001;">Option</span><span>&lt;StateFn&gt;;
+</span></code></pre>
+<p>Thanks for the help on IRC for that one.
+The lexer just runs the state function until we reach EOF which in our case is represented by returning <code>None</code> as a state function. Here's the whole run method of the lexer:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">pub fn </span><span style="color:#c23f31;">run</span><span>(</span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">mut </span><span style="color:#5597d6;">self</span><span>) {
+</span><span>    </span><span style="color:#72ab00;">loop </span><span>{
+</span><span>        </span><span style="color:#668f14;">let</span><span> StateFn(state_fn) </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">self</span><span>.state;
+</span><span>        </span><span style="color:#72ab00;">if</span><span> state_fn.</span><span style="color:#b39f04;">is_none</span><span>() {
+</span><span>            </span><span style="color:#72ab00;">break</span><span>;
+</span><span>        }
+</span><span>        </span><span style="color:#5597d6;">self</span><span>.state </span><span style="color:#72ab00;">=</span><span> state_fn.</span><span style="color:#b39f04;">unwrap</span><span>()(</span><span style="color:#5597d6;">self</span><span>);
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>The actions read the next character and know what to do for each kind of character, eg. finding a number in a variable block will return the <code>lex_number</code> state function. The lexer ouput is a vector of tokens that ends with either a EOF or an error.</p>
+<p>You can read the whole lexer <a href="https://github.com/Keats/tera/blob/fddb8a0b82cba7374bd0552fed1cf831b8943395/src/lexer.rs">on GitHub</a>, it is actually quite simple and readable.</p>
+<p>The parser is quite simple as well. Since we are either in text, in a variable block or in a tag block, we just handle those cases in a loop and use EOF to break. Each "state" knows how to parse itself so the main logic is actually only:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">pub fn </span><span style="color:#c23f31;">parse</span><span>(</span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">mut </span><span style="color:#5597d6;">self</span><span>) {
+</span><span>    </span><span style="color:#72ab00;">loop </span><span>{
+</span><span>        </span><span style="color:#72ab00;">match </span><span style="color:#5597d6;">self</span><span>.</span><span style="color:#b39f04;">peek</span><span>().kind {
+</span><span>            TokenType::TagStart </span><span style="color:#72ab00;">=&gt; </span><span style="color:#5597d6;">self</span><span>.</span><span style="color:#b39f04;">parse_tag_block</span><span>(),
+</span><span>            TokenType::VariableStart </span><span style="color:#72ab00;">=&gt; </span><span style="color:#5597d6;">self</span><span>.</span><span style="color:#b39f04;">parse_variable_block</span><span>(),
+</span><span>            TokenType::Text </span><span style="color:#72ab00;">=&gt; </span><span style="color:#5597d6;">self</span><span>.</span><span style="color:#b39f04;">parse_text</span><span>(),
+</span><span>            TokenType::Eof </span><span style="color:#72ab00;">=&gt; break</span><span>,
+</span><span>            </span><span style="color:#72ab00;">_ =&gt; </span><span style="color:#a2a001;">unreachable!</span><span>()
+</span><span>        };
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>The trickiest bit was handling precedence in blocks so that something like <code>{{1 / 2 + 3 * 2 + 42}}</code> would parse as expected. This is done by assigning precedence values to each kind of token and looking forward to see if something with higer precedence is coming. I would be surprised if there was not a bug in there.</p>
+<p>The output of the parser is a classic AST.</p>
+<h3 id="context">Context<a class="zola-anchor" href="#context" aria-label="Anchor link for: context">🔗</a></h3>
+<p>Context is where dynamic languages have the upper hand. In python I can just pass a dict <code>{"user": user, "count": 1}</code> to Jinja2 or Django and be done with it. In Rust, it can't be that easy unfortunately.
+Here's the same context as above for Tera:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">let mut</span><span> context </span><span style="color:#72ab00;">= </span><span>Context::new();
+</span><span>context.</span><span style="color:#b39f04;">add</span><span>(</span><span style="color:#d07711;">&quot;user&quot;</span><span>, </span><span style="color:#72ab00;">&amp;</span><span>user);
+</span><span>context.</span><span style="color:#b39f04;">add</span><span>(</span><span style="color:#d07711;">&quot;count&quot;</span><span>, </span><span style="color:#72ab00;">&amp;</span><span style="color:#b3933a;">1</span><span>);
+</span></code></pre>
+<p>To make that possible, Tera uses <a href="https://github.com/serde-rs/serde">serde</a> which means that in the example above, the <code>user</code> variable would have to implement the <code>Serialize</code> trait. This makes Tera annoying to use on non-nightly Rust as compiler plugins are not stable yet. Serde is the future for serialization in Rust so might as well embrace it.</p>
+<h3 id="rendering">Rendering<a class="zola-anchor" href="#rendering" aria-label="Anchor link for: rendering">🔗</a></h3>
+<p>In the rendering phase, we take the AST from the parser and traverse it, replacing variables with values from the context and handling the various tag blocks. It is also home to some terrible terrible code, namely the <a href="https://github.com/Keats/tera/blob/fddb8a0b82cba7374bd0552fed1cf831b8943395/src/render.rs#L126-L241"><code>eval_condition</code></a> method that checks <code>if</code> and <code>elif</code> conditions. It has a cyclomatic complexity of 27 apparently.
+It also contains the classic test fixing snippet that will be removed after I handle calculations properly:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#7f8989;">// TODO: fix properly
+</span><span style="color:#7f8989;">// TODO: add tests for float maths arithmetics
+</span><span style="color:#72ab00;">if</span><span> result.</span><span style="color:#b39f04;">fract</span><span>() </span><span style="color:#72ab00;">&lt; </span><span style="color:#b3933a;">0.01 </span><span>{
+</span><span>    result </span><span style="color:#72ab00;">=</span><span> result.</span><span style="color:#b39f04;">round</span><span>();
+</span><span>}
+</span></code></pre>
+<h2 id="feedback-on-the-dev-aspect">Feedback on the dev aspect<a class="zola-anchor" href="#feedback-on-the-dev-aspect" aria-label="Anchor link for: feedback-on-the-dev-aspect">🔗</a></h2>
+<p>The more Rust I do, the more I like it. There are times where you might look at the screen blankly for a few minutes and then decide to have a walk instead but it happens less and less. IRC and the <a href="https://www.reddit.com/r/rust">Rust subreddit</a> are very good source for help if you are stuck and they have interesting conversations.</p>
+<p>With no hesitation, <a href="https://github.com/Manishearth/rust-clippy">Clippy</a> is the MVP of the development tools I'm using at the moment across all languages (Rust, Python and TypeScript mostly). It is a linter that catches lots of errors or bad code and shows you how to fix or how to do what you wanted to do but in a clearer way. The team is adding lints continuously so I usually just <code>cargo update</code> my projects every week or so just so I can run the latest <code>clippy</code> on it.</p>
+<p>Error messages are usually very good and are getting <a href="https://github.com/rust-lang/rust/pull/32756">even better soon</a>.</p>
+<h2 id="what-s-next">What's next<a class="zola-anchor" href="#what-s-next" aria-label="Anchor link for: what-s-next">🔗</a></h2>
+<p>The main things Tera are missing right now are filters and a way to add custom tag blocks. If anyone thinks that it is 2016 and therefore should use a parser combinator, feel free to submit a PR! I also welcome any feedback on Tera design as it doesn't have to be a clone of Jinja2 or Django.</p>
+<p>Since I am quite busy with our first product <a href="https://github.com/wearewizards/proppyweb">Proppy</a>, I won't have a huge amount of time so any help is welcome.</p>
+<p>To finish on a "Rust for web" note, the last main thing I would miss to try it for real is a validation crate that would work <a href="https://gist.github.com/Keats/32d26f699dcc13ebd41b">like this gist</a>. We use <a href="https://marshmallow.readthedocs.org/en/latest/">marshmallow</a> in proppy and it makes validation API data a breeze. Unfortunately, with compiler plugins being still unstable, I don't think I will start working on that. There is a RFC for stabilization though: <a href="https://github.com/rust-lang/rfcs/pull/1566">Procedural macros</a>.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    After a year of beta, Tera now reaches v1.
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Tera v1 is here!</h1>
+            <div class="post__meta">
+                2019-12-07
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>Tera is a template engine inspired by <a href="http://jinja.pocoo.org/">Jinja2</a> and the <a href="https://docs.djangoproject.com/en/1.9/topics/templates/">Django template language</a>.
+It is also similar to <a href="https://twig.symfony.com/">Twig</a> and <a href="https://shopify.github.io/liquid/">Liquid</a> if you are coming from PHP/Ruby.</p>
+<p>The last release, 0.11.20, was released back in November 2018 and the first v1 alpha was released in January 2019. During 2019,
+the <a href="https://www.getzola.org/">Zola</a> static engine has been keeping up with each Tera release and has therefore been tested quite a bit.</p>
+<p>If you want to see the TL;DR of all the changes since 0.11.20, you can have a look at the <a href="https://github.com/Keats/tera/blob/master/CHANGELOG.md#100-2019-12-07">changelog</a>.</p>
+<p>In most cases, the upgrade to v1 should be painless: unless you are using the error-chain part of Tera errors, it might
+even work without any changes.</p>
+<p>Before going further, a huge thank you to everyone that <a href="https://github.com/Keats/tera/graphs/contributors">contributed</a>.</p>
+<p>Let's look at some of the main changes in a bit more detail now.</p>
+<h2 id="error-handling">Error handling<a class="zola-anchor" href="#error-handling" aria-label="Anchor link for: error-handling">🔗</a></h2>
+<p>Error handling is a <a href="https://blog.yoshuawuyts.com/error-handling-survey/">hot topic</a> in Rust and has been for quite some time.
+At the time of 0.11, <a href="https://github.com/rust-lang-nursery/error-chain">error-chain</a> was the recommended approach but pretty much as
+soon as I ported all of my code to use it, <a href="https://github.com/rust-lang-nursery/failure/">failure</a> became the go-to crate. Since then,
+some of <code>failure</code>'s features made their way into the standard <code>Error</code> trait including the one I am using: the <a href="https://doc.rust-lang.org/std/error/trait.Error.html#method.source"><code>source</code></a> method.</p>
+<p>I have pretty much given up on any error handling crate for the time being and just use <code>std::Error</code> for everything, including in this new version of Tera.</p>
+<h2 id="traits-for-filter-tests-and-functions">Traits for filter, tests and functions<a class="zola-anchor" href="#traits-for-filter-tests-and-functions" aria-label="Anchor link for: traits-for-filter-tests-and-functions">🔗</a></h2>
+<p>Previously, the type for each was a simple function. It has now been changed to a trait, allowing for each of them to have a context, for example.
+Zola, for example, uses structs for some of the functions in order to hold the site data. The trait is automatically implemented for the previous function
+type so if you had defined your own they should continue to work, as soon as you change their arguments to be borrowed instead of owned.</p>
+<h2 id="whitespace-management">Whitespace management<a class="zola-anchor" href="#whitespace-management" aria-label="Anchor link for: whitespace-management">🔗</a></h2>
+<p>You can now use the same whitespace management as Jinja2 in Tera:</p>
+<pre data-lang="jinja2" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-jinja2 "><code class="language-jinja2" data-lang="jinja2"><span>hello
+</span><span style="color:#c23f31;">{{- </span><span style="color:#5597d6;">username </span><span style="color:#c23f31;">-}}
+</span><span>!
+</span></code></pre>
+<p>will render <code>hellovincent!</code> if <code>username</code> is <code>vincent</code>. Please see the <a href="https://tera.netlify.com/docs/#whitespace-control">documentation</a> for more details.</p>
+<h2 id="increased-rendering-performance">Increased rendering performance<a class="zola-anchor" href="#increased-rendering-performance" aria-label="Anchor link for: increased-rendering-performance">🔗</a></h2>
+<p>The whole rendering code has been rewritten to be more performant.</p>
+<p>The bottleneck is still converting the context to JSON since it needs to clone the data.
+This is unlikely to change until we move to a borrowed approach but I do not know how to approach that. If
+anyone can figure out a way to solve this issue and still be ergonomic, that would be amazing; please chime in on the <a href="https://github.com/Keats/tera/issues/469">related issue</a>.</p>
+<p>How does it compare with other Rust template engines? There is a <a href="https://github.com/djc/template-benchmarks-rs">benchmark</a> testing just that.
+Before showing the results, it is important to understand the difference between the compiled templates and interpreted templates:</p>
+<ul>
+<li>compiled template engines: <a href="https://crates.io/crates/askama">askama</a>, <a href="https://crates.io/crates/horrorshow">horrorshow</a> and most of the ones
+in that benchmark are generating Rust code through macros. The big upsides of this are performance and being able to typecheck your templates.
+The big downsides are compilation time and not being able to handle dynamic templates: you cannot render an arbitrary template file.</li>
+<li>interpreted template engines: <a href="https://crates.io/crates/liquid">Liquid</a>, <a href="https://crates.io/crates/handlebars">Handlebars</a> and Tera are in this category.
+They are not going to be as fast or type-safe as compiled one but can run any templates you throw at them.</li>
+</ul>
+<p>For example, a static site engine could not work using a compiled template engine as users define their own templates, add arbitrary data and extend other random existing templates.</p>
+<p>I've grouped the table output of the templates benchmark (done with <a href="https://github.com/bheisler/criterion.rs">criterion.rs</a>) depending on the template engine type.
+The benchmarks have been ran on a 2018 Macbook Pro.</p>
+<h3 id="big-table-benchmark">Big table benchmark<a class="zola-anchor" href="#big-table-benchmark" aria-label="Anchor link for: big-table-benchmark">🔗</a></h3>
+<p>This is running a for loop with a context being an array of length 100 with each element being another array of length 100.</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">Big</span><span> table/Askama        time:   </span><span style="color:#72ab00;">[</span><span>624.98 us 643.77 us 663.40 us</span><span style="color:#72ab00;">]
+</span><span style="color:#5597d6;">Big</span><span> table/fomat         time:   </span><span style="color:#72ab00;">[</span><span>228.47 us 230.94 us 234.08 us</span><span style="color:#72ab00;">]
+</span><span style="color:#5597d6;">Big</span><span> table/Horrorshow    time:   </span><span style="color:#72ab00;">[</span><span>357.87 us 371.52 us 385.84 us</span><span style="color:#72ab00;">]  
+</span><span style="color:#5597d6;">Big</span><span> table/Markup        time:   </span><span style="color:#72ab00;">[</span><span>294.43 us 302.90 us 313.99 us</span><span style="color:#72ab00;">] 
+</span><span style="color:#5597d6;">Big</span><span> table/Ructe         time:   </span><span style="color:#72ab00;">[</span><span>586.48 us 609.61 us 638.02 us</span><span style="color:#72ab00;">]
+</span><span style="color:#5597d6;">Big</span><span> table/Yarte         time:   </span><span style="color:#72ab00;">[</span><span>286.75 us 311.03 us 334.20 us</span><span style="color:#72ab00;">]
+</span><span style="color:#5597d6;">Big</span><span> table/write         time:   </span><span style="color:#72ab00;">[</span><span>353.75 us 370.98 us 391.61 us</span><span style="color:#72ab00;">] 
+</span><span>
+</span><span style="color:#5597d6;">Big</span><span> table/Tera          time:   </span><span style="color:#72ab00;">[</span><span>3.5811 ms 3.6997 ms 3.8292 ms</span><span style="color:#72ab00;">] 
+</span><span style="color:#5597d6;">Big</span><span> table/Liquid        time:   </span><span style="color:#72ab00;">[</span><span>12.890 ms 13.113 ms 13.366 ms</span><span style="color:#72ab00;">] 
+</span><span style="color:#5597d6;">Big</span><span> table/Handlebars    time:   </span><span style="color:#72ab00;">[</span><span>83.598 ms 86.947 ms 90.391 ms</span><span style="color:#72ab00;">]   
+</span></code></pre>
+<p>As you can see, this is a bad case for interpreted template engine. Tera is the fastest among them but is still up to 10x slower than some compiled engines.
+The result from Handlebars are particularly odd: I do not see why it would be 23x slower than Tera.</p>
+<p>Considering those results, you should probably use a compiled template engine if you are trying to render some context
+requiring a lot of allocations like in that benchmark.</p>
+<h3 id="teams-benchmark">Teams benchmark<a class="zola-anchor" href="#teams-benchmark" aria-label="Anchor link for: teams-benchmark">🔗</a></h3>
+<p>This is rendering a template with a small array of structs as context, a more realistic average workload.</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">Teams/Askama</span><span>            time:   </span><span style="color:#72ab00;">[</span><span>1.1503 us 1.2120 us 1.2800 us</span><span style="color:#72ab00;">] 
+</span><span style="color:#5597d6;">Teams/fomat</span><span>             time:   </span><span style="color:#72ab00;">[</span><span>502.20 ns 512.54 ns 524.81 ns</span><span style="color:#72ab00;">] 
+</span><span style="color:#5597d6;">Teams/Horrorshow</span><span>        time:   </span><span style="color:#72ab00;">[</span><span>466.38 ns 469.09 ns 472.31 ns</span><span style="color:#72ab00;">] 
+</span><span style="color:#5597d6;">Teams/Markup</span><span>            time:   </span><span style="color:#72ab00;">[</span><span>403.39 ns 408.75 ns 416.11 ns</span><span style="color:#72ab00;">] 
+</span><span style="color:#5597d6;">Teams/Ructe</span><span>             time:   </span><span style="color:#72ab00;">[</span><span>963.43 ns 976.63 ns 989.98 ns</span><span style="color:#72ab00;">]
+</span><span style="color:#5597d6;">Teams/Yarte</span><span>             time:   </span><span style="color:#72ab00;">[</span><span>766.24 ns 782.78 ns 800.46 ns</span><span style="color:#72ab00;">]
+</span><span style="color:#5597d6;">Teams/write</span><span>             time:   </span><span style="color:#72ab00;">[</span><span>756.18 ns 770.13 ns 784.21 ns</span><span style="color:#72ab00;">] 
+</span><span>
+</span><span style="color:#5597d6;">Teams/Tera</span><span>              time:   </span><span style="color:#72ab00;">[</span><span>8.8657 us 8.8969 us 8.9288 us</span><span style="color:#72ab00;">] 
+</span><span style="color:#5597d6;">Teams/Liquid</span><span>            time:   </span><span style="color:#72ab00;">[</span><span>12.858 us 12.909 us 12.960 us</span><span style="color:#72ab00;">] 
+</span><span style="color:#5597d6;">Teams/Handlebars</span><span>        time:   </span><span style="color:#72ab00;">[</span><span>70.150 us 75.716 us 81.926 us</span><span style="color:#72ab00;">]
+</span></code></pre>
+<p>Tera is again the fastest interpreted template engine, but the numbers are small enough that any engine will do the job.</p>
+<h2 id="glob-patterns-now-supported">Glob patterns now supported<a class="zola-anchor" href="#glob-patterns-now-supported" aria-label="Anchor link for: glob-patterns-now-supported">🔗</a></h2>
+<p>You can now pass patterns to <code>Tera::new</code> like <code>templates/**/*{html,xml}</code> to load exactly the type of files you want.</p>
+<h2 id="a-builtins-feature">A <code>builtins</code> feature<a class="zola-anchor" href="#a-builtins-feature" aria-label="Anchor link for: a-builtins-feature">🔗</a></h2>
+<p>The number of dependencies started to grow quite a bit as filters and functions were being added.
+From <code>1.0.0</code>, a new active-by-default feature named <code>builtins</code> has been introduced. If you disable it, Tera will only
+depend on the crates needed for parsing and rendering and all the filters and functions that were depending on those
+dependencies will not be present anymore.</p>
+<h2 id="known-issue">Known issue<a class="zola-anchor" href="#known-issue" aria-label="Anchor link for: known-issue">🔗</a></h2>
+<p>Due to a bug in <a href="https://pest.rs/">pest</a>, the parser generator used by Tera, some template parsing might timeout. There
+are more details in the <a href="https://github.com/Keats/tera/issues/436">issue</a> but since the pest contributors are working on v3,
+it doesn't seem worth it to hold on releasing Tera 1.0 for an unknown amount of time until its release.
+This issue was found while fuzzing but I've been running into <a href="https://github.com/rust-lang/rust/issues/66140">https://github.com/rust-lang/rust/issues/66140</a> when trying
+to run the fuzzer again on OSX.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    How to calculate trendiness factor from ES and use it in queries
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Finding trending things in Elasticsearch using python and redis</h1>
+            <div class="post__meta">
+                2014-09-19
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>One of the features at my current contract is displaying widgets showing trending news articles.
+We define trendiness on a company basis (topic as well but let's keep it to only companies for this article), ie we want to display articles from companies that are trending.
+The articles are stored in <a href="http://www.elasticsearch.org/">Elasticsearch</a> and we want to spot the trending ones for a given time period (last week, last month, last quarter, last year).
+For each article we keep track (in the article doc in ES, as a <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-nested-type.html">nested type</a>) of the companies mentioned and we use that field to calculate the trends (this is a bit simplified, there is actually a second similar field as well but let's keep things simple for the sake of the article).</p>
+<p>These trending articles are shown in a iframe and this iframe had been timing out even for short-ish time periods (3 months or so) worth of data.
+Since we can't really have things timing out, I decided to have a look and try to improve things.</p>
+<h2 id="what-was-there-before">What was there before<a class="zola-anchor" href="#what-was-there-before" aria-label="Anchor link for: what-was-there-before">🔗</a></h2>
+<p>Looking at the code, I realised that the current trending code was very naive.
+It was working in two steps:</p>
+<ul>
+<li>gets the number of times a company was mentioned over the time period we're interested in</li>
+<li>run a javascript script in a ES query that was calculating the score for each article by adding the score for of each company in the article</li>
+</ul>
+<p>There are two things wrong with that approach.
+The first obvious one is that it massively favours big companies, as they will have more articles talking about them, and even if they are actually trending down compared to the norm, they will still be at the top of the trending list.
+The second one is that it is running a script iterating over 2 dicts for each article (2 because as mentioned in the introduction, there is another field we rate with in addition to companies), making it pretty damn slow and timing out on the live server.</p>
+<h2 id="a-new-approach">A new approach<a class="zola-anchor" href="#a-new-approach" aria-label="Anchor link for: a-new-approach">🔗</a></h2>
+<p>With these 2 things in mind, I set out to figure out a better and faster way to find the trending companies.</p>
+<h3 id="trendiness">Trendiness<a class="zola-anchor" href="#trendiness" aria-label="Anchor link for: trendiness">🔗</a></h3>
+<p>The first thing to define is trendiness: something trendy is something that is mentioned more often than usual.
+From that definition we can realise that we first need to define what is <em>usual</em>, also called the <em>baseline</em> so let's start with that.</p>
+<h3 id="defining-a-baseline-using-elasticsearch">Defining a baseline using Elasticsearch<a class="zola-anchor" href="#defining-a-baseline-using-elasticsearch" aria-label="Anchor link for: defining-a-baseline-using-elasticsearch">🔗</a></h3>
+<p>As mentioned above, the goal in defining a baseline is finding out what's normal for a company.
+I chose to find the number of mentions for each company everyday for the 3 months prior to the interval we're interested in.
+3 months is a completely arbitrary value that could as well be 1 month but it seemed about right.
+Elasticsearch provides a <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html">date histogram aggregation</a> that does exactly that !</p>
+<p>Let's have a look at a query, there are a few options worth mentioning:</p>
+<pre data-lang="json" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>    </span><span style="color:#d07711;">&quot;size&quot;</span><span>: </span><span style="color:#b3933a;">0</span><span>,
+</span><span>    </span><span style="color:#d07711;">&quot;query&quot;</span><span>: {</span><span style="background-color:#562d56bf;color:#f8f8f8;">...</span><span>},
+</span><span>    </span><span style="color:#d07711;">&quot;aggs&quot;</span><span>: {
+</span><span>        </span><span style="color:#d07711;">&quot;companies&quot;</span><span>: {
+</span><span>            </span><span style="color:#d07711;">&quot;date_histogram&quot;</span><span>: {
+</span><span>                </span><span style="color:#d07711;">&quot;field&quot;</span><span>: </span><span style="color:#d07711;">&quot;harvest_date&quot;</span><span>,
+</span><span>                </span><span style="color:#d07711;">&quot;interval&quot;</span><span>: </span><span style="color:#d07711;">&quot;day&quot;</span><span>,
+</span><span>                </span><span style="color:#d07711;">&quot;format&quot;</span><span>: </span><span style="color:#d07711;">&quot;yyyy-MM-dd&quot;</span><span>,
+</span><span>                </span><span style="color:#d07711;">&quot;min_doc_count&quot;</span><span>: </span><span style="color:#b3933a;">0</span><span>,
+</span><span>                </span><span style="color:#d07711;">&quot;extended_bounds&quot;</span><span>: {
+</span><span>                    </span><span style="color:#d07711;">&quot;min&quot;</span><span>: </span><span style="background-color:#562d56bf;color:#f8f8f8;">history_start,</span><span>
+</span><span>                    </span><span style="color:#d07711;">&quot;max&quot;</span><span>: </span><span style="background-color:#562d56bf;color:#f8f8f8;">end</span><span>
+</span><span>                },
+</span><span>            },
+</span><span>            </span><span style="color:#d07711;">&quot;aggs&quot;</span><span>: {
+</span><span>                </span><span style="color:#d07711;">&quot;nested_items&quot;</span><span>: {
+</span><span>                    </span><span style="color:#d07711;">&quot;aggs&quot;</span><span>: {
+</span><span>                        </span><span style="color:#d07711;">&quot;items&quot;</span><span>: {
+</span><span>                            </span><span style="color:#d07711;">&quot;terms&quot;</span><span>: {
+</span><span>                                </span><span style="color:#d07711;">&quot;field&quot;</span><span>: </span><span style="color:#d07711;">&quot;companies.id&quot;</span><span>,
+</span><span>                                </span><span style="color:#d07711;">&quot;size&quot;</span><span>: </span><span style="color:#b3933a;">0
+</span><span>                            }
+</span><span>                        }
+</span><span>                    },
+</span><span>                    </span><span style="color:#d07711;">&quot;nested&quot;</span><span>: {
+</span><span>                        </span><span style="color:#d07711;">&quot;path&quot;</span><span>: </span><span style="color:#d07711;">&quot;companies&quot;
+</span><span>                    }
+</span><span>                }
+</span><span>            }
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span><span>
+</span></code></pre>
+<p>As mentioned in the introduction, companies is a nested type so require some addition levels in the queries.
+There are a few things to note:</p>
+<ul>
+<li>we want a day by day interval, ES provides that out of the box and a few more if necessary, see the link above for all the possibilities</li>
+<li>we want the date formatted as ISO for simplicity sake</li>
+<li>we want to get as many buckets as possible so we even get the days where we don't have any matching documents by setting <strong>min_doc_count</strong> to 0</li>
+<li>we want every possible day between history_start and end to have a bucket by setting the <strong>extended_bounds</strong> min/max to these dates</li>
+</ul>
+<p>With this query we get a bucket for each day that can contain companies with they doc_count if there are, or an empty bucket otherwise.
+With all the companies ids and that data, we can recreate the complete histogram of the number of article for each company in our postgres  database.  I also separate the history data from the window we are observing, the python code looks something like:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span>AggregationData </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">namedtuple</span><span>(</span><span style="color:#d07711;">&#39;AggregationData&#39;</span><span>, [</span><span style="color:#d07711;">&#39;history&#39;</span><span>, </span><span style="color:#d07711;">&#39;window&#39;</span><span>])
+</span><span>
+</span><span style="color:#72ab00;">def </span><span style="color:#c23f31;">_get_numbers_by_day</span><span>(</span><span style="color:#5597d6;">all_ids</span><span>, </span><span style="color:#5597d6;">aggregation</span><span>, </span><span style="color:#5597d6;">window_start</span><span>):
+</span><span>  </span><span style="color:#7f8989;">&quot;&quot;&quot;window_start is ISO formatted string&quot;&quot;&quot;
+</span><span>  values </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">defaultdict</span><span>(</span><span style="color:#72ab00;">lambda</span><span>: </span><span style="color:#5597d6;">AggregationData</span><span>([], []))
+</span><span>
+</span><span>  in_window </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">False
+</span><span>  </span><span style="color:#72ab00;">for </span><span>day </span><span style="color:#72ab00;">in </span><span>aggregation:
+</span><span>    </span><span style="color:#72ab00;">if not </span><span>in_window:
+</span><span>      </span><span style="color:#7f8989;"># remember we asked for the dates from the agg to be ISO formatted as well
+</span><span>      in_window </span><span style="color:#72ab00;">= </span><span>window_start </span><span style="color:#72ab00;">== </span><span>day[</span><span style="color:#d07711;">&#39;key_as_string&#39;</span><span>]
+</span><span>
+</span><span>    </span><span style="color:#7f8989;"># then look if we got doc_counts for that day, add it to the right tuple in the values dict, see below
+</span><span>    </span><span style="color:#7f8989;"># fill with 0 for the rest, for example
+</span><span>    </span><span style="color:#7f8989;"># (_id would have been set while looping over the ids not seen in the buckets here)
+</span><span>    </span><span style="color:#72ab00;">if </span><span>in_window:
+</span><span>      values[_id].window.</span><span style="color:#5597d6;">append</span><span>(</span><span style="color:#b3933a;">0</span><span>)
+</span><span>    </span><span style="color:#72ab00;">else</span><span>:
+</span><span>      values[_id].history.</span><span style="color:#5597d6;">append</span><span>(</span><span style="color:#b3933a;">0</span><span>)
+</span><span>
+</span></code></pre>
+<p>We now have the data for all companies for each day. Cool.</p>
+<h3 id="finding-the-trends">Finding the trends<a class="zola-anchor" href="#finding-the-trends" aria-label="Anchor link for: finding-the-trends">🔗</a></h3>
+<h4 id="first-approach">First approach<a class="zola-anchor" href="#first-approach" aria-label="Anchor link for: first-approach">🔗</a></h4>
+<p>The first thing I tried was to get the mean value of the history values and divide the window period values with that mean to get normalized values compared to their usual values.
+You are then able to spot unusual activities when a value is above 1 (by that mean I something like 5, not 1.1) and identify trends by looking at the difference between 2 consecutive points: if the numbers are going up and are reasonably higher than 1, it's trending !</p>
+<p>While this gives <em>ok</em> results, this approach fails to account for the standard deviation which can change the results quite a bit.</p>
+<h4 id="z-score">Z-Score<a class="zola-anchor" href="#z-score" aria-label="Anchor link for: z-score">🔗</a></h4>
+<p>Time to look at <a href="http://en.wikipedia.org/wiki/Standard_score">z-score</a> !
+This is the standard algorithm to find trending things and is simple to implement:</p>
+<div class="post__image">
+    <a href="https://www.vincentprouillet.com/blog/finding-trending-things/http:&#x2F;&#x2F;upload.wikimedia.org&#x2F;math&#x2F;8&#x2F;4&#x2F;6&#x2F;8463971a22cc96a1e0612588e5656bce.png" class="image-link" target="_blank">
+        <img src="https://www.vincentprouillet.com/blog/finding-trending-things/http:&#x2F;&#x2F;upload.wikimedia.org&#x2F;math&#x2F;8&#x2F;4&#x2F;6&#x2F;8463971a22cc96a1e0612588e5656bce.png" alt="z-score formula">
+    </a>
+</div>
+<p>With μ being the history mean and σ the standard deviation of the history data.</p>
+<p>Let's implement it quickly in python:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">from </span><span>math </span><span style="color:#72ab00;">import </span><span>sqrt
+</span><span>
+</span><span style="color:#72ab00;">def </span><span style="color:#c23f31;">zscore</span><span>(</span><span style="color:#5597d6;">data</span><span>, </span><span style="color:#5597d6;">point</span><span>):
+</span><span>  </span><span style="color:#7f8989;">&quot;&quot;&quot;Going to observe a single point here&quot;&quot;&quot;
+</span><span>  length_data </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">float</span><span>(</span><span style="color:#b39f04;">len</span><span>(data)) </span><span style="color:#7f8989;"># need floats, and we are using it several times
+</span><span>  mean </span><span style="color:#72ab00;">= </span><span style="color:#b39f04;">sum</span><span>(data) </span><span style="color:#72ab00;">/ </span><span>length_data  </span><span style="color:#7f8989;"># and be careful of len(data) == 0
+</span><span>  std </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">sqrt</span><span>(</span><span style="color:#b39f04;">sum</span><span>((point </span><span style="color:#72ab00;">- </span><span>mean) </span><span style="color:#72ab00;">** </span><span style="color:#b3933a;">2 </span><span style="color:#72ab00;">for </span><span>point </span><span style="color:#72ab00;">in </span><span>data) </span><span style="color:#72ab00;">/ </span><span>length_data)
+</span><span>
+</span><span>  </span><span style="color:#7f8989;"># And we now apply the formula above
+</span><span>  </span><span style="color:#72ab00;">return </span><span>(point </span><span style="color:#72ab00;">- </span><span>mean) </span><span style="color:#72ab00;">/ </span><span>std  </span><span style="color:#7f8989;"># again, check for std == 0
+</span></code></pre>
+<p>Nothing fancy going there, just getting the mean and standard deviation for the data and use the formula.
+This gives pretty good results (good thing we humans can detect if something is trendy pretty easily):</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">print</span><span> zscore(</span><span style="color:#72ab00;">[</span><span>20, 10, 10, 5, 5, 6, 6, 6</span><span style="color:#72ab00;">]</span><span>, 20)
+</span><span style="color:#72ab00;">&gt;&gt; </span><span style="color:#b3933a;">2</span><span style="color:#5597d6;">.4244128728
+</span><span style="color:#5597d6;">print</span><span> zscore(</span><span style="color:#72ab00;">[</span><span>0, 2, 3, 4, 6, 8</span><span style="color:#72ab00;">]</span><span>, 2)
+</span><span style="color:#72ab00;">&gt;&gt; </span><span>-</span><span style="color:#5597d6;">0.7027642215
+</span></code></pre>
+<p>There is one issue with that though:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">print </span><span style="color:#5597d6;">zscore</span><span>([</span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>], </span><span style="color:#b3933a;">20</span><span>)
+</span><span style="color:#72ab00;">&gt;&gt; </span><span style="color:#b3933a;">1.15470053838
+</span><span style="color:#72ab00;">print </span><span style="color:#5597d6;">zscore</span><span>([</span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>], </span><span style="color:#b3933a;">20</span><span>)
+</span><span style="color:#72ab00;">&gt;&gt; </span><span style="color:#b3933a;">1.15470053838
+</span></code></pre>
+<p>Our guts tell us that the first one is more unusual than the second one and thus should have a higher rating than the second (imagine similar series containing hundred of points rather than this small example) if we are only looking at the last few days.
+When we are looking at trending things, recent values are more important than old ones right?
+We need to somehow depreciate the previous values as we move forward in the history.
+This is called a rolling zscore and unfortunately Pandas doesn't <a href="https://pandas.pydata.org/pandas-docs/stable/reference/window.html#standard-moving-window-functions">have one for zscore</a>.  I could have probably used rolling_apply but where would be the fun in that and it is pretty easy to implement anyway !</p>
+<h4 id="rolling-z-score">Rolling z-score<a class="zola-anchor" href="#rolling-z-score" aria-label="Anchor link for: rolling-z-score">🔗</a></h4>
+<p>We got the formula and the code for the normal z-score above.
+By rolling we mean that we re-apply the formula for every point, and in our case adding a factor so that the oldest points carry the less value.
+How do we do that?
+Simply by multiplying the average by a factor for every point.
+An implementation in python looks like the following (maths taken from <a href="http://stackoverflow.com/a/826509">that stackoverflow answer</a>:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">def </span><span style="color:#c23f31;">rolling_zscore</span><span>(</span><span style="color:#5597d6;">data</span><span>, </span><span style="color:#5597d6;">observed_window</span><span>, </span><span style="color:#5597d6;">decay</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">0.9</span><span>):
+</span><span>    </span><span style="color:#7f8989;">&quot;&quot;&quot;
+</span><span style="color:#7f8989;">    The lowest the decay, the more important the new points
+</span><span style="color:#7f8989;">    Decay is there to ensure that new data is worth more than old data
+</span><span style="color:#7f8989;">    in terms of trendiness
+</span><span style="color:#7f8989;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#7f8989;"># Set the average to a the first value of the history to start with
+</span><span>    avg </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">float</span><span>(data[</span><span style="color:#b3933a;">0</span><span>])
+</span><span>    squared_average </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">float</span><span>(data[</span><span style="color:#b3933a;">0</span><span>] </span><span style="color:#72ab00;">** </span><span style="color:#b3933a;">2</span><span>)
+</span><span>
+</span><span>    </span><span style="color:#72ab00;">def </span><span style="color:#c23f31;">add_to_history</span><span>(</span><span style="color:#5597d6;">point</span><span>, </span><span style="color:#5597d6;">average</span><span>, </span><span style="color:#5597d6;">sq_average</span><span>):
+</span><span>        average </span><span style="color:#72ab00;">= </span><span>average </span><span style="color:#72ab00;">* </span><span>decay </span><span style="color:#72ab00;">+ </span><span>point </span><span style="color:#72ab00;">* </span><span>(</span><span style="color:#b3933a;">1 </span><span style="color:#72ab00;">- </span><span>decay)
+</span><span>        sq_average </span><span style="color:#72ab00;">= </span><span>sq_average </span><span style="color:#72ab00;">* </span><span>decay </span><span style="color:#72ab00;">+ </span><span>(point </span><span style="color:#72ab00;">** </span><span style="color:#b3933a;">2</span><span>) </span><span style="color:#72ab00;">* </span><span>(</span><span style="color:#b3933a;">1 </span><span style="color:#72ab00;">- </span><span>decay)
+</span><span>        </span><span style="color:#72ab00;">return </span><span>average, sq_average
+</span><span>
+</span><span>    </span><span style="color:#72ab00;">def </span><span style="color:#c23f31;">calculate_zscore</span><span>(</span><span style="color:#5597d6;">average</span><span>, </span><span style="color:#5597d6;">sq_average</span><span>, </span><span style="color:#5597d6;">value</span><span>):
+</span><span>        std </span><span style="color:#72ab00;">= </span><span style="color:#b39f04;">round</span><span>(</span><span style="color:#5597d6;">sqrt</span><span>(sq_average </span><span style="color:#72ab00;">- </span><span>avg </span><span style="color:#72ab00;">** </span><span style="color:#b3933a;">2</span><span>))
+</span><span>        </span><span style="color:#72ab00;">if </span><span>std </span><span style="color:#72ab00;">== </span><span style="color:#b3933a;">0</span><span>:
+</span><span>            </span><span style="color:#72ab00;">return </span><span>value </span><span style="color:#72ab00;">- </span><span>average
+</span><span>
+</span><span>        </span><span style="color:#72ab00;">return </span><span>(value </span><span style="color:#72ab00;">- </span><span>average) </span><span style="color:#72ab00;">/ </span><span>std
+</span><span>
+</span><span>    </span><span style="color:#72ab00;">for </span><span>point </span><span style="color:#72ab00;">in </span><span>data[</span><span style="color:#b3933a;">1</span><span>:]:
+</span><span>        avg, squared_average </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">add_to_history</span><span>(point, avg, squared_average)
+</span><span>
+</span><span>    trends </span><span style="color:#72ab00;">= </span><span>[]
+</span><span>    </span><span style="color:#7f8989;"># We recalculate the averages for each new point added to be more
+</span><span>    </span><span style="color:#7f8989;"># accurate
+</span><span>    </span><span style="color:#72ab00;">for </span><span>point </span><span style="color:#72ab00;">in </span><span>observed_window:
+</span><span>        trends.</span><span style="color:#5597d6;">append</span><span>(</span><span style="color:#5597d6;">calculate_zscore</span><span>(avg, squared_average, point))
+</span><span>        avg, squared_average </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">add_to_history</span><span>(point, avg, squared_average)
+</span><span>
+</span><span>    </span><span style="color:#7f8989;"># Close enough way to find a trend in the window
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#b39f04;">sum</span><span>(trends) </span><span style="color:#72ab00;">/ </span><span style="color:#b39f04;">len</span><span>(trends) </span><span style="color:#72ab00;">if </span><span style="color:#b39f04;">len</span><span>(trends) </span><span style="color:#72ab00;">!= </span><span style="color:#b3933a;">0 </span><span style="color:#72ab00;">else </span><span style="color:#b3933a;">0
+</span></code></pre>
+<p>Let's see the results and how decay affects the trendiness by checking the values for the trends list:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#7f8989;"># Values used, you can see data averaging 3-4
+</span><span>data </span><span style="color:#72ab00;">= </span><span>[</span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">3</span><span>, </span><span style="color:#b3933a;">5</span><span>, </span><span style="color:#b3933a;">4</span><span>, </span><span style="color:#b3933a;">3</span><span>, </span><span style="color:#b3933a;">6</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">2</span><span>, </span><span style="color:#b3933a;">6</span><span>, </span><span style="color:#b3933a;">8</span><span>, </span><span style="color:#b3933a;">9</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">1</span><span>, </span><span style="color:#b3933a;">3</span><span>, </span><span style="color:#b3933a;">7</span><span>, </span><span style="color:#b3933a;">5</span><span>, </span><span style="color:#b3933a;">6</span><span>, </span><span style="color:#b3933a;">4</span><span>, </span><span style="color:#b3933a;">5</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">1</span><span>, </span><span style="color:#b3933a;">3</span><span>, </span><span style="color:#b3933a;">5</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">6</span><span>, </span><span style="color:#b3933a;">4</span><span>, </span><span style="color:#b3933a;">2</span><span>, </span><span style="color:#b3933a;">3</span><span>, </span><span style="color:#b3933a;">1</span><span>]
+</span><span>window_not_trending </span><span style="color:#72ab00;">= </span><span>[</span><span style="color:#b3933a;">3</span><span>, </span><span style="color:#b3933a;">4</span><span>, </span><span style="color:#b3933a;">3</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">1</span><span>, </span><span style="color:#b3933a;">4</span><span>, </span><span style="color:#b3933a;">5</span><span>]
+</span><span>window_trending </span><span style="color:#72ab00;">= </span><span>[</span><span style="color:#b3933a;">5</span><span>, </span><span style="color:#b3933a;">8</span><span>, </span><span style="color:#b3933a;">10</span><span>, </span><span style="color:#b3933a;">12</span><span>, </span><span style="color:#b3933a;">15</span><span>, </span><span style="color:#b3933a;">17</span><span>, </span><span style="color:#b3933a;">20</span><span>]
+</span><span>
+</span><span style="color:#72ab00;">print </span><span style="color:#5597d6;">rolling_zscore</span><span>(data, window_not_trending)
+</span><span>[</span><span style="color:#b3933a;">3.8618524915490227e-05</span><span>, </span><span style="color:#b3933a;">0.5000347566724239</span><span>, </span><span style="color:#72ab00;">-</span><span style="color:#b3933a;">0.04996871899481836</span><span>, </span><span style="color:#72ab00;">-</span><span style="color:#b3933a;">1.5449718470953364</span><span>, </span><span style="color:#72ab00;">-</span><span style="color:#b3933a;">0.8904746623858029</span><span>, </span><span style="color:#b3933a;">0.6985728038527774</span><span>, </span><span style="color:#b3933a;">1.1287155234674997</span><span>]
+</span><span style="color:#72ab00;">&gt;&gt; -</span><span style="color:#b3933a;">0.0225790751369
+</span><span>
+</span><span style="color:#72ab00;">print </span><span style="color:#5597d6;">rolling_zscore</span><span>(data, window_trending)
+</span><span>[</span><span style="color:#b3933a;">1.0000386185249155</span><span>, </span><span style="color:#b3933a;">2.400034756672424</span><span>, </span><span style="color:#b3933a;">2.106687520670121</span><span>, </span><span style="color:#b3933a;">2.5626854352697754</span><span>, </span><span style="color:#b3933a;">2.4798126688070985</span><span>, </span><span style="color:#b3933a;">2.185465121541111</span><span>, </span><span style="color:#b3933a;">2.566918609387</span><span>]
+</span><span style="color:#72ab00;">&gt;&gt; </span><span style="color:#b3933a;">2.18594896155
+</span><span>
+</span><span style="color:#7f8989;"># And now with diferent decay, not linear relation
+</span><span style="color:#72ab00;">print </span><span style="color:#5597d6;">rolling_zscore</span><span>(data, window_trending, </span><span style="color:#5597d6;">decay</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">0.5</span><span>)
+</span><span style="color:#72ab00;">&gt;&gt; </span><span style="color:#b3933a;">1.85740988579
+</span><span style="color:#72ab00;">print </span><span style="color:#5597d6;">rolling_zscore</span><span>(data, window_trending, </span><span style="color:#5597d6;">decay</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">0.1</span><span>)
+</span><span style="color:#72ab00;">&gt;&gt; </span><span style="color:#b3933a;">2.93406854599
+</span><span>
+</span></code></pre>
+<p>And now let's see the results for the type of series we had before that would cause problems:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">print </span><span style="color:#5597d6;">rolling_zscore</span><span>([</span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>], [</span><span style="color:#b3933a;">20</span><span>])
+</span><span style="color:#72ab00;">&gt;&gt; </span><span style="color:#b3933a;">2.03674495279
+</span><span style="color:#72ab00;">print </span><span style="color:#5597d6;">rolling_zscore</span><span>([</span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>, </span><span style="color:#b3933a;">20</span><span>], [</span><span style="color:#b3933a;">20</span><span>])
+</span><span style="color:#72ab00;">&gt;&gt; </span><span style="color:#b3933a;">1.062882
+</span></code></pre>
+<p>Ok we got something that looks like credible results, time to get back to the ES part but first, a (very) quick trip to redis.</p>
+<h3 id="finding-the-most-trendings-in-that">Finding the most trendings in that<a class="zola-anchor" href="#finding-the-most-trendings-in-that" aria-label="Anchor link for: finding-the-most-trendings-in-that">🔗</a></h3>
+<p>So we got a dict with companies ids as keys and trendiness as values.
+We could easily sort that in python but where's the fun in that !
+Redis provides a sorted set for us that we can query easily as we want and since we want to cache things to avoid repeating all these calculations and the initial ES query, let's use that: <a href="http://redis.io/commands/zadd">ZADD</a>.
+The syntax is a bit odd (to me) as you five the value before the key, but is easy to use:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#7f8989;"># This will insert a member to the set `company_key`,
+</span><span style="color:#7f8989;"># with the rolling average as the value and the company_id as they key
+</span><span style="color:#72ab00;">for </span><span>company_id, agg </span><span style="color:#72ab00;">in </span><span>companies.</span><span style="color:#5597d6;">iteritems</span><span>():
+</span><span>    redis.</span><span style="color:#5597d6;">zadd</span><span>(company_key, </span><span style="color:#5597d6;">rolling_zscore</span><span>(agg.history, agg.window), company_id)
+</span></code></pre>
+<p>Now, if we query redis for that set, it will return the key-value tuple sorted the way we want:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#7f8989;"># This asks for the 5 companies with the highest trending score
+</span><span style="color:#7f8989;"># and to send the score back as well
+</span><span style="color:#7f8989;"># if you want to find the 5 lowest trending companies, you would use redis.zrange
+</span><span>trending_companies </span><span style="color:#72ab00;">= </span><span>redis.</span><span style="color:#5597d6;">zrevrange</span><span>(company_key, </span><span style="color:#b3933a;">0</span><span>, </span><span style="color:#b3933a;">5</span><span>, </span><span style="color:#5597d6;">withscores</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">True</span><span>)
+</span></code></pre>
+<h3 id="wrapping-this-up-in-elasticsearch">Wrapping this up in Elasticsearch<a class="zola-anchor" href="#wrapping-this-up-in-elasticsearch" aria-label="Anchor link for: wrapping-this-up-in-elasticsearch">🔗</a></h3>
+<p>Note: I am a newbie with ES, so do let me know if there are better ways to do that
+We got our trending companies, time to actually take them into articles when fetching data from ES.
+ES provides a way to <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/1.x/query-dsl-boosting-query.html">boost</a> a query, which will change a document score (ie 0.2 boost means its the document score is multiplied by 0.2 and so has a lower score while a boost of 1.5 means it will be higher than normal).
+Good thing we have the trendiness of every companies ! We can just give each company its trendiness as a boost:</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span>companies_filters </span><span style="color:#72ab00;">= </span><span>[]
+</span><span style="color:#7f8989;"># trending_companies if the list of tuples returned by redis.zrevrange
+</span><span style="color:#72ab00;">for </span><span>company </span><span style="color:#72ab00;">in </span><span>trending_companies:
+</span><span>    companies_filters.</span><span style="color:#5597d6;">append</span><span>({
+</span><span>        </span><span style="color:#d07711;">&quot;filter&quot;</span><span>: {
+</span><span>            </span><span style="color:#d07711;">&quot;nested&quot;</span><span>: {
+</span><span>                </span><span style="color:#d07711;">&quot;path&quot;</span><span>: </span><span style="color:#d07711;">&quot;companies&quot;</span><span>,
+</span><span>                </span><span style="color:#d07711;">&quot;filter&quot;</span><span>: {
+</span><span>                    </span><span style="color:#d07711;">&quot;term&quot;</span><span>: {
+</span><span>                        </span><span style="color:#d07711;">&quot;companies.id&quot;</span><span>: company[</span><span style="color:#b3933a;">0</span><span>]  </span><span style="color:#7f8989;"># id
+</span><span>                    }
+</span><span>                }
+</span><span>
+</span><span>            }
+</span><span>        },
+</span><span>        </span><span style="color:#d07711;">&quot;boost_factor&quot;</span><span>: </span><span style="color:#b3933a;">1 </span><span style="color:#72ab00;">+ </span><span>company[</span><span style="color:#b3933a;">1</span><span>]  </span><span style="color:#7f8989;"># score (can be negative)
+</span><span>    })
+</span></code></pre>
+<p>From that we get a list of filters to apply to our query that will favour articles from the trendy companies.</p>
+<h2 id="conclusion">Conclusion<a class="zola-anchor" href="#conclusion" aria-label="Anchor link for: conclusion">🔗</a></h2>
+<p>I finally got to play a bit with Elasticsearch and it looks quite good !
+Being able to do queries in JSON (still more complex than SQL imo) and easy to compose it from different functions as from the python side we are just manipulating a dict.
+I'll definitely use it when I need search on another project.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

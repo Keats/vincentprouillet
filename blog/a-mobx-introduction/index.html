@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Getting started with MobX and a case study
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>A MobX introduction and case study</h1>
+            <div class="post__meta">
+                2016-11-01
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p><a href="https://mobxjs.github.io/mobx/">MobX</a> (previously mobservable) is a state management library for JavaScript frontend application. This article introduces it with examples as well as showing how it works in a real app with TypeScript. It is based on a talk I gave at the Osaka Web designers and developers meetup recently.</p>
+<h2 id="what-is-mobx-and-why-should-i-look-into-it">What is MobX and why should I look into it<a class="zola-anchor" href="#what-is-mobx-and-why-should-i-look-into-it" aria-label="Anchor link for: what-is-mobx-and-why-should-i-look-into-it">🔗</a></h2>
+<h3 id="mobx">MobX?<a class="zola-anchor" href="#mobx" aria-label="Anchor link for: mobx">🔗</a></h3>
+<p>Let's start by explaining what is MobX and how it works. It's presented as using Transparent Functional Reactive Programming.</p>
+<p>Now, FRP is a very controversial term as everyone seems to have their own definition so let's forget about that and look at a illustration from the MobX docs (click on it to open in a new tab and get full size or open <a href="https://www.vincentprouillet.com/blog/a-mobx-introduction/mobx-flow.png">this link</a>).</p>
+<div class="post__image">
+    <a href="https://www.vincentprouillet.com/blog/a-mobx-introduction/mobx-flow.png" class="image-link" target="_blank">
+        <img src="https://www.vincentprouillet.com/blog/a-mobx-introduction/mobx-flow.png" alt="MobX flow">
+    </a>
+</div>
+<p>In short, actions modify the state, which triggers reactions. Part of the state can be derived automatically, such as the number of tasks left to do in a TODO list to take the example of the picture above.
+What sets MobX apart from other Observable implementations is the transparent part. Reactions observe which observables you are using and subscribe to them automatically, without you having to explicitely subscribe to those.</p>
+<p>Before we continue, a few more things:</p>
+<ul>
+<li>while some of the examples use React, MobX is not tied to any particular framework</li>
+<li>it is written in TypeScript so you get type definitions out of the box if you are using TypeScript</li>
+<li>the learning curve is very small and you will be able to start an app by the end of that article</li>
+</ul>
+<h3 id="why-would-i-use-it-instead-of-redux-immutablejs-or-library-x">Why would I use it instead of Redux/ImmutableJS or library X?<a class="zola-anchor" href="#why-would-i-use-it-instead-of-redux-immutablejs-or-library-x" aria-label="Anchor link for: why-would-i-use-it-instead-of-redux-immutablejs-or-library-x">🔗</a></h3>
+<p>This part is written from my experience using both Redux/ImmutableJS and MobX with React in Proppy, our app to write proposals for freelancers and small agencies/companies. Its frontend is written in TypeScript, which was one of a big reason to moving to MobX as we will see in a bit.</p>
+<p>Our issues with Redux/ImmutableJS were twofold.</p>
+<p>The first issue was that it is very verbose. You need to write an action, the reducer function, a selector and then connect the actions and the data on the React components.</p>
+<p>The second issue only occurs if you are using TypeScript like us. You also need to add the types of actions and data at each step and sometimes even repeat them if you are passing down actions to dumb components. We were also using ImmutableJS records with maps in them which meant the code was very often stringly typed. For example, getting a value using <code>.getIn(["blocks", id, "data", "value"])</code> was common and there was no typecheck whatsoever.</p>
+<p>With MobX we only have to mention the types and, as we will see when showing examples of Proppy, get full typechecking as we are only dealing with plain JavaScript objects.</p>
+<p>Note that using MobX means you have to give up immutability, which could be a showstopper for you.</p>
+<h2 id="mobx-by-example">MobX by example<a class="zola-anchor" href="#mobx-by-example" aria-label="Anchor link for: mobx-by-example">🔗</a></h2>
+<p>This section is a brief introduction to MobX. If you have already used it, you can safely skip to the next section to see some patterns/snippets from a live application.</p>
+<p>Note that I will use ES6 syntax and decorators throughout the examples but it works in plain ES5 as well.</p>
+<h3 id="observing-arrays-and-map-changes-with-autorun">Observing arrays and map changes with autorun<a class="zola-anchor" href="#observing-arrays-and-map-changes-with-autorun" aria-label="Anchor link for: observing-arrays-and-map-changes-with-autorun">🔗</a></h3>
+<p>Let's start with observing arrays and maps, as it constitutes a big chunk of what we would want
+to observe.</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#72ab00;">import </span><span>{ </span><span style="color:#5597d6;">observable</span><span>, </span><span style="color:#5597d6;">asMap</span><span>, </span><span style="color:#5597d6;">autorun </span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;mobx&quot;</span><span>;
+</span><span>
+</span><span style="color:#7f8989;">// becomes an ObservableArray (same API as normal array)
+</span><span style="color:#668f14;">const </span><span style="color:#5597d6;">numbers </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">observable</span><span>([</span><span style="color:#b3933a;">1</span><span>,</span><span style="color:#b3933a;">2</span><span>,</span><span style="color:#b3933a;">3</span><span>]);
+</span><span style="color:#7f8989;">// becomes an ObservableMap (same API as Map)
+</span><span style="color:#668f14;">const </span><span style="color:#5597d6;">users </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">observable</span><span>(</span><span style="color:#c23f31;">asMap</span><span>({</span><span style="color:#d07711;">&quot;bob&quot;</span><span>: </span><span style="color:#d07711;">&quot;bob&quot;</span><span>}));
+</span></code></pre>
+<p>To show the changes to observable values, we will use the <code>autorun</code> function provided by the mobx package. This function takes a function as argument and call it once to detect which observables are being used in it and subscribe to them.</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#c23f31;">autorun</span><span>(() </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>  </span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">log</span><span>(</span><span style="color:#d07711;">&quot;autorun!&quot;</span><span>, </span><span style="color:#5597d6;">numbers</span><span>.</span><span style="color:#c23f31;">toJS</span><span>(), </span><span style="color:#5597d6;">users</span><span>.</span><span style="color:#c23f31;">toJS</span><span>());
+</span><span>});
+</span><span style="color:#7f8989;">// initial run: prints autorun! [1,2,3] {&quot;bob&quot;: &quot;bob&quot;}
+</span><span style="color:#5597d6;">numbers</span><span>.</span><span style="color:#b39f04;">push</span><span>(</span><span style="color:#b3933a;">4</span><span>);
+</span><span style="color:#7f8989;">// prints autorun! [1,2,3,4] {&quot;bob&quot;: &quot;bob&quot;}
+</span><span style="color:#5597d6;">users</span><span>.</span><span style="color:#b39f04;">set</span><span>(</span><span style="color:#d07711;">&quot;jane&quot;</span><span>, </span><span style="color:#d07711;">&quot;jane&quot;</span><span>);
+</span><span style="color:#7f8989;">// prints autorun! [1,2,3,4] {&quot;bob&quot;: &quot;bob&quot;, &quot;jane&quot;: &quot;jane&quot;}
+</span></code></pre>
+<p>We will show in the next section that <code>autorun</code> doesn't actually run everytime any observable is modified like the example above might indicate but only when one of those used in the function are modified.</p>
+<h3 id="observing-class-properties-and-transactions">Observing class properties and transactions<a class="zola-anchor" href="#observing-class-properties-and-transactions" aria-label="Anchor link for: observing-class-properties-and-transactions">🔗</a></h3>
+<p>The other thing that we typically want to observe are class properties.</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#72ab00;">import </span><span>{ </span><span style="color:#5597d6;">observable</span><span>, </span><span style="color:#5597d6;">autorun </span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;mobx&quot;</span><span>;
+</span><span>
+</span><span style="color:#668f14;">class </span><span style="color:#c23f31;">Meetup </span><span>{
+</span><span>  @</span><span style="color:#5597d6;">observable name</span><span>;
+</span><span>  @</span><span style="color:#5597d6;">observable numberPeople</span><span>;
+</span><span>
+</span><span>  </span><span style="color:#668f14;">constructor</span><span>(</span><span style="color:#5597d6;">name</span><span>, </span><span style="color:#5597d6;">numberPeople</span><span>) {
+</span><span>    </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#a2a001;">name </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">name</span><span>;
+</span><span>    </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">numberPeople </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">numberPeople</span><span>;
+</span><span>  }
+</span><span>}
+</span><span>
+</span><span>
+</span><span style="color:#668f14;">const </span><span style="color:#5597d6;">thisMeetup </span><span style="color:#72ab00;">= new </span><span style="color:#c23f31;">Meetup</span><span>(</span><span style="color:#d07711;">&quot;Osaka Web designers and developers&quot;</span><span>, </span><span style="color:#b3933a;">0</span><span>);
+</span><span style="color:#c23f31;">autorun</span><span>(() </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>  </span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">log</span><span>(</span><span style="color:#5597d6;">thisMeetup</span><span>.</span><span style="color:#5597d6;">numberPeople </span><span style="color:#72ab00;">+ </span><span style="color:#d07711;">&quot; people&quot;</span><span>);
+</span><span>});
+</span><span style="color:#5597d6;">thisMeetup</span><span>.</span><span style="color:#5597d6;">numberPeople </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">1</span><span>;
+</span><span style="color:#7f8989;">// prints &quot;1 people&quot;
+</span></code></pre>
+<p>In that example, both <code>name</code> and <code>numberPeople</code> are observable properties of the <code>thisMeetup</code> object but only <code>numberPeople</code> is used in the <code>autorun</code> function. Therefore, the following snippet will not print anything:</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#5597d6;">thisMeetup</span><span>.</span><span style="color:#a2a001;">name </span><span style="color:#72ab00;">= </span><span style="color:#d07711;">&quot;Hello&quot;</span><span>;
+</span><span style="color:#7f8989;">// doesn&#39;t print anything
+</span></code></pre>
+<p>Remember the T part of TFRP? MobX automatically figured out which observable to subscribe to and has done so transparently.</p>
+<p>Reactions are synchronous so you might wonder how to avoid "useless" reactions, e.g. when setting multiple observables at once such as when receiving a response from a AJAX request. <code>transaction</code> solves that issue by not triggering reactions until the end of the function.</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#c23f31;">transaction</span><span>(() </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>  </span><span style="color:#5597d6;">thisMeetup</span><span>.</span><span style="color:#5597d6;">numberPeople </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">2</span><span>;
+</span><span>  </span><span style="color:#5597d6;">thisMeetup</span><span>.</span><span style="color:#5597d6;">numberPeople </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">3</span><span>;
+</span><span>  </span><span style="color:#5597d6;">thisMeetup</span><span>.</span><span style="color:#5597d6;">numberPeople </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">4</span><span>;
+</span><span>});
+</span><span style="color:#7f8989;">// print &quot;4 people&quot;
+</span></code></pre>
+<p>In the example above, <code>autorun</code> only runs once: with <code>numberPeople</code> equal to 4, not with the intermediate 2 and 3.</p>
+<h3 id="computed-values">Computed values<a class="zola-anchor" href="#computed-values" aria-label="Anchor link for: computed-values">🔗</a></h3>
+<p>In some cases, data can be derived directly from the state. To take a simplified example from Proppy, we are going to look at a row in a cost table: we have quantity and unit price and can therefore automatically calculate the total.
+<code>computed</code> is lazy (won't be evaluated unless needed in a reaction) and it is memoized (if the observables used inside didn't change, it doesn't need to re-run and can return the current value).</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#668f14;">class </span><span style="color:#c23f31;">TableRow </span><span>{
+</span><span>  @</span><span style="color:#5597d6;">observable quantity </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">0</span><span>;
+</span><span>  @</span><span style="color:#5597d6;">observable price </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">0</span><span>;
+</span><span>
+</span><span>  </span><span style="color:#668f14;">constructor</span><span>(</span><span style="color:#5597d6;">price</span><span>) {
+</span><span>    </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">price </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">price
+</span><span>  }
+</span><span>
+</span><span>  </span><span style="color:#7f8989;">// a getter
+</span><span>  @</span><span style="color:#5597d6;">computed </span><span style="color:#668f14;">get </span><span style="color:#c23f31;">total</span><span>() {
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">price </span><span style="color:#72ab00;">* </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">quantity</span><span>;
+</span><span>  }
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">const </span><span style="color:#5597d6;">row </span><span style="color:#72ab00;">= new </span><span style="color:#c23f31;">TableRow</span><span>(</span><span style="color:#b3933a;">10</span><span>);
+</span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">log</span><span>(</span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#5597d6;">total</span><span>);
+</span><span style="color:#7f8989;">// prints 0 (since 10x0=0)
+</span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#5597d6;">quantity </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">10</span><span>;
+</span><span style="color:#7f8989;">// Only computed on the call
+</span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">log</span><span>(</span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#5597d6;">total</span><span>);
+</span><span style="color:#7f8989;">// prints 100
+</span><span style="color:#7f8989;">// Not recomputed if the observables used didn&#39;t change
+</span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">log</span><span>(</span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#5597d6;">total</span><span>)
+</span><span style="color:#7f8989;">// prints 100
+</span></code></pre>
+<p>Note that <code>@computed</code> can only be used on <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/get">getter</a> in a class.</p>
+<h3 id="actions">Actions<a class="zola-anchor" href="#actions" aria-label="Anchor link for: actions">🔗</a></h3>
+<p>Actions are functions that modify the state.
+While, as shown in the previous examples, we can simply modify the object directly, it is not the recommended way to do so.</p>
+<p>The recommended way is to wrap any actions that modify the state with the <code>action</code> function or decorator. This will accomplish a few things:</p>
+<ul>
+<li>wrap the function in a transaction automatically</li>
+<li>provide debugging info for that state change that can be displayed in dev tools</li>
+</ul>
+<p>You can force your app to only modify state through actions by using <code>useStrict(true)</code> in your app.</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#c23f31;">useStrict</span><span>(</span><span style="color:#b3933a;">true</span><span>);
+</span><span>
+</span><span style="color:#668f14;">class </span><span style="color:#c23f31;">TableRow </span><span>{
+</span><span>  @</span><span style="color:#5597d6;">observable quantity </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">0</span><span>;
+</span><span>  </span><span style="color:#5597d6;">price </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">0</span><span>;
+</span><span>
+</span><span>  </span><span style="color:#668f14;">constructor</span><span>(</span><span style="color:#5597d6;">price</span><span>) {
+</span><span>    </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">price </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">price
+</span><span>  }
+</span><span>
+</span><span>  </span><span style="color:#7f8989;">// a getter
+</span><span>  @</span><span style="color:#5597d6;">computed </span><span style="color:#668f14;">get </span><span style="color:#c23f31;">total</span><span>() {
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">price </span><span style="color:#72ab00;">* </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">quantity</span><span>;
+</span><span>  }
+</span><span>
+</span><span>  @</span><span style="color:#5597d6;">action </span><span style="color:#c23f31;">setQuantity</span><span>(</span><span style="color:#5597d6;">quantity</span><span>) {
+</span><span>    </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">quantity </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">quantity</span><span>;
+</span><span>  }
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">const </span><span style="color:#5597d6;">row </span><span style="color:#72ab00;">= new </span><span style="color:#c23f31;">TableRow</span><span>(</span><span style="color:#b3933a;">10</span><span>);
+</span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">log</span><span>(</span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#5597d6;">total</span><span>);
+</span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#c23f31;">setQuantity</span><span>(</span><span style="color:#b3933a;">10</span><span>);
+</span><span style="color:#7f8989;">// Only computed on the call
+</span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">log</span><span>(</span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#5597d6;">total</span><span>);
+</span><span style="color:#7f8989;">// Not recomputed if the observables used didn&#39;t change
+</span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">log</span><span>(</span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#5597d6;">total</span><span>);
+</span><span>
+</span><span style="color:#7f8989;">// Use `useStrict` to force state to only be modified in `action` fns
+</span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#5597d6;">quantity </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">10</span><span>; </span><span style="color:#7f8989;">// will error
+</span></code></pre>
+<p>We don't use the strict mode ourselves</p>
+<h2 id="mobx-in-real-life">MobX in real life<a class="zola-anchor" href="#mobx-in-real-life" aria-label="Anchor link for: mobx-in-real-life">🔗</a></h2>
+<p>Now that you know the basics of MobX, it's time to see how it looks in production.
+It's currently the backbone of our frontend app in Proppy so we will use examples from it.</p>
+<p>If you are doing SSR, be aware that the way we handle stores shown below will not work for you.</p>
+<p>Converting Proppy to use MobX took about 4 days, numerous long-standing issues were fixed along the way and the end result was a deletion of around 1000 to 2000 lines (estimate as we also moved to use npm @types for typings in that branch).</p>
+<h3 id="stores">Stores<a class="zola-anchor" href="#stores" aria-label="Anchor link for: stores">🔗</a></h3>
+<p>Our stores are simple singleton classes that have observable properties.
+Here's a shorter version of one of our stores, dealing with clients for proposals.</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#72ab00;">import </span><span>{ </span><span style="color:#5597d6;">observable</span><span>, </span><span style="color:#5597d6;">action</span><span>, </span><span style="color:#5597d6;">map</span><span>, </span><span style="color:#5597d6;">transaction</span><span>, </span><span style="color:#5597d6;">ObservableMap </span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;mobx&quot;</span><span>;
+</span><span>
+</span><span style="color:#7f8989;">// a class definition with types
+</span><span style="color:#72ab00;">import </span><span>{ </span><span style="color:#5597d6;">Client </span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;./models/Client&quot;</span><span>;
+</span><span style="color:#72ab00;">import </span><span style="color:#5597d6;">fetchling </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;../utils/fetchling&quot;</span><span>;
+</span><span style="color:#72ab00;">import </span><span style="color:#5597d6;">uiStore </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;./UIStore&quot;</span><span>;
+</span><span>
+</span><span style="color:#72ab00;">export </span><span style="color:#668f14;">class </span><span style="color:#c23f31;">ClientStore </span><span>{
+</span><span>  @</span><span style="color:#5597d6;">observable clients</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">ObservableMap</span><span>&lt;</span><span style="color:#c23f31;">Client</span><span>&gt; </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">map</span><span>&lt;</span><span style="color:#c23f31;">Client</span><span>&gt;();
+</span><span>
+</span><span>  </span><span style="color:#c23f31;">getClient</span><span>(</span><span style="color:#5597d6;">id</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">number</span><span>) {
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">clients</span><span>.</span><span style="color:#b39f04;">get</span><span>(</span><span style="color:#5597d6;">id</span><span>.</span><span style="color:#b39f04;">toString</span><span>());
+</span><span>  }
+</span><span>
+</span><span>  @</span><span style="color:#5597d6;">action </span><span style="color:#c23f31;">fetchAll</span><span>()</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">Promise</span><span>&lt;</span><span style="color:#a2a001;">any</span><span>&gt; {
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#c23f31;">fetchling</span><span>(</span><span style="color:#d07711;">&quot;/clients&quot;</span><span>).</span><span style="color:#b39f04;">get</span><span>().</span><span style="color:#b39f04;">then</span><span>((</span><span style="color:#5597d6;">response</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">any</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>      </span><span style="color:#c23f31;">transaction</span><span>(() </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#c23f31;">setClients</span><span>(</span><span style="color:#5597d6;">response</span><span>.</span><span style="color:#5597d6;">clients</span><span>);
+</span><span>      });
+</span><span>    });
+</span><span>  }
+</span><span>
+</span><span>  @</span><span style="color:#5597d6;">action </span><span style="color:#c23f31;">deleteClient</span><span>(</span><span style="color:#5597d6;">clientId</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">number</span><span>) {
+</span><span>    </span><span style="color:#668f14;">const </span><span style="color:#5597d6;">client </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">clients</span><span>.</span><span style="color:#b39f04;">get</span><span>(</span><span style="color:#5597d6;">clientId</span><span>.</span><span style="color:#b39f04;">toString</span><span>());
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#c23f31;">fetchling</span><span>(</span><span style="color:#d07711;">`/clients/${</span><span style="color:#acb3c2;">clientId</span><span style="color:#d07711;">}`</span><span>).</span><span style="color:#b39f04;">delete</span><span>()
+</span><span>      .</span><span style="color:#b39f04;">then</span><span>(() </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">clients</span><span>.</span><span style="color:#b39f04;">delete</span><span>(</span><span style="color:#5597d6;">clientId</span><span>.</span><span style="color:#b39f04;">toString</span><span>());
+</span><span>        </span><span style="color:#5597d6;">uiStore</span><span>.</span><span style="color:#c23f31;">notify</span><span>(</span><span style="color:#d07711;">`Client deleted`</span><span>, </span><span style="color:#b3933a;">false</span><span>);
+</span><span>      })
+</span><span>      .</span><span style="color:#b39f04;">catch</span><span>(() </span><span style="color:#668f14;">=&gt; </span><span style="color:#5597d6;">uiStore</span><span>.</span><span style="color:#c23f31;">notify</span><span>(</span><span style="color:#d07711;">`Client ${</span><span style="color:#acb3c2;">client</span><span style="color:#d07711;">.</span><span style="color:#a2a001;">name</span><span style="color:#d07711;">} could not be deleted. Please try again later`</span><span>, </span><span style="color:#b3933a;">false</span><span>));
+</span><span>  }
+</span><span>
+</span><span>  @</span><span style="color:#5597d6;">action </span><span style="color:#c23f31;">updateClient</span><span>(</span><span style="color:#5597d6;">clientId</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">number</span><span>, </span><span style="color:#5597d6;">name</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">string</span><span>) {
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#c23f31;">fetchling</span><span>(</span><span style="color:#d07711;">`/clients/${</span><span style="color:#acb3c2;">clientId</span><span style="color:#d07711;">}`</span><span>).</span><span style="color:#c23f31;">put</span><span>({</span><span style="color:#5597d6;">name</span><span>})
+</span><span>      .</span><span style="color:#b39f04;">then</span><span>((</span><span style="color:#5597d6;">response</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">any</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#5597d6;">this</span><span>.</span><span style="color:#5597d6;">clients</span><span>.</span><span style="color:#b39f04;">set</span><span>(</span><span style="color:#5597d6;">clientId</span><span>.</span><span style="color:#b39f04;">toString</span><span>(), </span><span style="color:#72ab00;">new </span><span style="color:#c23f31;">Client</span><span>(</span><span style="color:#5597d6;">response</span><span>.</span><span style="color:#5597d6;">client</span><span>));
+</span><span>        </span><span style="color:#5597d6;">uiStore</span><span>.</span><span style="color:#c23f31;">notify</span><span>(</span><span style="color:#d07711;">`Client updated`</span><span>, </span><span style="color:#b3933a;">false</span><span>);
+</span><span>      })
+</span><span>      .</span><span style="color:#b39f04;">catch</span><span>(</span><span style="color:#5597d6;">response </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#5597d6;">uiStore</span><span>.</span><span style="color:#c23f31;">notify</span><span>(</span><span style="color:#d07711;">`Client could not be updated. Please try again later`</span><span>, </span><span style="color:#b3933a;">true</span><span>);
+</span><span>        </span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#5597d6;">response</span><span>.</span><span style="color:#5597d6;">errors</span><span>) {
+</span><span>          </span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">response</span><span>.</span><span style="color:#5597d6;">errors</span><span>.</span><span style="color:#5597d6;">errors</span><span>;
+</span><span>        }
+</span><span>      });
+</span><span>  }
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">const </span><span style="color:#5597d6;">clientStore </span><span style="color:#72ab00;">= new </span><span style="color:#c23f31;">ClientStore</span><span>();
+</span><span style="color:#72ab00;">export default </span><span style="color:#5597d6;">clientStore</span><span>;
+</span></code></pre>
+<p>Quite simple stuff.
+You can see we are calling another store from our store. That would be a big no-no in Redux and we were using a middleware to solve that previously.
+It feels much nicer now: we have a full view of what's happening and it's very easy to see if something is missing (which was actually the case for some ajax requests).</p>
+<p>This example doesn't really show it but every data stored in a store is typed and trying to access <code>client.random</code> would be a compiler error.
+It really shines for complex objects like cost tables that were previously a simple map with no schema and are now fully typed objects with functions of their own. Thanks to that, we moved things such as calculating totals to the cost table class rather than a React component like before.</p>
+<h3 id="components">Components<a class="zola-anchor" href="#components" aria-label="Anchor link for: components">🔗</a></h3>
+<p>We're using the <code>mobx-react</code> package that gives us the <code>observer</code> decorator that we put on top of a component.
+Doing so gives us the same thing as the <code>autorun</code> in the MobX by example section: when an observable used in the <code>render</code> function changes, the component will be re-rendered.
+<code>@observer</code> also comes with an optimized <code>shouldComponentUpdate</code> that works very well in our experience: the only <code>shouldComponentUpdate</code> left in our code are the ones impossible to not handle manually due to <code>contenteditable</code>.</p>
+<p>Since we don't do server side rendering, we can directly import a store and call its function directly. Here's a slightly modified code sample for the Settings&gt;Clients page:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#72ab00;">import </span><span style="color:#b3933a;">* </span><span style="color:#72ab00;">as </span><span style="color:#5597d6;">React  </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;react&quot;</span><span>;
+</span><span style="color:#72ab00;">import </span><span>{ </span><span style="color:#5597d6;">observer </span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;mobx-react&quot;</span><span>;
+</span><span style="color:#72ab00;">import </span><span>{ </span><span style="color:#5597d6;">observable </span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;mobx&quot;</span><span>;
+</span><span>
+</span><span style="color:#72ab00;">import </span><span style="color:#5597d6;">companyStore </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;../../stores/CompanyStore&quot;</span><span>;
+</span><span style="color:#72ab00;">import </span><span style="color:#5597d6;">clientStore </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;../../stores/ClientStore&quot;</span><span>;
+</span><span style="color:#7f8989;">// ... some component import
+</span><span>
+</span><span>@</span><span style="color:#5597d6;">observer
+</span><span style="color:#72ab00;">export </span><span style="color:#668f14;">class </span><span style="color:#c23f31;">Clients </span><span style="color:#668f14;">extends </span><span style="color:#c23f31;">React</span><span>.</span><span style="font-style:italic;color:#b06936;">Component</span><span>&lt;{}, {}&gt; {
+</span><span>  </span><span style="color:#7f8989;">// not used, only here for the sake of example
+</span><span>  @</span><span style="color:#5597d6;">observable clientAdded</span><span style="color:#72ab00;">: </span><span style="color:#a2a001;">boolean </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">false</span><span>;
+</span><span>
+</span><span>  </span><span style="color:#7f8989;">// Our async loaded component will call that function and wait until
+</span><span>  </span><span style="color:#7f8989;">// the promises complete to render that component
+</span><span>  </span><span style="color:#668f14;">static </span><span style="color:#c23f31;">fetchData</span><span>() {
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#a2a001;">Promise</span><span>.</span><span style="color:#b39f04;">all</span><span>([
+</span><span>      </span><span style="color:#5597d6;">companyStore</span><span>.</span><span style="color:#c23f31;">fetchUs</span><span>(),
+</span><span>      </span><span style="color:#5597d6;">clientStore</span><span>.</span><span style="color:#c23f31;">fetchAll</span><span>(),
+</span><span>    ]);
+</span><span>  }
+</span><span>
+</span><span>  </span><span style="color:#c23f31;">renderClients</span><span>() {
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">clientStore</span><span>.</span><span style="color:#5597d6;">clients</span><span>.</span><span style="color:#b39f04;">values</span><span>().</span><span style="color:#c23f31;">map</span><span>(</span><span style="color:#5597d6;">client </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>      </span><span style="color:#72ab00;">return </span><span>(
+</span><span>        </span><span style="color:#6486ab;">&lt;</span><span style="color:#7f902a;">div className</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&quot;client&quot; </span><span style="color:#7f902a;">key</span><span style="color:#72ab00;">=</span><span style="color:#6486ab;">{</span><span style="color:#5597d6;">client</span><span style="color:#6486ab;">.</span><span style="color:#a2a001;">id</span><span style="color:#6486ab;">}&gt;
+</span><span style="color:#6486ab;">          &lt;</span><span style="color:#7f902a;">span onClick</span><span style="color:#72ab00;">=</span><span style="color:#6486ab;">{() </span><span style="color:#668f14;">=&gt; </span><span style="color:#5597d6;">clientStore</span><span style="color:#6486ab;">.deleteClient(</span><span style="color:#5597d6;">client</span><span style="color:#6486ab;">.</span><span style="color:#a2a001;">id</span><span style="color:#6486ab;">)} </span><span style="color:#7f902a;">className</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&quot;icon-delete&quot; </span><span style="color:#6486ab;">/&gt;
+</span><span style="color:#6486ab;">          &lt;</span><span style="color:#a2a001;">InlineInput
+</span><span style="color:#6486ab;">            </span><span style="color:#7f902a;">value</span><span style="color:#72ab00;">=</span><span style="color:#6486ab;">{</span><span style="color:#5597d6;">client</span><span style="color:#6486ab;">.</span><span style="color:#a2a001;">name</span><span style="color:#6486ab;">}
+</span><span style="color:#6486ab;">            </span><span style="color:#7f902a;">onEnter</span><span style="color:#72ab00;">=</span><span style="color:#6486ab;">{(</span><span style="color:#5597d6;">value</span><span style="color:#6486ab;">) </span><span style="color:#668f14;">=&gt; </span><span style="color:#5597d6;">clientStore</span><span style="color:#6486ab;">.updateClient(</span><span style="color:#5597d6;">client</span><span style="color:#6486ab;">.</span><span style="color:#a2a001;">id</span><span style="color:#6486ab;">, </span><span style="color:#5597d6;">value</span><span style="color:#6486ab;">)} /&gt;
+</span><span style="color:#6486ab;">        &lt;/</span><span style="color:#7f902a;">div</span><span style="color:#6486ab;">&gt;
+</span><span>      );
+</span><span>    });
+</span><span>  }
+</span><span>
+</span><span>  </span><span style="color:#c23f31;">renderForm</span><span>() {
+</span><span>    </span><span style="color:#72ab00;">return </span><span>(
+</span><span>      </span><span style="color:#6486ab;">&lt;</span><span style="color:#a2a001;">InAppForm
+</span><span style="color:#6486ab;">        </span><span style="color:#7f902a;">inline</span><span style="color:#72ab00;">=</span><span style="color:#6486ab;">{</span><span style="color:#b3933a;">true</span><span style="color:#6486ab;">}
+</span><span style="color:#6486ab;">        </span><span style="color:#7f902a;">resetOnSuccess
+</span><span style="color:#6486ab;">        </span><span style="color:#7f902a;">submitText</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&quot;Add client&quot;
+</span><span style="color:#6486ab;">        </span><span style="color:#7f902a;">onSubmit</span><span style="color:#72ab00;">=</span><span style="color:#6486ab;">{(</span><span style="color:#5597d6;">data</span><span style="color:#6486ab;">) </span><span style="color:#668f14;">=&gt; </span><span style="color:#5597d6;">clientStore</span><span style="color:#6486ab;">.createClient(</span><span style="color:#5597d6;">data</span><span style="color:#6486ab;">)} /&gt;
+</span><span>    );
+</span><span>  }
+</span><span>  </span><span style="color:#c23f31;">render</span><span>() {
+</span><span>    </span><span style="color:#72ab00;">return </span><span>(
+</span><span>      </span><span style="color:#6486ab;">&lt;</span><span style="color:#a2a001;">SettingsContainer</span><span style="color:#6486ab;">&gt;
+</span><span style="color:#6486ab;">        &lt;</span><span style="color:#7f902a;">div className</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&quot;clients&quot;</span><span style="color:#6486ab;">&gt;
+</span><span style="color:#6486ab;">          &lt;</span><span style="color:#7f902a;">h2</span><span style="color:#6486ab;">&gt;Manage {</span><span style="color:#5597d6;">your</span><span style="color:#6486ab;">} clients&lt;/</span><span style="color:#7f902a;">h2</span><span style="color:#6486ab;">&gt;
+</span><span style="color:#6486ab;">          {</span><span style="color:#5597d6;">this</span><span style="color:#6486ab;">.renderForm()}
+</span><span style="color:#6486ab;">          &lt;</span><span style="color:#7f902a;">div className</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&quot;clients-list&quot;</span><span style="color:#6486ab;">&gt;
+</span><span style="color:#6486ab;">            {</span><span style="color:#5597d6;">this</span><span style="color:#6486ab;">.renderClients()}
+</span><span style="color:#6486ab;">          &lt;/</span><span style="color:#7f902a;">div</span><span style="color:#6486ab;">&gt;
+</span><span style="color:#6486ab;">        &lt;/</span><span style="color:#7f902a;">div</span><span style="color:#6486ab;">&gt;
+</span><span style="color:#6486ab;">      &lt;/</span><span style="color:#a2a001;">SettingsContainer</span><span style="color:#6486ab;">&gt;
+</span><span>    );
+</span><span>  }
+</span><span>}
+</span></code></pre>
+<p>No ceremony needed, everything works out of the box as if I was just dealing with plain JavaScript objects. All the store functions and data are typed too. Trying to call <code>clientStore.deleteClient("1")</code> for example would be a compilation error and I only had to write the type once: in the store as shown before.</p>
+<p>Another aspect not mentioned before is that you can also use <code>observable</code> to remove the need for React state.</p>
+<p>Rather than having a state and updating it with <code>this.setState</code>, you can just update your variable directly and it will re-render the component if that property is used in the render method.
+To use the previous example, if I wanted to display a banner after adding a client in that component I could set <code>this.client = true</code> and render something different when <code>this.client</code> is true. No more <code>this.setState({..} as any)</code> to satisfy the TypeScript compiler.
+Another neat thing about using MobX for state is that changes will be logged if you are using dev tools.</p>
+<h3 id="dev-tools">Dev tools<a class="zola-anchor" href="#dev-tools" aria-label="Anchor link for: dev-tools">🔗</a></h3>
+<p>For React, <code>mobx-react-devtools</code> is available and is pretty great. See the gif below from its repo to have an overview of the 3 features.</p>
+<div class="post__image">
+    <a href="https://www.vincentprouillet.com/blog/a-mobx-introduction/devtools.gif" class="image-link" target="_blank">
+        <img src="https://www.vincentprouillet.com/blog/a-mobx-introduction/devtools.gif" alt="React MobX devtools">
+    </a>
+</div>
+<p>I have mostly used the logging to inspect action and state changes while debugging and to spot erroneous updates and the re-rendering highlighter to figure out if some of our components were re-rendering too often.</p>
+<h2 id="useful-links">Useful links<a class="zola-anchor" href="#useful-links" aria-label="Anchor link for: useful-links">🔗</a></h2>
+<ul>
+<li><a href="https://mobxjs.github.io/mobx/">Official docs</a> and in particular <a href="https://mobxjs.github.io/mobx/best/pitfalls.html">Common pitfalls &amp; best practices</a> and <a href="https://mobxjs.github.io/mobx/best/react.html">What does MobX reacts to?</a></li>
+<li><a href="https://medium.com/@mweststrate/becoming-fully-reactive-an-in-depth-explanation-of-mobservable-55995262a254">In-depth explanation of MobX</a></li>
+<li><a href="https://github.com/mobxjs/mobx/issues/199">Understanding MobX and when to use it</a></li>
+<li><a href="https://github.com/mobxjs/mobx/issues/104">Example: real-life with router/ajax etc</a></li>
+</ul>
+<h2 id="conclusion">Conclusion<a class="zola-anchor" href="#conclusion" aria-label="Anchor link for: conclusion">🔗</a></h2>
+<p>Overall, we are very happy with the transition to MobX and would recommend investigating it if you are looking for a state management solution, especially if you are using TypeScript or Flow.
+I'm pretty impressed by the constant work the TypeScript team has accomplished and highly recommend it as well if you are planning to stay on the JavaScript side and not go for Elm/PureScript/etc.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

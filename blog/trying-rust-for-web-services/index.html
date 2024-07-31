@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    I made a very basic Rust backend, here&#x27;s what I think about it
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Trying Rust for web services</h1>
+            <div class="post__meta">
+                2015-10-01
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>Developing web apps in dynamic languages is a breeze when using frameworks like <a href="https://www.djangoproject.com/">Django</a> for Python.
+The downsides are that software written in dynamic languages is harder, at least in my opinion, to maintain, to refactor and you also need to write tests to cover potential errors that would simply not be possible with a compiler.</p>
+<p>While I would use Flask or Django for a small project, I would definitely prefer having help from a compiler for a long-lived product. The fact that compiled languages are generally faster than dynamic ones is a nice bonus too.</p>
+<p>The two choices in my mind right now for a compiled language are Go and Rust. Some (ie Tom) would say Haskell, others would say Scala but in the end it's down to preferences.</p>
+<p>I previously used Go for a few projects and I quite liked it despite some annoying quirks such as package management (might be solved by <code>gb</code> now) and seeing <code>interface {}</code> in some libraries to get around the weak type system. On the other hand, I have been following <a href="https://www.rust-lang.org/">Rust</a> development for quite a while but didn't play with it more than a couple of toy programs. I was keen to see if it could work as the backend for a web app, which in short means a HTTP server receiving and sending JSON while talking to a Postgres database. There are obviously an awful lot of other things but let's keep it simple for now.</p>
+<h2 id="the-demo">The demo<a class="zola-anchor" href="#the-demo" aria-label="Anchor link for: the-demo">🔗</a></h2>
+<p>You can see the project at <a href="https://github.com/Keats/webrust">https://github.com/Keats/webrust</a>.
+This is a simple webapp with one endpoint that responds to either a GET or a POST. The GET handler will return all the passwords in the table and the POST will insert a record into the table and return a 201 status code.</p>
+<p>For the HTTP framework, I have used <a href="http://ironframework.io/">Iron</a> which was simple to use, granted I only created 2 routes and had no middlewares but there are other alternative such as <a href="https://github.com/Ogeon/rustful">rustful</a> and <a href="http://nickel.rs/">nickle.rs</a>.</p>
+<p>For the postgres side, there is a crate (the term for a package in Rust) called <a href="https://github.com/sfackler/rust-postgres">postgres</a>. I'm also using a pool manager called <a href="https://github.com/sfackler/r2d2">r2d2</a> because I didn't know about <a href="https://doc.rust-lang.org/std/sync/struct.Arc.html">Arc</a> and couldn't pass the connection itself as it wasn't thread safe.</p>
+<p>The Makefile for Postgres was taken from another Iron + Postgres project I have found on Github: rustwebapp (link now dead).</p>
+<p>Keep in mind I'm a newbie in Rust so there are probably lots of things I'm doing wrong in there, feel free to point them out!</p>
+<blockquote>
+<p><strong>Note:</strong> the server is currently quite slow, only handling around 6.5k req/s for the GET handler, removing the database part makes it shoot up to 70k req/s so something must be going wrong somewhere around postgres</p>
+</blockquote>
+<h2 id="what-i-liked">What I liked<a class="zola-anchor" href="#what-i-liked" aria-label="Anchor link for: what-i-liked">🔗</a></h2>
+<p><a href="https://crates.io/">Cargo</a>, Rust package manager, works pretty damn well and its configuration file <code>Cargo.toml</code> is easy to write and understand. It is also used to build and run your package.</p>
+<p>The language itself is very nice and easy to get started, granted this demo is very simple and doesn't have a single lifetime. Every single time the compiler didn't complain, whatever I wanted to do was working and whenever it complained, the message was clear enough for me to realize what was happening.
+This is not going to be exhaustive by any means but here are the things I liked and disliked the most.</p>
+<h3 id="result-and-option-types">Result and Option types<a class="zola-anchor" href="#result-and-option-types" aria-label="Anchor link for: result-and-option-types">🔗</a></h3>
+<p>Every Go developers has been caught forgetting the <code>if err != nil</code> when calling a function, every Python developers has seen exceptions that they didn't realise could happen. Rust (and some functional languages it's borrowing the concept from) bake those in the language, using the <a href="https://doc.rust-lang.org/std/result/">Result</a> type.
+In practice, this means that by returning this type, the caller <strong>has</strong> to handle the possible errors. It wouldn't even compile if you didn't as we will see later, unless you use <code>.unwrap()</code> which is a way to get panics if there is an error.</p>
+<p>The Option types is the same as the Maybe in FP, it represents the possibility of a value which Javascript would benefit greatly from for example (<code>undefined is not a function</code> anyone?).</p>
+<h3 id="pattern-matching">Pattern matching<a class="zola-anchor" href="#pattern-matching" aria-label="Anchor link for: pattern-matching">🔗</a></h3>
+<p>The easiest way to handle the above types is called <em>pattern matching</em> and is awesome in Rust.
+As an example from the demo, here's how to handle the Result from <code>list_passwords</code> that fetches all the passwords from the table in our handler:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#72ab00;">match </span><span>dal::list_passwords(conn) {
+</span><span>    </span><span style="color:#a2a001;">Ok</span><span>(passwords) </span><span style="color:#72ab00;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#668f14;">let</span><span> response_payload </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">try_or_500!</span><span>(serde_json::to_string(</span><span style="color:#72ab00;">&amp;</span><span>passwords));
+</span><span>        </span><span style="color:#a2a001;">Ok</span><span>(Response::with((status::Ok, response_payload)))
+</span><span>    },
+</span><span>    </span><span style="color:#a2a001;">Err</span><span>(e) </span><span style="color:#72ab00;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#a2a001;">Ok</span><span>(Response::with((status::InternalServerError)))
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<blockquote>
+<p><strong>Note:</strong> Rust automatically returns the last value, in that case the Ok() ones. Iron handler return type is a Result so I should probably return an Err but it currently works well enough™</p>
+</blockquote>
+<p>As mentioned earlier, Rust forces us to handle the result properly: removing the Err branch errors with the following message <code>error: non-exhaustive patterns: Err(_) not covered [E0004]</code>.</p>
+<p>Pattern matching is obviously not limited to Result and Option and can be used anywhere you would want a if/else or a switch.</p>
+<h3 id="macros">Macros<a class="zola-anchor" href="#macros" aria-label="Anchor link for: macros">🔗</a></h3>
+<p>Macros are a way to abstract some code but, instead of a function call, the macro is expanded where it's called at compilation time. In practice it means you can simplify code without the overhead of calling a function. The most used macro is probably <a href="https://doc.rust-lang.org/std/macro.try!.html">try!</a> which returns the error if there is one or gives the result value otherwise. Here's an example from the demo: while trying things out I ended up with the following two lines in each http handler to get a connection to postgres.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">let</span><span> pool </span><span style="color:#72ab00;">=</span><span> req.get::&lt;PRead&lt;db::PostgresDB&gt;&gt;().</span><span style="color:#b39f04;">unwrap</span><span>();
+</span><span style="color:#668f14;">let</span><span> conn </span><span style="color:#72ab00;">=</span><span> pool.</span><span style="color:#b39f04;">get</span><span>().</span><span style="color:#b39f04;">unwrap</span><span>();
+</span></code></pre>
+<p>As you can see, I use <code>unwrap</code> which means it can panic in case of errors. I wrote the following macro to clean it up:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#7f8989;">// db.rs
+</span><span style="color:#7f8989;">// Gets a connection from the pool from the given request or returns a 500
+</span><span style="color:#b39f04;">macro_rules! </span><span style="color:#c23f31;">get_pg_connection </span><span>{
+</span><span>    (</span><span style="color:#5597d6;">$req</span><span>:</span><span style="color:#668f14;">expr</span><span>) </span><span style="color:#72ab00;">=&gt; </span><span>(</span><span style="color:#72ab00;">match </span><span style="color:#5597d6;">$req</span><span>.get::&lt;persistent::Read&lt;db::PostgresDB&gt;&gt;() {
+</span><span>        </span><span style="color:#a2a001;">Ok</span><span>(pool) </span><span style="color:#72ab00;">=&gt; match</span><span> pool.</span><span style="color:#b39f04;">get</span><span>() {
+</span><span>            </span><span style="color:#a2a001;">Ok</span><span>(conn) </span><span style="color:#72ab00;">=&gt;</span><span> conn,
+</span><span>            </span><span style="color:#a2a001;">Err</span><span>(</span><span style="color:#72ab00;">_</span><span>) </span><span style="color:#72ab00;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Couldn&#39;t get a connection to pg!&quot;</span><span>);
+</span><span>                </span><span style="color:#72ab00;">return </span><span style="color:#a2a001;">Ok</span><span>(Response::with((status::InternalServerError)));
+</span><span>            }
+</span><span>        },
+</span><span>        </span><span style="color:#a2a001;">Err</span><span>(</span><span style="color:#72ab00;">_</span><span>) </span><span style="color:#72ab00;">=&gt; </span><span>{
+</span><span>            </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Couldn&#39;t get the pg pool from the request!&quot;</span><span>);
+</span><span>            </span><span style="color:#72ab00;">return </span><span style="color:#a2a001;">Ok</span><span>(Response::with((status::InternalServerError)));
+</span><span>        }
+</span><span>    })
+</span><span>}
+</span><span>
+</span><span style="color:#7f8989;">// main.rs
+</span><span style="color:#7f8989;">// we can use the macro that way in a handler, notice the ! to indicate it&#39;s a macro
+</span><span style="color:#668f14;">let</span><span> conn </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">get_pg_connection!</span><span>(req);
+</span></code></pre>
+<p>The last line in the snippet will get a connection or will return a 500 if anything fails in the middle.</p>
+<p>You can even have macros checking <a href="https://github.com/sfackler/rust-postgres-macros">SQL syntax</a> or <a href="https://github.com/lfairy/maud">HTML one</a> at compile time! Neat!</p>
+<h2 id="what-i-didn-t-like">What I didn't like<a class="zola-anchor" href="#what-i-didn-t-like" aria-label="Anchor link for: what-i-didn-t-like">🔗</a></h2>
+<p>I think it can be summed up in one word: documentation.</p>
+<p>Most of the crates I have looked at (except the postgres one) have next to no real documentation, only a maze of links to click in the generated rustdoc that pulls the in-code documentation into a nice looking website. This is useful if I want to know more details about a type or a trait but doesn't help me understanding how am I supposed to use it. Having to go through the tests or the code directly to see what I am supposed to do for every crate instead of having a "How to use" documentation is annoying.</p>
+<p>The provided documentation can also be outdated as it is currently not integrated with Cargo. There is an <a href="https://github.com/rust-lang/crates.io/issues/91">open issue</a> for that though.</p>
+<h2 id="rust-for-a-backend-yet">Rust for a backend yet?<a class="zola-anchor" href="#rust-for-a-backend-yet" aria-label="Anchor link for: rust-for-a-backend-yet">🔗</a></h2>
+<p>I don't think I would use Rust if I had to choose a backend language right now. The toy project was intentionally small but there are lots of other things needed for a backend not shown here:</p>
+<ul>
+<li><em>sending emails</em>: I found <a href="https://github.com/amousset/rust-smtp">rust-smtp</a> but haven't tried it</li>
+<li><em>templates</em>: needed for example for emails, there is <a href="https://github.com/sunng87/handlebars-rust">handlebars</a> and if I have time I would like to port a subset of <a href="http://jinja.pocoo.org/docs/dev/">Jinja2</a>. There is also some compile-time HTML templating using macros such as <a href="https://github.com/lfairy/maud">maud</a></li>
+<li><em>serialization e.g. between services</em> : there is <a href="https://github.com/stepancheg/rust-protobuf">rust-protobuf</a></li>
+<li><em>database migrations</em>: we could probably use <a href="http://alembic.readthedocs.org/en/latest/">Alembic</a>, a python library</li>
+<li><em>logging</em></li>
+<li><em>error reporting</em></li>
+<li>and probably a bunch of other things that I can't think of right now</li>
+</ul>
+<p>There are also a few open questions where I haven't spent the time to look for the answer:</p>
+<ul>
+<li><em>testing</em>: are there hooks available somewhere to truncate the database between tests?</li>
+<li><em>mocking</em>: often you want to mock things in test, how would that work in Rust?</li>
+</ul>
+<p>I think that, with a bit more time, the ecosystem will be good enough to make Rust a good first choice but it is not there right now. If I had to start a project now, I would lean towards Go but who knows for the one after!</p>
+<p>As mentioned before, I'm a Rust beginner so do not hesitate to correct me and I would definitely appreciate PRs on the demo to see how it could improve.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

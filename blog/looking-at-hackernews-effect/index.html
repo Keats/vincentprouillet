@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Looking at stats from HN crowd after getting on the top spot
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>The Hacker News effect examined</h1>
+            <div class="post__meta">
+                2015-06-14
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <blockquote>
+<p>Note: the original article was published on my old company blog which is no longer live. I've changed the URLs so they don't 404</p>
+</blockquote>
+<p>Last week my article <a href="https://www.vincentprouillet.com/blog/trying-to-replace-json-with-protobuf/">Using Protobuf instead of JSON to communicate with a frontend</a> ended up being number one on <a href="https://news.ycombinator.com">Hacker News</a> and we saw a crazy amount of traffic coming on this blog.</p>
+<p>I thought that it would be interesting to analyze some of that data so here it is.</p>
+<h2 id="the-data">The data<a class="zola-anchor" href="#the-data" aria-label="Anchor link for: the-data">🔗</a></h2>
+<p>It is coming from Google Analytics and while I could just paste screenshots, that wouldn't be any fun so I exported some of it as CSVs and used them in the notebook you can see below. The data is over the past month to have more insights on various social "strategies" (or rather, lack of) as you will see in a bit.</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">%</span><span>matplotlib inline
+</span><span>
+</span><span style="color:#72ab00;">import </span><span>matplotlib.pyplot </span><span style="color:#72ab00;">as </span><span>plt
+</span><span style="color:#72ab00;">import </span><span>numpy </span><span style="color:#72ab00;">as </span><span>np
+</span><span style="color:#72ab00;">import </span><span>pandas </span><span style="color:#72ab00;">as </span><span>pd
+</span><span style="color:#72ab00;">import </span><span>seaborn  </span><span style="color:#7f8989;"># make charts prettier and more readable
+</span></code></pre>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#7f8989;"># Let&#39;s look at the number of sessions first
+</span><span>sessions </span><span style="color:#72ab00;">= </span><span>pd.</span><span style="color:#5597d6;">read_csv</span><span>(
+</span><span>    </span><span style="color:#d07711;">&#39;sessions.csv&#39;</span><span>,
+</span><span>    </span><span style="color:#5597d6;">index_col</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;Day Index&#39;</span><span>,
+</span><span>    </span><span style="color:#5597d6;">parse_dates</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">True
+</span><span>)
+</span><span>
+</span><span style="color:#72ab00;">def </span><span style="color:#c23f31;">intify_sessions</span><span>(</span><span style="color:#5597d6;">df</span><span>):
+</span><span>    </span><span style="color:#7f8989;">&quot;&quot;&quot;
+</span><span style="color:#7f8989;">    GA returns big numbers as string like 1,000
+</span><span style="color:#7f8989;">    That won&#39;t do here we need ints
+</span><span style="color:#7f8989;">    &quot;&quot;&quot;
+</span><span>    </span><span style="color:#72ab00;">return </span><span>df[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>].</span><span style="color:#5597d6;">replace</span><span>(</span><span style="color:#d07711;">&#39;,&#39;</span><span>, </span><span style="color:#d07711;">&#39;&#39;</span><span>, </span><span style="color:#5597d6;">regex</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">True</span><span>).</span><span style="color:#5597d6;">astype</span><span>(</span><span style="color:#d07711;">&#39;int&#39;</span><span>)
+</span><span>
+</span><span style="color:#7f8989;"># We need to ensure we only have ints
+</span><span>sessions[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">intify_sessions</span><span>(sessions)
+</span><span>
+</span><span style="color:#7f8989;"># We will annotate the data with our articles to see the
+</span><span style="color:#7f8989;"># difference between them
+</span><span style="color:#7f8989;"># The number at the end of the tuples is the y offset
+</span><span style="color:#7f8989;"># for the annotation
+</span><span>articles </span><span style="color:#72ab00;">= </span><span>[
+</span><span>    (</span><span style="color:#d07711;">&quot;2015-05-11&quot;</span><span>, </span><span style="color:#d07711;">&quot;Berg&#39;s Little Printer&quot;</span><span>, </span><span style="color:#b3933a;">30</span><span>),
+</span><span>    (</span><span style="color:#d07711;">&quot;2015-05-19&quot;</span><span>, </span><span style="color:#d07711;">&quot;Comparing the weather of places I&#39;ve lived in&quot;</span><span>, </span><span style="color:#b3933a;">130</span><span>),
+</span><span>    (</span><span style="color:#d07711;">&quot;2015-05-25&quot;</span><span>, </span><span style="color:#d07711;">&quot;My experience of using NixOps as an Ansible user&quot;</span><span>, </span><span style="color:#b3933a;">135</span><span>),
+</span><span>    (</span><span style="color:#d07711;">&quot;2015-06-05&quot;</span><span>, </span><span style="color:#d07711;">&quot;Using Protobuf instead of JSON to communicate with a frontend&quot;</span><span>, </span><span style="color:#b3933a;">10</span><span>),
+</span><span>]
+</span><span>dates </span><span style="color:#72ab00;">= </span><span>[date.</span><span style="color:#5597d6;">isoformat</span><span>() </span><span style="color:#72ab00;">for </span><span>date </span><span style="color:#72ab00;">in </span><span>sessions.index.date.</span><span style="color:#5597d6;">tolist</span><span>()]
+</span><span>
+</span><span>plt.</span><span style="color:#5597d6;">figure</span><span>(</span><span style="color:#5597d6;">figsize</span><span style="color:#72ab00;">=</span><span>(</span><span style="color:#b3933a;">16</span><span>, </span><span style="color:#b3933a;">10</span><span>))
+</span><span>ax </span><span style="color:#72ab00;">= </span><span>plt.</span><span style="color:#5597d6;">subplot</span><span>(</span><span style="color:#b3933a;">111</span><span>)
+</span><span>plt.</span><span style="color:#5597d6;">tick_params</span><span>(</span><span style="color:#5597d6;">axis</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;both&#39;</span><span>, </span><span style="color:#5597d6;">which</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;major&#39;</span><span>, </span><span style="color:#5597d6;">labelsize</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">16</span><span>)
+</span><span>sessions[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>].</span><span style="color:#5597d6;">plot</span><span>(</span><span style="color:#5597d6;">x_compat</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">True</span><span>)
+</span><span>
+</span><span>plt.</span><span style="color:#5597d6;">title</span><span>(</span><span style="color:#d07711;">&quot;Daily sessions on the blog&quot;</span><span>, </span><span style="color:#5597d6;">fontsize</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">18</span><span>)
+</span><span>
+</span><span style="color:#72ab00;">for </span><span>(date, title, offset) </span><span style="color:#72ab00;">in </span><span>articles:
+</span><span>    index </span><span style="color:#72ab00;">= </span><span>dates.</span><span style="color:#5597d6;">index</span><span>(date)
+</span><span>    number_sessions </span><span style="color:#72ab00;">= </span><span>sessions[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>][index]
+</span><span>    </span><span style="color:#5597d6;">_ </span><span style="color:#72ab00;">= </span><span>ax.</span><span style="color:#5597d6;">annotate</span><span>(
+</span><span>        </span><span style="color:#d07711;">&#39;</span><span style="color:#aeb52b;">%s</span><span style="color:#d07711;">: </span><span style="color:#aeb52b;">%d</span><span style="color:#d07711;"> sessions&#39; </span><span style="color:#72ab00;">% </span><span>(title, number_sessions),
+</span><span>        </span><span style="color:#5597d6;">xy</span><span style="color:#72ab00;">=</span><span>(sessions.index[index], sessions[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>][index]),
+</span><span>        </span><span style="color:#5597d6;">fontsize</span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">20</span><span>,
+</span><span>        </span><span style="color:#5597d6;">horizontalalignment</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;right&#39;</span><span>, </span><span style="color:#5597d6;">verticalalignment</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;center&#39;</span><span>,
+</span><span>        </span><span style="color:#5597d6;">xytext</span><span style="color:#72ab00;">=</span><span>(</span><span style="color:#b3933a;">00</span><span>, offset),
+</span><span>        </span><span style="color:#5597d6;">textcoords</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;offset points&#39;</span><span>,
+</span><span>        </span><span style="color:#5597d6;">arrowprops</span><span style="color:#72ab00;">=</span><span style="color:#a2a001;">dict</span><span>(</span><span style="color:#5597d6;">arrowstyle</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;-|&gt;&#39;</span><span>))
+</span></code></pre>
+<div class="post__image">
+    <a href="https://www.vincentprouillet.com/blog/looking-at-hackernews-effect/ga-stats_1_0.png" class="image-link" target="_blank">
+        <img src="https://www.vincentprouillet.com/blog/looking-at-hackernews-effect/ga-stats_1_0.png" alt="GA stats: sessions">
+    </a>
+</div>
+<p>Here are the links of the articles for reference (I'll refer to them by their number in the list below from now on):</p>
+<ol>
+<li>Berg's Little Printer (not live anymore)</li>
+<li><a href="https://www.vincentprouillet.com/blog/comparing-weathers/">Comparing the weather of places I've lived in</a></li>
+<li>My experience of using NixOps as an Ansible user (not live anymore)</li>
+<li><a href="https://www.vincentprouillet.com/blog/trying-to-replace-json-with-protobuf/">Using Protobuf instead of JSON to communicate with a frontend</a></li>
+</ol>
+<p>We always tweet when we post an article but only post to HN/Reddit the ones we feel are interesting enough. Article 1 has not been posted anywhere, number 2 has been posted on <a href="https://www.reddit.com/r/python">r/python</a> and number 3 and 4 were both on the front page of HackerNews, with number 4 being at the top for some time.
+From that graph and my experience with my <a href="https://www.vincentprouillet.com/">previous blog</a>, HN brings way more readers than reddit or twitter.</p>
+<p>Let's have a look to see if I'm right.</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span>channels </span><span style="color:#72ab00;">= </span><span>pd.</span><span style="color:#5597d6;">read_csv</span><span>(</span><span style="color:#d07711;">&#39;channels.csv&#39;</span><span>)
+</span><span style="color:#7f8989;"># We need to ensure we only have ints
+</span><span>channels[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">intify_sessions</span><span>(channels)
+</span><span>plt.</span><span style="color:#5597d6;">figure</span><span>()
+</span><span>wedges </span><span style="color:#72ab00;">= </span><span>channels[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>].</span><span style="color:#5597d6;">plot</span><span>(
+</span><span>    </span><span style="color:#5597d6;">kind</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;pie&#39;</span><span>,
+</span><span>    </span><span style="color:#5597d6;">autopct</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;</span><span style="color:#aeb52b;">%1.1f%%</span><span style="color:#d07711;">&#39;</span><span>,
+</span><span>    </span><span style="color:#5597d6;">labels</span><span style="color:#72ab00;">=</span><span>channels[</span><span style="color:#d07711;">&#39;Default Channel Grouping&#39;</span><span>],
+</span><span>    </span><span style="color:#5597d6;">fontsize</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">16</span><span>,
+</span><span>    </span><span style="color:#5597d6;">labeldistance</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">1.1
+</span><span>)
+</span><span>
+</span><span style="color:#5597d6;">_ </span><span style="color:#72ab00;">= </span><span>plt.</span><span style="color:#5597d6;">axis</span><span>(</span><span style="color:#d07711;">&#39;equal&#39;</span><span>)
+</span></code></pre>
+<div class="post__image">
+    <a href="https://www.vincentprouillet.com/blog/looking-at-hackernews-effect/ga-stats_3_0.png" class="image-link" target="_blank">
+        <img src="https://www.vincentprouillet.com/blog/looking-at-hackernews-effect/ga-stats_3_0.png" alt="GA stats: source">
+    </a>
+</div>
+<p>We can see most of our sessions are coming from Social, which includes HN/Reddit/Twitter mainly: 16,946 to be exact.
+We also have a significant portion of users coming from referrals which are mainly Python newsletters, <a href="http://feedly.com">feedly.com</a>, <a href="http://lobste.rs">lobste.rs</a>, <a href="http://hckrnews.com">hckrnews.com</a> and <a href="http://flipboard.com">flipboard.com</a>.</p>
+<p>Let's drill down into those social sessions to see where they are coming from but since I am lazy (and we don't want a pie chart overdose!) I will just paste the number of sessions from each rather having a pie chart for that:</p>
+<ul>
+<li><strong>Hacker News</strong>: 15,223 (89.83%)</li>
+<li><strong>Twitter</strong>: 1,008 (5.95%)</li>
+<li><strong>Reddit</strong>: 323 (1.91%)</li>
+<li><strong>Facebook</strong>: 247 (1.46%)</li>
+<li><strong>Other</strong>: 144 (0.85%)</li>
+</ul>
+<p>I was a bit surprised by the Twitter amount so I went and found that there is a HN bot with lots of followers that tweets the articles. I guess most of them come from that tweet since we are not really active on Twitter ourselves.</p>
+<p>This is cool but I am more interested on what location/devices the people are using so let's have a look.</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span>locations </span><span style="color:#72ab00;">= </span><span>pd.</span><span style="color:#5597d6;">read_csv</span><span>(</span><span style="color:#d07711;">&#39;locations.csv&#39;</span><span>)
+</span><span>locations[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">intify_sessions</span><span>(locations)
+</span><span>
+</span><span>plt.</span><span style="color:#5597d6;">figure</span><span>(</span><span style="color:#5597d6;">figsize</span><span style="color:#72ab00;">=</span><span>(</span><span style="color:#b3933a;">8</span><span>,</span><span style="color:#b3933a;">6</span><span>))
+</span><span>ax </span><span style="color:#72ab00;">= </span><span>locations[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>].</span><span style="color:#5597d6;">plot</span><span>(</span><span style="color:#5597d6;">kind</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;barh&#39;</span><span>)
+</span><span>ax.</span><span style="color:#5597d6;">set_yticklabels</span><span>(locations[</span><span style="color:#d07711;">&#39;Country&#39;</span><span>])
+</span><span>ax.</span><span style="color:#5597d6;">invert_yaxis</span><span>()
+</span><span>plt.</span><span style="color:#5597d6;">tick_params</span><span>(</span><span style="color:#5597d6;">axis</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;both&#39;</span><span>, </span><span style="color:#5597d6;">which</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;major&#39;</span><span>, </span><span style="color:#5597d6;">labelsize</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">16</span><span>)
+</span><span>plt.</span><span style="color:#5597d6;">title</span><span>(</span><span style="color:#d07711;">&quot;Number of sessions by countries (top 10)&quot;</span><span>)
+</span><span style="color:#5597d6;">_ </span><span style="color:#72ab00;">= </span><span>ax.</span><span style="color:#5597d6;">set_xlabel</span><span>(</span><span style="color:#d07711;">&quot;Number of sessions&quot;</span><span>)
+</span></code></pre>
+<div class="post__image">
+    <a href="https://www.vincentprouillet.com/blog/looking-at-hackernews-effect/ga-stats_5_0.png" class="image-link" target="_blank">
+        <img src="https://www.vincentprouillet.com/blog/looking-at-hackernews-effect/ga-stats_5_0.png" alt="GA stats: countries">
+    </a>
+</div>
+<p>As expected, most of the users are from English speaking countries, the articles being written in English after all. We could translate them into French/German if we wanted but that wouldn't be worth the effort of maintaining multiple versions of each article.</p>
+<p>In terms of cities, the top 3 are <em>San Francisco</em>, <em>New York</em> and <em>London</em>. Again nothing surprising.  The first non english-speaking city is <em>Berlin</em> at the 8th position but <em>Paris</em> is only 4 sessions away from overtaking <em>Los Angeles</em> and taking the 10th position.</p>
+<p>To me, having people in thousands of cities in over 100 countries reading what we write is pretty mind-blowing and is by far the best part.</p>
+<p>I couldn't finish that notebook without satisfying some of my curiosity: what devices/OS/browsers are used?</p>
+<p>First, what devices are readers mostly using?</p>
+<ul>
+<li><strong>desktop</strong>: 16,211 (64.94%)</li>
+<li><strong>mobile</strong>: 7,335 (29.38%)</li>
+<li><strong>tablet</strong>: 1,418 (5.68%)</li>
+</ul>
+<p>Nothing surprising here either, most people browse websites from a computer. In the mobile/tablet category, iPhone and iPad are the big winners in terms of number of users but Android still wins due to the sheer number of devices as we will see below.</p>
+<p>If anyone is working on a B2B app, would you be able to share those numbers? It seems to me that you could forego responsiveness for quite a lot of B2B products, or only have a basic one.</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span>oses </span><span style="color:#72ab00;">= </span><span>pd.</span><span style="color:#5597d6;">read_csv</span><span>(</span><span style="color:#d07711;">&#39;os.csv&#39;</span><span>)
+</span><span>oses[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">intify_sessions</span><span>(oses)
+</span><span>plt.</span><span style="color:#5597d6;">figure</span><span>()
+</span><span style="color:#7f8989;"># Limiting to OSes over 200 users, sorry WP, Chrome OS,
+</span><span style="color:#7f8989;"># Firefox OS and Free/OpenBSD users
+</span><span>oses[oses[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>] </span><span style="color:#72ab00;">&gt; </span><span style="color:#b3933a;">200</span><span>][</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>].</span><span style="color:#5597d6;">plot</span><span>(
+</span><span>    </span><span style="color:#5597d6;">kind</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;pie&#39;</span><span>,
+</span><span>    </span><span style="color:#5597d6;">autopct</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;</span><span style="color:#aeb52b;">%1.1f%%</span><span style="color:#d07711;">&#39;</span><span>,
+</span><span>    </span><span style="color:#5597d6;">labels</span><span style="color:#72ab00;">=</span><span>oses[</span><span style="color:#d07711;">&#39;Operating System&#39;</span><span>],
+</span><span>    </span><span style="color:#5597d6;">fontsize</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">16</span><span>,
+</span><span>    </span><span style="color:#5597d6;">labeldistance</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">1.1
+</span><span>)
+</span><span style="color:#5597d6;">_ </span><span style="color:#72ab00;">= </span><span>plt.</span><span style="color:#5597d6;">axis</span><span>(</span><span style="color:#d07711;">&#39;equal&#39;</span><span>)
+</span></code></pre>
+<div class="post__image">
+    <a href="https://www.vincentprouillet.com/blog/looking-at-hackernews-effect/ga-stats_8_0.png" class="image-link" target="_blank">
+        <img src="https://www.vincentprouillet.com/blog/looking-at-hackernews-effect/ga-stats_8_0.png" alt="GA stats: os">
+    </a>
+</div>
+<p>Interestingly enough, Android and iOS are almost identical.</p>
+<p>I have to say I'm a bit surprised by the predominance of Macs, I was expecting it to be at around 25% and have more Linux users than that.
+For Windows and Mac, it seems the readers are using majoritarily the last 2 versions of each OS, with 7 being the most used version for Window and 10.10 for Mac.
+A special hello for the person that came from Windows Server 2003 and the few still on Vista.</p>
+<p>Let's see what browsers everyone is using now.</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span>browsers </span><span style="color:#72ab00;">= </span><span>pd.</span><span style="color:#5597d6;">read_csv</span><span>(</span><span style="color:#d07711;">&#39;browsers.csv&#39;</span><span>)
+</span><span>browsers[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">intify_sessions</span><span>(browsers)
+</span><span style="color:#7f8989;"># Limiting to browsers over 200 users,
+</span><span style="color:#7f8989;"># sorry IE/Opera/Blackberry users
+</span><span>browsers[browsers[</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>] </span><span style="color:#72ab00;">&gt; </span><span style="color:#b3933a;">200</span><span>][</span><span style="color:#d07711;">&#39;Sessions&#39;</span><span>].</span><span style="color:#5597d6;">plot</span><span>(
+</span><span>    </span><span style="color:#5597d6;">kind</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;pie&#39;</span><span>,
+</span><span>    </span><span style="color:#5597d6;">autopct</span><span style="color:#72ab00;">=</span><span style="color:#d07711;">&#39;</span><span style="color:#aeb52b;">%1.1f%%</span><span style="color:#d07711;">&#39;</span><span>,
+</span><span>    </span><span style="color:#5597d6;">labels</span><span style="color:#72ab00;">=</span><span>browsers[</span><span style="color:#d07711;">&#39;Browser&#39;</span><span>],
+</span><span>    </span><span style="color:#5597d6;">fontsize</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">16
+</span><span>)
+</span><span style="color:#5597d6;">_ </span><span style="color:#72ab00;">= </span><span>plt.</span><span style="color:#5597d6;">axis</span><span>(</span><span style="color:#d07711;">&#39;equal&#39;</span><span>)
+</span></code></pre>
+<div class="post__image">
+    <a href="https://www.vincentprouillet.com/blog/looking-at-hackernews-effect/ga-stats_10_0.png" class="image-link" target="_blank">
+        <img src="https://www.vincentprouillet.com/blog/looking-at-hackernews-effect/ga-stats_10_0.png" alt="GA stats: browsers">
+    </a>
+</div>
+<p>This is a pretty damn big win for Chrome here and almost all of those are on Chrome 42 or 43.
+Most Safari and Firefox users are also on the latest version of their respective browsers.</p>
+<p>About 200 sessions came from IE and they were mostly using IE10 or IE11 so if you are a frontend person and you are targeting the HN crowd, you don't have to worry about old browsers really (but I think you already knew that).</p>
+<p>Looking at the list below those major players is interesting though, you find out about things like <a href="http://en.wikipedia.org/wiki/Amazon_Silk">Amazon Silk</a> or <a href="http://help.yandex.ru/yabrowser/?lang=en">YaBrowser</a>.</p>
+<h2 id="the-server">The server<a class="zola-anchor" href="#the-server" aria-label="Anchor link for: the-server">🔗</a></h2>
+<p>Just a quick word to praise static sites: we ran 15 QPS excluding static assets (50 QPS including those) on a micro instance at 0.0 load with 500 concurrent users.</p>
+<p>We use <a href="http://docs.getpelican.com/en/3.5.0/">Pelican</a> but any of the dozens of other similar tools is fine and you can handle ridiculous amount of traffic without any worries. You can also host the blog on S3 or a CDN if you don't want to have a server at all.
+Using a static site generator also makes it easy to review and improve articles, like you would do for code reviews. The only pain point is commenting on notebooks, as it is not possible to do so on the rendered version on Github and a raw notebook looks like <a href="https://raw.githubusercontent.com/WeAreWizards/blog/master/content/notebooks/weather.ipynb">that</a>.</p>
+<p>You can check <a href="https://github.com/WeAreWizards/blog">our blog repo</a> and look at the issues if you are curious about that process.</p>
+<p>Now, onto vacations!</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

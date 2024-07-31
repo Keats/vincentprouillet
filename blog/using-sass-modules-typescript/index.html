@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    A brief explanation on how to add CSS modules for the React&#x2F;TS&#x2F;Webpack starter
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Using CSS modules with Sass, Webpack and TypeScript</h1>
+            <div class="post__meta">
+                2020-01-24
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>A few months ago, I mentioned in my articles about setting up Webpack with TypeScript (<a href="https://www.vincentprouillet.com/blog/react-typescript-webpack-1/">part 1</a> and
+<a href="https://www.vincentprouillet.com/blog/react-typescript-webpack-2/">part 2</a>) that CSS modules would be a nice addition to it. Here we go!</p>
+<h2 id="what-are-css-modules">What are CSS modules?<a class="zola-anchor" href="#what-are-css-modules" aria-label="Anchor link for: what-are-css-modules">🔗</a></h2>
+<p>One common issue for anyone writing CSS is <strong>specificity</strong>. As a site grows, the number of CSS rules and classes grow.
+This makes it easy to accidentally re-use an existing class name by inadvertence and wonder why your text is now red.</p>
+<p>CSS modules are pretty simple. Let's start by writing CSS/Sass/Less as you would normally do:</p>
+<pre data-lang="css" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-css "><code class="language-css" data-lang="css"><span style="color:#9b703f;">.my-class </span><span>{
+</span><span>   </span><span style="color:#c5af75;">color</span><span>: </span><span style="color:#da5d42;">red</span><span>;
+</span><span>}
+</span><span style="color:#9b703f;">.title </span><span>{
+</span><span>   </span><span style="color:#c5af75;">font-size</span><span>: </span><span style="color:#ca7840;">2</span><span style="color:#72ab00;">rem</span><span>;
+</span><span>}
+</span></code></pre>
+<p>You can then import the file in your <code>.js</code>/<code>.ts</code> variable (like <code>import styles from "_style.scss";</code>) and access the class names from it: <code>styles.title</code>.
+Not very impressive but if you look at the source of your HTML page you will notice the class is some random combination of letters and numbers.
+This is the powerful part of CSS modules: each class gets its own unique name which means that there cannot be specificity issues anymore.</p>
+<p>There are a few other ways to solve the specificity issues:</p>
+<ul>
+<li>use something like <a href="http://getbem.com/">BEM</a>, which requires discipline</li>
+<li>use a CSS-in-JS library like <a href="https://emotion.sh/docs/introduction">emotion</a>, which is more complex and has lower performance than alternatives</li>
+<li>hope for the best</li>
+</ul>
+<h2 id="adding-css-module-to-the-webpack-boilerplate">Adding CSS module to the Webpack boilerplate<a class="zola-anchor" href="#adding-css-module-to-the-webpack-boilerplate" aria-label="Anchor link for: adding-css-module-to-the-webpack-boilerplate">🔗</a></h2>
+<p>Turns out enabling them is really easy! The only tricky part is, as some might have guessed from the example above, ensuring
+TypeScript does not error when loading the Sass file. Thankfully, a loader exists to automatically create definition file from CSS files:
+<a href="https://www.npmjs.com/package/@teamsupercell/typings-for-css-modules-loader">typings-for-css-modules-loader</a>.</p>
+<p>Let's go quickly through the main changes needed to the Webpack configuration:</p>
+<pre data-lang="diff" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-diff "><code class="language-diff" data-lang="diff"><span style="background-color:#6c1d15;color:#f8f8f8;">-          // Translates CSS into CommonJS
+</span><span style="background-color:#6c1d15;color:#f8f8f8;">-          &quot;css-loader&quot;,
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+          {
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+            loader: &quot;@teamsupercell/typings-for-css-modules-loader&quot;,
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+            options: {
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+              banner: &quot;// autogenerated by typings-for-css-modules-loader.&quot;
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+            }
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+          },
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+          // Translates CSS into CommonJS with modules
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+          {
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+            loader: &quot;css-loader&quot;,
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+            options: {
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+              modules: {
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+                mode: &quot;local&quot;,
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+                localIdentName: &#39;[local]--[hash:base64:6]&#39;,
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+              },
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+              localsConvention: &quot;camelCase&quot;
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+            }
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+          },
+</span><span>
+</span></code></pre>
+<p>We go from a plain <code>css-loader</code> to one with modules enabled with a <code>local</code> scope and where the generated classes are still readable.
+We also tell the loader to camel case the classes in order to satisfy the various linters.
+Lastly, we set the <code>@teamsupercell/typings-for-css-modules-loader</code> <strong>above</strong> the <code>css-loader</code>, the position is important.
+There are other changes in the commit, such as ignoring all generated files, that are pretty straightforward.</p>
+<p>The commit is <a href="https://github.com/Keats/webpack-react-typescript/commit/9786130bf283d47af1d1945ac66679a0529254c4">https://github.com/Keats/webpack-react-typescript/commit/9786130bf283d47af1d1945ac66679a0529254c4</a>.</p>
+<h2 id="anything-missing">Anything missing?<a class="zola-anchor" href="#anything-missing" aria-label="Anchor link for: anything-missing">🔗</a></h2>
+<p>Now that we have CSS modules in place, the only thing I consider missing is <a href="https://storybook.js.org/">Storybook</a>. This is
+unlikely to get an article as it is pretty easy to follow the instructions to install it though.</p>
+<p>Are there any amazing libraries/Webpack plugins I'm missing out on?</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

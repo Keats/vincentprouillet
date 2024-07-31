@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Gutenberg 0.4.0 is out with custom taxonomies, image processing, improved shortcodes and more
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Gutenberg 0.4.0: custom taxonomies, image processing and more</h1>
+            <div class="post__meta">
+                2018-08-04
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p><a href="https://github.com/Keats/gutenberg">Gutenberg</a> is a powerful static site engine inspired by <a href="https://gohugo.io/">Hugo</a> but simpler to use.
+You can build pretty much any kind of static site with it using markdown:</p>
+<ul>
+<li>a basic blog</li>
+<li>a landing site</li>
+<li>a knowledge base</li>
+<li>a gitbook (there is a <a href="https://github.com/Keats/book">theme</a> for that)</li>
+<li>a documentation site</li>
+<li>all of the above combined</li>
+</ul>
+<p>You can download built binaries from the <a href="https://github.com/Keats/gutenberg/releases">Github releases page</a> or install
+it from <a href="https://www.getzola.org/documentation/getting-started/installation/">one of the installation methods</a>.</p>
+<p>You should also be able to install it on Ubuntu via Snapcraft once <a href="https://forum.snapcraft.io/t/the-rust-plugin-sets-an-invalid-manifest-path/6565/6">this bug</a>
+is resolved.</p>
+<h2 id="what-s-new">What's new<a class="zola-anchor" href="#what-s-new" aria-label="Anchor link for: what-s-new">🔗</a></h2>
+<p>Lots of things! You can view the <a href="https://github.com/Keats/gutenberg/blob/master/CHANGELOG.md">CHANGELOG</a> for
+a quick overview: I will look at the biggest changes in more details here including the breaking ones and how to migrate.</p>
+<h3 id="breaking-custom-taxonomies">Breaking: custom taxonomies<a class="zola-anchor" href="#breaking-custom-taxonomies" aria-label="Anchor link for: breaking-custom-taxonomies">🔗</a></h3>
+<p>Taxonomies are a way to group content together, the most common one in blogs being tags and categories.
+Before 0.4.0, you could only have those two taxonomies: <code>tags</code> and <code>categories</code>. You
+couldn't paginate their pages, have a RSS feed for each or create your own taxonomy.</p>
+<p>Let's see how to use, and also how to migrate from the point of view of a current user
+already using tags/categories.</p>
+<p>If you are looking for more information, the <a href="https://www.getzola.org/documentation/content/taxonomies/">docs</a> have been updated — look
+for the various taxonomies pages in the side menu.</p>
+<h4 id="updating-the-configuration">Updating the configuration<a class="zola-anchor" href="#updating-the-configuration" aria-label="Anchor link for: updating-the-configuration">🔗</a></h4>
+<p>The first thing to do is open your <code>config.toml</code> and list the taxonomies you want to use:</p>
+<pre data-lang="toml" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#7f8989;"># You can delete those 2 lines, they aren&#39;t used anymore.
+</span><span style="color:#7f902a;">generate_tags_pages </span><span>= </span><span style="color:#b3933a;">true
+</span><span style="color:#7f902a;">generate_categories_pages </span><span>= </span><span style="color:#b3933a;">true
+</span><span>
+</span><span style="color:#7f8989;"># And define them like so instead
+</span><span style="color:#7f902a;">taxonomies </span><span>= [
+</span><span>    </span><span style="color:#7f8989;"># each tag will have its own RSS feed
+</span><span>    {</span><span style="color:#7f902a;">name </span><span>= </span><span style="color:#d07711;">&quot;tags&quot;</span><span>, </span><span style="color:#7f902a;">rss </span><span>= </span><span style="color:#b3933a;">true</span><span>},
+</span><span>    </span><span style="color:#7f8989;"># 5 items per page for a term, you can also customise the pagination path
+</span><span>    </span><span style="color:#7f8989;"># like for the rest of the paginated content
+</span><span>    {</span><span style="color:#7f902a;">name </span><span>= </span><span style="color:#d07711;">&quot;categories&quot;</span><span>, </span><span style="color:#7f902a;">paginate_by </span><span>= </span><span style="color:#b3933a;">5</span><span>},
+</span><span>    </span><span style="color:#7f8989;"># Basic definition: no RSS or pagination
+</span><span>    {</span><span style="color:#7f902a;">name </span><span>= </span><span style="color:#d07711;">&quot;authors&quot;</span><span>},
+</span><span>]
+</span></code></pre>
+<h4 id="updating-the-templates">Updating the templates<a class="zola-anchor" href="#updating-the-templates" aria-label="Anchor link for: updating-the-templates">🔗</a></h4>
+<p>We need to change two things regarding the taxonomies templates:</p>
+<ul>
+<li>their location</li>
+<li>the main variable they use</li>
+</ul>
+<p>First we need to move the templates their new location:</p>
+<ul>
+<li><code>tags.html</code> -&gt; <code>tags/list.html</code></li>
+<li><code>tag.html</code> -&gt; <code>tags/single.html</code></li>
+<li><code>categories.html</code> -&gt; <code>categories/list.html</code></li>
+<li><code>category.html</code> -&gt; <code>categories/single.html</code></li>
+</ul>
+<p>In short, Gutenberg is now looking for:</p>
+<ul>
+<li><code>$TAXONOMY_NAME/single.html</code></li>
+<li><code>$TAXONOMY_NAME/list.html</code></li>
+</ul>
+<p>Lastly, the name of the variables available have changed:</p>
+<ul>
+<li>replace <code>tags</code> and <code>categories</code> with <code>terms</code></li>
+<li>replace <code>tag</code> and <code>category</code> with <code>term</code></li>
+</ul>
+<h4 id="updating-the-content">Updating the content<a class="zola-anchor" href="#updating-the-content" aria-label="Anchor link for: updating-the-content">🔗</a></h4>
+<p>Before, your front-matter would look like:</p>
+<pre style="background-color:#f5f5f5;color:#1f1f1f;"><code><span>+++
+</span><span>title = &quot;Provisioning and deploying this blog with Ansible&quot;
+</span><span>description = &quot;Showing off Ansible by example&quot;
+</span><span>date = 2013-08-17
+</span><span>category = &quot;Devops&quot;
+</span><span>tags = [&quot;ansible&quot;]
+</span><span>+++
+</span></code></pre>
+<p>An updated version is:</p>
+<pre style="background-color:#f5f5f5;color:#1f1f1f;"><code><span>+++
+</span><span>title = &quot;Provisioning and deploying this blog with Ansible&quot;
+</span><span>description = &quot;Showing off Ansible by example&quot;
+</span><span>date = 2013-08-17
+</span><span>
+</span><span>[taxonomies]
+</span><span>categories = [&quot;Devops&quot;]
+</span><span>tags = [&quot;ansible&quot;]
+</span><span>+++
+</span></code></pre>
+<p>Note that every taxonomies is now required to take an array of string, whereas before
+there could be only a single category.</p>
+<h3 id="breaking-removal-of-order-sorting-renaming-of-next-previous">Breaking: removal of <code>order</code> sorting &amp; renaming of <code>next</code>/<code>previous</code><a class="zola-anchor" href="#breaking-removal-of-order-sorting-renaming-of-next-previous" aria-label="Anchor link for: breaking-removal-of-order-sorting-renaming-of-next-previous">🔗</a></h3>
+<p>Before 0.4.0, you could sort pages by <code>date</code>, <code>order</code> and <code>weight</code>.</p>
+<p><code>order</code> and <code>weight</code> were the opposite of each other but the difference of meaning led
+to <a href="https://github.com/Keats/gutenberg/issues/338">confusion</a> when trying to get the <code>previous</code> or the <code>next</code> page.</p>
+<p>To make things more explicit two changes have been made:</p>
+<ul>
+<li><code>order</code> has been removed</li>
+<li><code>page.previous</code> and <code>page.next</code> have been renamed depending on the sorting used:
+<ul>
+<li><code>date</code>: now called <code>page.earlier</code> and <code>page.later</code></li>
+<li><code>weight</code>: now called <code>page.lighter</code> and <code>page.heavier</code></li>
+</ul>
+</li>
+</ul>
+<p>No more <code>&lt;a class="previous" href="{{page.next.permalink}}&gt;{{page.next.title}}&lt;/a&gt;</code>!</p>
+<p>To fix sites using <code>order</code> or <code>date</code>, you will need to:</p>
+<ul>
+<li>change <code>sort_by</code> of the sections to use <code>weight</code></li>
+<li>rename <code>order</code> to <code>weight</code> and invert the order of values if necessary</li>
+<li>rename <code>next</code> and <code>previous</code> to <code>heavier</code>/<code>lighter</code> or <code>later</code>/<code>earlier</code></li>
+</ul>
+<p>This has been implemented by <a href="https://github.com/codesections">Daniel Sockwell</a> as his first ever Rust PR!
+Daniel has also made tons of improvements to the documentation, something always appreciated.</p>
+<h3 id="image-processing">Image processing<a class="zola-anchor" href="#image-processing" aria-label="Anchor link for: image-processing">🔗</a></h3>
+<p>This is the amazing work of <a href="https://github.com/vojtechkral">Vojtech Kral</a> who also wrote
+a thorough <a href="https://www.getzola.org/documentation/content/image-processing/">documentation page</a> explaining it in detail.</p>
+<p>In short: you can now resize images from a template and implementing a gallery is trivial. Open an issue if you have an idea for
+some image processing not already in!</p>
+<h3 id="shortcodes-fixes">Shortcodes fixes<a class="zola-anchor" href="#shortcodes-fixes" aria-label="Anchor link for: shortcodes-fixes">🔗</a></h3>
+<p>In the previous versions, <a href="https://www.getzola.org/documentation/content/shortcodes/">shortcodes</a> were detected with a Regex and built up
+while parsing the Markdown which ended up being some of the worst spaghetti code I have ever written.
+It lead to numerous bugs as well some valuable features like array arguments to be almost impossible to implement — at least for me.</p>
+<p>In Gutenberg 0.4.0, shortcodes are now rendered before Markdown as a separate pass, going through a custom parser specifically written for it.
+The rendered shortcodes are then inserted back into the Markdown as raw HTML so the (much simplified) Markdown parser can ignore them.
+Thanks to that redesign, all shortcodes feature requests were added easily and every known bug has been fixed.</p>
+<h3 id="external-link-checker">External link checker<a class="zola-anchor" href="#external-link-checker" aria-label="Anchor link for: external-link-checker">🔗</a></h3>
+<p>Link rot can be a big issue: some pages might not make sense anymore as a whole if an important link stopped working.</p>
+<p>Since Gutenberg already checks internal links, only external links were left to check!
+Simply add <code>check_external_links = true</code> to your <code>config.toml</code> and Gutenberg will look up every link in your pages, reporting the ones
+not working.</p>
+<p>This process is quite slow though so I would recommend enabling it once in a while to check but not all the time.
+Keep in mind that some results might be false negatives: crates.io for example <a href="https://github.com/rust-lang/crates.io/issues/788">always returns a 404</a>.</p>
+<h2 id="what-s-next">What's next<a class="zola-anchor" href="#what-s-next" aria-label="Anchor link for: what-s-next">🔗</a></h2>
+<p>The main goal for the next version is i18n support. There is an <a href="https://github.com/Keats/gutenberg/pull/111">open RFC</a> to
+discuss how the implementation would look like, comments are very welcome.</p>
+<p>The main issue left seems to be the translation of the template texts as I'm not sure how to handle that.
+Right now it's a dictionary in <code>config.toml</code> but that can grow to be quite large so a separate file for each language
+would make sense. Pluralization also becomes an issue.</p>
+<p>Once the spec is clearly defined on all points, I would happy to mentor people of any skill level on bits of it: <code>gutenberg</code> is divided in
+many sub-crates, making changes pretty self-contained.</p>
+<p>As always if you have any feedback or bugs, please open an issue. Hopefully soon Gutenberg will have enough users
+to qualify for a free open-source Discourse forum to have a good way to interact with users more efficiently than GitHub issues.
+If you are using Gutenberg and are not featured in <a href="https://github.com/Keats/gutenberg/blob/master/EXAMPLES.md">the list of sites</a>, please
+add yourself!</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

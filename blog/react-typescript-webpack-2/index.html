@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    How to quickly get started with a React&#x2F;TypeScript project using Webpack: the production environment
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Setting up a React+TypeScript frontend with Webpack — Part 2</h1>
+            <div class="post__meta">
+                2019-11-01
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>In this article, we are going to turn our <a href="https://www.vincentprouillet.com/blog/react-typescript-webpack-1/">local environment setup</a> into
+a production-ready setup. Thanks to improvements in recent Webpack versions, it is now straightforward.</p>
+<h2 id="node-env-production-in-webpack">NODE_ENV=production in Webpack<a class="zola-anchor" href="#node-env-production-in-webpack" aria-label="Anchor link for: node-env-production-in-webpack">🔗</a></h2>
+<p>The majority of JavaScript projects use the <code>NODE_ENV</code> variable to enable optimizations and remove debug code. If you need
+to support Windows, setting an environment variable directly in the script the UNIX way is not going to work. You can install <a href="https://www.npmjs.com/package/cross-env">cross-env</a> to handle cross-platform environment variables.
+The script in that case is <code>"build:prod": "cross-env NODE_ENV=production webpack"</code>.
+Again, if you do not need Windows support, simply remove the <code>cross-env</code> from the script.</p>
+<p>Now there are two ways to proceed:</p>
+<ol>
+<li>split the configuration in multiple files and merge them with something like <a href="https://www.npmjs.com/package/webpack-merge">webpack-merge</a></li>
+<li>keep everything in one file and use JavaScript to toggle things</li>
+</ol>
+<p>I prefer the second approach as I find it more readable and doesn't require additional dependencies. You can judge for yourself
+by looking at the <a href="https://github.com/Keats/webpack-react-typescript/blob/master/webpack.config.js">final result</a>.</p>
+<p>As mentioned before, Webpack has been making things easier. With the introduction of <a href="https://webpack.js.org/configuration/mode/">mode</a>, it is easy
+to get a production-ready bundle:</p>
+<pre data-lang="diff" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-diff "><code class="language-diff" data-lang="diff"><span>diff --git a/webpack.config.js b/webpack.config.js
+</span><span>index 53c39f2..b4d6e11 100644
+</span><span style="background-color:#234561;font-style:italic;color:#f8f8f8;">--- a/webpack.config.js
+</span><span style="background-color:#234561;font-style:italic;color:#f8f8f8;">+++ b/webpack.config.js
+</span><span style="background-color:#234561;font-style:italic;color:#f8f8f8;">@@ -4,9 +4,11 @@ </span><span style="background-color:#234561;color:#c23f31;">const HtmlWebpackPlugin = require(&quot;html-webpack-plugin&quot;);
+</span><span> const ForkTsCheckerWebpackPlugin = require(&quot;fork-ts-checker-webpack-plugin&quot;);
+</span><span> const { CleanWebpackPlugin } = require(&quot;clean-webpack-plugin&quot;);
+</span><span> 
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+const isProd = process.env.NODE_ENV === &quot;production&quot;;
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+
+</span><span> module.exports = {
+</span><span>   context: __dirname,
+</span><span style="background-color:#6c1d15;color:#f8f8f8;">-  mode: &quot;development&quot;,
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+  mode: isProd ? &quot;production&quot; : &quot;development&quot;,
+</span><span>   entry: {
+</span><span>     app: &quot;./src/index.tsx&quot;
+</span><span>   },
+</span></code></pre>
+<p>Just changing the mode will get us a minified output: you can check it by running <code>build:prod</code> yourself.</p>
+<p>Looking at the minified code, we can see that the sourcemap is embedded in the file still.
+The <a href="https://webpack.js.org/configuration/devtool/#production">best option for production environments</a>
+is <code>source-map</code> which we can set conditionally on the <code>isProd</code> variable: <code>devtool: isProd ? "source-map" : "eval-source-map",</code>.
+Running <code>build:prod</code> again will now properly create a separate file ending in <code>.js.map</code>.
+Remember that the sourcemap files should not be accessible by anyone other than you and your bug reporting app.</p>
+<p>Lastly, the HMR from Webpack is injecting some code in the bundle that we do not want in our production bundle. We can disable it easily:</p>
+<pre data-lang="diff" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-diff "><code class="language-diff" data-lang="diff"><span>diff --git a/webpack.config.js b/webpack.config.js
+</span><span>index af5fd2f..63272fd 100644
+</span><span style="background-color:#234561;font-style:italic;color:#f8f8f8;">--- a/webpack.config.js
+</span><span style="background-color:#234561;font-style:italic;color:#f8f8f8;">+++ b/webpack.config.js
+</span><span style="background-color:#234561;font-style:italic;color:#f8f8f8;">@@ -58,6 +58,6 @@ </span><span style="background-color:#234561;color:#c23f31;">module.exports = {
+</span><span>       async: false
+</span><span>     }),
+</span><span>     new CleanWebpackPlugin(),
+</span><span style="background-color:#6c1d15;color:#f8f8f8;">-    new webpack.HotModuleReplacementPlugin()
+</span><span style="background-color:#6c1d15;color:#f8f8f8;">-  ]
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+    isProd ? false : new webpack.HotModuleReplacementPlugin()
+</span><span style="background-color:#3b5a37;color:#f8f8f8;">+  ].filter(Boolean)
+</span><span> };
+</span></code></pre>
+<p>The commit is <a href="https://github.com/Keats/webpack-react-typescript/commit/4527184f2d7a49447451774b1bf5cc8d4cb3c1e5">https://github.com/Keats/webpack-react-typescript/commit/4527184f2d7a49447451774b1bf5cc8d4cb3c1e5</a>.</p>
+<h2 id="splitting-chunks">Splitting chunks<a class="zola-anchor" href="#splitting-chunks" aria-label="Anchor link for: splitting-chunks">🔗</a></h2>
+<p>In our current situation, we generate a single file for the whole app: it clocks in at 132KB before gzip.
+This means that every time someone changes anything in the codebase, the full bundle will be invalidated and re-downloaded by every users.</p>
+<p>There are two approaches to splitting the chunks:</p>
+<ol>
+<li><strong>bundle splitting</strong>: separating into fixed bundles, for example putting dependencies into another bundle</li>
+<li><strong>code splitting</strong>: splitting your own code into multiple bundles loaded on demand</li>
+</ol>
+<h3 id="bundle-splitting">Bundle splitting<a class="zola-anchor" href="#bundle-splitting" aria-label="Anchor link for: bundle-splitting">🔗</a></h3>
+<p>The easiest bundle splitting strategy is to create a <code>vendors</code> bundle containing all dependencies. In our case we currently
+only have <code>react</code> and <code>react-dom</code> but it will inevitably grow and, unless you are upgrading dependencies every day, will not
+change very often. Dividing the bundle does not change anything for first-time users as they will have to download all files but
+repeat users will only download the bundles that changed.</p>
+<p>Webpack comes with a built-in option to split everything coming from the <code>node_modules</code> folder to another bundle: <a href="https://webpack.js.org/plugins/split-chunks-plugin/#splitchunkschunks">optimization.splitChunks.chunks</a>.
+Setting it to <code>"all"</code> will produce a new JavaScript file with a name starting by <code>vendors~app</code> in the output directory weighting 131KB while the app bundle shrank down to 1.9KB.
+If you run <code>build:prod</code> again after making a change to <code>index.tsx</code>, you will notice the hash did change: we need to ensure the hash
+is done on the content rather than the build. In practice this means changing <code>[hash]</code> to <code>[contenthash]</code> in the <code>output.filename</code> configuration in production.
+Trying it again will now give the expected results: a change in our application code doesn't change the <code>vendors</code> bundle.</p>
+<p>For many apps, just splitting the bundle that way will be enough to get started. If needed, you can create different kind
+of strategies, for example:</p>
+<ul>
+<li>one file per <code>npm</code> dependency</li>
+<li>group packages per update of frequency: put the ones that change often in the same bundle</li>
+<li>group packages per kind: all React packages could go in one bundle, all data viz in another etc</li>
+<li>have multiple entry points: Webpack will create one file per entry point</li>
+</ul>
+<p>The <a href="https://webpack.js.org/plugins/split-chunks-plugin/#splitchunkscachegroups">Webpack documentation</a>
+has some examples demonstrating how to implement some of the strategies. Once again, start with the default dumb splitting and experiment as you go when needed.</p>
+<p>The commit is <a href="https://github.com/Keats/webpack-react-typescript/commit/cd2669b62d9542794fdc52e6e6fb1702716ddc36">https://github.com/Keats/webpack-react-typescript/commit/cd2669b62d9542794fdc52e6e6fb1702716ddc36</a>.</p>
+<h3 id="code-splitting">Code splitting<a class="zola-anchor" href="#code-splitting" aria-label="Anchor link for: code-splitting">🔗</a></h3>
+<p>Code splitting is allowing you to import some code on demand. It relies on the <a href="https://github.com/tc39/proposal-dynamic-import">dynamic import() proposal</a> which
+is now on stage 4, eg finished. A simple React example would be:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#72ab00;">import </span><span style="color:#5597d6;">React </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;react&quot;</span><span>;
+</span><span>
+</span><span style="color:#668f14;">class </span><span style="color:#c23f31;">LocationForm </span><span style="color:#668f14;">extends </span><span style="color:#c23f31;">React</span><span>.</span><span style="font-style:italic;color:#b06936;">Component</span><span>&lt;{}&gt; {
+</span><span>   </span><span style="color:#c23f31;">handleClickOnMap </span><span style="color:#72ab00;">= </span><span>() </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>     </span><span style="color:#72ab00;">import</span><span>(</span><span style="color:#d07711;">&#39;./locationModal&#39;</span><span>)
+</span><span>      .</span><span style="color:#b39f04;">then</span><span>(({ </span><span style="color:#5597d6;">locationModal </span><span>}) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#7f8989;">// Use locationModal
+</span><span>      })
+</span><span>      .</span><span style="color:#b39f04;">catch</span><span>(</span><span style="color:#5597d6;">err </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#7f8989;">// Handle failure
+</span><span>      });
+</span><span>   }
+</span><span>
+</span><span>   </span><span style="color:#c23f31;">render</span><span>() {
+</span><span>     </span><span style="color:#72ab00;">return </span><span>(
+</span><span>       </span><span style="color:#6486ab;">&lt;</span><span style="color:#7f902a;">form</span><span style="color:#6486ab;">&gt;
+</span><span style="color:#6486ab;">         &lt;</span><span style="color:#7f902a;">button onClick</span><span style="color:#72ab00;">=</span><span style="color:#6486ab;">{</span><span style="color:#5597d6;">this</span><span style="color:#6486ab;">.</span><span style="color:#5597d6;">handleClickOnMap</span><span style="color:#6486ab;">}&gt;Select location&lt;/</span><span style="color:#7f902a;">button</span><span style="color:#6486ab;">&gt;
+</span><span style="color:#6486ab;">       &lt;/</span><span style="color:#7f902a;">form</span><span style="color:#6486ab;">&gt;
+</span><span>     );
+</span><span>   }
+</span><span>}
+</span></code></pre>
+<p>Imagine that the <code>locationModal</code> component is loading <a href="https://leafletjs.com/">Leaflet</a> and that this is the only place
+where it is used. With the bundle splitting, Leaflet would be in your bundle even for users never seeing that form. If you are
+doing code splitting, you will obviously need to make sure Leaflet is not part of another chunk. Another
+obvious contender for code splitting is data visualisation: plottting libraries are typically heavy and if you only have them in one page you can split it from your bundle to
+provide a faster experience for everyone.</p>
+<p>Code splitting is very powerful but not that useful if you are just starting: worry about it when your codebase is bigger. If you
+are using React, the <a href="https://reactjs.org/docs/code-splitting.html">documentation page on code splitting</a> is very well written and should
+answer most questions on how to actually use it.</p>
+<p>To use code splitting with TypeScript, you will also need to change <code>module</code> in <code>tsconfig.json</code> to <code>esnext</code>.</p>
+<h3 id="analyzing-bundles">Analyzing bundles<a class="zola-anchor" href="#analyzing-bundles" aria-label="Anchor link for: analyzing-bundles">🔗</a></h3>
+<p>Once you have your bundle(s), a useful step is to actually check what they contain and whether there is fat that can be trimmed.
+<a href="https://www.npmjs.com/package/webpack-bundle-analyzer">webpack-bundle-analyzer</a> is shining for that usecase.</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">$</span><span> yarn add webpack-bundle-analyzer</span><span style="color:#5597d6;"> --dev
+</span></code></pre>
+<p>We only need to analyze bundles once in a while so I like to create a new script for it <code>"analyze": "cross-env NODE_ENV=production ANALYZE=true webpack",</code> and
+only instantiate the plugin when that <code>ANALYZE</code> environment variable is set to <code>true</code>.
+Running <code>analyze</code> will give you a treemap visualisation of each package used and their size, with and without gzip.</p>
+<p>Using this tool, it becomes very easy to notice some packages taking way more spaces than they should. The most classic examples I've seen
+personally are not removing <a href="https://momentjs.com/">Momentjs</a> locales for an English only site and having the full <a href="https://lodash.com/">Lodash</a> while
+only using one or two functions.</p>
+<p>The commit is <a href="https://github.com/Keats/webpack-react-typescript/commit/41190ae6e279c84c8614d5d77656b8afaed1dea3">https://github.com/Keats/webpack-react-typescript/commit/41190ae6e279c84c8614d5d77656b8afaed1dea3</a>.</p>
+<h2 id="extracting-css">Extracting CSS<a class="zola-anchor" href="#extracting-css" aria-label="Anchor link for: extracting-css">🔗</a></h2>
+<p>If you added Sass by following the previous article and looked at the bundle analyzer results, you might have noticed that the app bundle contains CSS. That's because
+we've inlined them in our configuration via <code>style-loader</code> and need to extract it to a separate CSS file in production environment instead using a plugin.</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">$</span><span> yarn add mini-css-extract-plugin</span><span style="color:#5597d6;"> --dev
+</span></code></pre>
+<p>The change is pretty straightforward: we load the <code>MiniCssExtractPlugin</code> loader instead of <code>style-loader</code> in production and
+add the plugin to the plugin list. The plugin can be set for every environment as it will not do anything unless the loader
+is also used.</p>
+<p>Running <code>build:prod</code> will now create a CSS file as well as a sourcemap in the <code>dist</code> folder. I'm not 100% sure the sourcemap
+is accurate as I have never used them for CSS.</p>
+<p>The commit is <a href="https://github.com/Keats/webpack-react-typescript/commit/e97a368d67e88f2c1adb9b018b8a4164fdfd3283">https://github.com/Keats/webpack-react-typescript/commit/e97a368d67e88f2c1adb9b018b8a4164fdfd3283</a>.</p>
+<h2 id="conclusion">Conclusion<a class="zola-anchor" href="#conclusion" aria-label="Anchor link for: conclusion">🔗</a></h2>
+<p>If you followed the articles or just cloned the repository, you should be in a good place to start actually building your project.
+It might look complicated compared to <a href="https://github.com/facebook/create-react-app">create-react-app</a> but this is a minimal setup
+that you understand and that only has things what you need. Well, being a JavaScript project it still pulls way too many dependencies just for that but
+it's a good start.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

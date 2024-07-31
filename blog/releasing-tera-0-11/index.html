@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Tera 0.11 is out with whitespace handling and more
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Tera 0.11 is released</h1>
+            <div class="post__meta">
+                2018-01-22
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>The work on this version started in September 2017 so I'm pretty happy to finally have this published.</p>
+<p>The <a href="https://github.com/Keats/tera/blob/master/CHANGELOG.md">changelog</a> is pretty thorough but the main
+highlights are:</p>
+<ul>
+<li>whitespace handling</li>
+<li>default arguments for macros</li>
+<li>tests, global functions calls and macro calls are now expressions and can be combined like so: <code>if x is divisibleby(2) and x &gt; 10</code></li>
+</ul>
+<p>Quite a few of the changelog items were written by contributors and I hope this trend continues: thanks
+to <a href="https://github.com/upsuper">@upsuper</a>, <a href="https://github.com/Alex-PK">@Alex-PK</a>, <a href="https://github.com/jturner314">@jturner314</a>,
+<a href="https://github.com/hoggetaylor">@hoggetaylor</a> and <a href="https://github.com/alex">@alex</a> for that.</p>
+<h2 id="what-s-next">What's next<a class="zola-anchor" href="#what-s-next" aria-label="Anchor link for: what-s-next">🔗</a></h2>
+<p>I am satisfied with the current feature set of Tera and am not planning to do significant changes
+to the template language itself, which brings us to a 1.0!</p>
+<p>I expect most of the changes until then to happen to the Rust side:</p>
+<ul>
+<li>ergonomics improvement: I'm pretty happy with it so would welcome other viewpoints</li>
+<li>template rendering performance improvement (reducing the number <code>clone()</code>, etc)</li>
+<li>look into the benefits of <a href="https://github.com/withoutboats/failure">failure</a>
+and whether it's worth moving from <a href="https://github.com/rust-lang-nursery/error-chain">error-chain</a> (no at a first glance)</li>
+<li>try to get something like <a href="https://github.com/Keats/tera/issues/211">streamable templates</a> in or wait if it would be nicer when generators are stable</li>
+<li>look into <a href="https://github.com/Keats/tera/issues/219">https://github.com/Keats/tera/issues/219</a></li>
+</ul>
+<p>If you think you can help with any of the points above, please leave a comment on the associated issue or create a new one.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Releasing Gutenberg 0.1.0: what&#x27;s in it and what&#x27;s coming
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Releasing Gutenberg 0.1.0</h1>
+            <div class="post__meta">
+                2017-07-14
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p><a href="https://github.com/Keats/gutenberg">Gutenberg</a> is a powerful static site engine inspired by <a href="https://gohugo.io/">Hugo</a> but simpler to use.
+You can build pretty much any kind of static site with it using markdown:</p>
+<ul>
+<li>a basic blog</li>
+<li>a landing site</li>
+<li>a knowledge base</li>
+<li>a gitbook</li>
+<li>a documentation site</li>
+<li>all of the above combined</li>
+</ul>
+<p>You can download built binaries from the <a href="https://github.com/Keats/gutenberg/releases">Github releases page</a>. If you were using Gutenberg
+through Cargo, I will not upload new versions to crates.io for three reasons:</p>
+<ul>
+<li><a href="https://github.com/rust-lang/cargo/issues/2263">package for binary crates don't use the Cargo.lock</a> which means a dependency having breaking changes
+without respecting SemVer will cause the crate to compile but <a href="https://github.com/Keats/gutenberg/issues/92">fail at runtime</a> in some cases</li>
+<li>I moved to using a Cargo workspace with many small crates to improve iteration speed</li>
+<li>with Sass, building Gutenberg has become more involved and it is easier to let user install the already built binary</li>
+</ul>
+<p>As mentioned in <a href="https://www.vincentprouillet.com/blog/announcing-gutenberg/">my article introducing Gutenberg</a>,
+my main issue with Hugo is the extremely poor — and I'm being kind here — template engine it is using.
+This was solved in the first release of Gutenberg by using a template engine similar to Jinja2 I wrote: <a href="https://github.com/Keats/tera">Tera</a>.</p>
+<p>Another annoying thing was that, since I was using <a href="http://sass-lang.com/">Sass</a> to write CSS, each static site had to set up
+Sass compilation, usually with node/yarn/gulp.</p>
+<p>With Gutenberg 0.1.0, this is solved as it ships with a static version of libsass, the C++ Sass compiler and allows
+commits like <a href="https://gitlab.com/Keats/vincent.is/commit/2a05cdad4cfd9dac103c9907488ad71518886440">this one</a>.</p>
+<p>Let's have a look at the current set of features - it's pretty packed for a 0.1.0:</p>
+<ul>
+<li><strong>live reload</strong>: when anything changes, Gutenberg will do the minimum work required and will live reload assets (js/css/images/...) if possible</li>
+<li><strong>syntax highlighting</strong> built-in via <a href="https://github.com/trishume/syntect">syntect</a></li>
+<li><strong>pagination</strong></li>
+<li><strong>easy internal linking</strong>: they look like <code>[my article](@/blog/blabla.md)</code></li>
+<li><strong>automatic table of contents</strong></li>
+<li><strong>automatic insertion of anchors on titles</strong>: same as <a href="https://github.com/Keats/gutenberg">READMEs on Github</a></li>
+<li><strong>shortcodes</strong>: when you want to insert some HTML in a page but don't want to copy the HTML everywhere. For example
+<code>{{ youtube(id="dQw4w9WgXcQ") }}</code> is a built-in shortcode and will insert the YouTube video for that id.</li>
+<li><strong>Sass compilation</strong></li>
+<li><strong>RSS feed</strong> generation when requested</li>
+<li><strong>Tags and categories</strong> generation when requested</li>
+<li><strong>co-location of assets and content</strong>: when an article has some images and you want to keep them in the same folder</li>
+</ul>
+<h2 id="what-s-next">What's next<a class="zola-anchor" href="#what-s-next" aria-label="Anchor link for: what-s-next">🔗</a></h2>
+<p>The current features are pretty much what I wanted to have when I started Gutenberg but that doesn't mean there isn't anything left to do!</p>
+<h3 id="i18n">i18n<a class="zola-anchor" href="#i18n" aria-label="Anchor link for: i18n">🔗</a></h3>
+<p>The discussion started on <a href="https://github.com/Keats/gutenberg/issues/13">github</a> but as it isn't a feature I need, I would
+rather have someone else doing it, once there is consensus on the implementation</p>
+<h3 id="alternative-rendering-backends">Alternative rendering backends<a class="zola-anchor" href="#alternative-rendering-backends" aria-label="Anchor link for: alternative-rendering-backends">🔗</a></h3>
+<p>Right now, only markdown is supported. While I definitely don't want to have too many backend, <a href="http://asciidoctor.org/docs/what-is-asciidoc/">Asciidoc</a>
+is one I was interested in and <a href="https://github.com/Keats/gutenberg/issues/32">antoyo</a> started working on a asciidoc implementation so
+it should be coming eventually!</p>
+<h3 id="theme-support">Theme support<a class="zola-anchor" href="#theme-support" aria-label="Anchor link for: theme-support">🔗</a></h3>
+<p><a href="https://github.com/Keats/gutenberg/issues/91">An issue</a> was opened on Gutenberg to support themes.
+While the idea in the issue is IMO too complex, I would like to have some theme support baked in <code>gutenberg</code>,
+unless the <code>git clone a-template-repo</code> approach is simpler.</p>
+<h3 id="deploying">Deploying<a class="zola-anchor" href="#deploying" aria-label="Anchor link for: deploying">🔗</a></h3>
+<p>A subcommand to upload/push the generated site to Github Pages/server/service could be nice. Maybe this can be resolved
+with documentation instead though.</p>
+<h3 id="a-documentation-site">A documentation site<a class="zola-anchor" href="#a-documentation-site" aria-label="Anchor link for: a-documentation-site">🔗</a></h3>
+<p>Now that things are a bit more stable in Gutenberg, I will start working on a documentation site as Gutenberg Readme is currently not
+nearly enough. I've already started one for <a href="https://github.com/Keats/tera/tree/master/docs">Tera</a> and am mostly waiting for design inspiration
+before publishing it.</p>
+<h3 id="packaging">Packaging<a class="zola-anchor" href="#packaging" aria-label="Anchor link for: packaging">🔗</a></h3>
+<p>Lastly, I think it's time to put Gutenberg in <a href="https://github.com/Keats/gutenberg/issues/12">packages managers</a>. I will probably
+put it on <a href="https://aur.archlinux.org/">AUR</a> if no one beats me to it but I will need help for the other package managers.</p>
+<h2 id="conclusion">Conclusion<a class="zola-anchor" href="#conclusion" aria-label="Anchor link for: conclusion">🔗</a></h2>
+<p>As always I welcome any feedback. If you are using Gutenberg, please reply on <a href="https://github.com/Keats/gutenberg/issues/100">this issue</a> so I
+can update the list in the README.</p>
+<p>Joyeux 14 Juillet!</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

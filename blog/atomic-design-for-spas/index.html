@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    How I use Atomic Design to architect my SPAs in React
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Atomic Design in Single Page Applications</h1>
+            <div class="post__meta">
+                2018-10-26
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>This post will outline how I architect visual part of the SPAs I work on. But first, let me explain the issues I faced that led me there.
+I used to put every components in a <code>components</code> folder, which obviously doesn't scale and make
+it hard finding a specific component. After that, I grouped at least the top level routing
+components which made things a bit tidier but was still very unsatisfying.
+Looking around for various ways to organise design elements, I found <a href="http://bradfrost.com/blog/post/atomic-web-design/">Atomic Design</a>.
+I am not going to dive deep into explaning what is Atomatic Design as the linked article does a very good job
+so I would recommend taking 2 minutes to read it beforehand.</p>
+<p>You can find a basic clone of <a href="https://news.ycombinator.com/">HackerNews</a> on GitHub: <a href="https://github.com/Keats/hn-react">https://github.com/Keats/hn-react</a> made using
+the principles described in this post to illustrate this article.</p>
+<p>Lastly, while the title doesn't mention a specific framework, all the samples will use React. The
+ideas presented in this post will work equally well in Vue.js or any other component-based
+framework.</p>
+<h2 id="self-contained-components">Self-contained components<a class="zola-anchor" href="#self-contained-components" aria-label="Anchor link for: self-contained-components">🔗</a></h2>
+<p>That is something Vue.js users can get behind!
+Each component has now its own folder containing everything it needs to be used, apart from
+the other components it is using as we will see in a bit.</p>
+<p>What this means is that every component folder looks very similar to something like:</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">input
+</span><span style="color:#5597d6;">├──</span><span> index.tsx
+</span><span style="color:#5597d6;">└──</span><span> _style.scss
+</span></code></pre>
+<p>You can replace <code>tsx</code> by <code>js</code> if you are not using <a href="https://www.typescriptlang.org/">TypeScript</a>.</p>
+<p>As you can see, the folder also contains a <code>_style.scss</code>. I prefer to keep my CSS out of JS and since I use <a href="https://sass-lang.com/">Sass</a>
+for other projects without JavaScript, it makes sense to use it. You can use whatever floats your boat though.
+Those Sass files are only targeting specific CSS classes of that component, which solves potentially overlapping styling:</p>
+<pre data-lang="css" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-css "><code class="language-css" data-lang="css"><span style="color:#9b703f;">.input </span><span>{
+</span><span>  // the CSS of the component
+</span><span>}
+</span></code></pre>
+<p>The main Sass file will import each component individual style after setting up some base rules like fonts or vertical rhythm as can be seen in
+<a href="https://github.com/Keats/hn-react/blob/91bb067276006b0ea9d191f753112a5688b7c518/src/style/app.scss">app.scss</a>.</p>
+<p>Since each component has its own folder, it is a good place to keep related code.
+For example, if I am using <a href="https://graphql.org/">GraphQL</a> with <a href="https://www.apollographql.com/">Apollo</a>, I will also have a <code>queries.tsx</code> in there with the queries
+used by the component as well as the types:</p>
+<pre data-lang="tsx" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-tsx "><code class="language-tsx" data-lang="tsx"><span style="color:#72ab00;">import </span><span style="color:#5597d6;">gql </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;graphql-tag&quot;</span><span>;
+</span><span style="color:#72ab00;">import </span><span>{</span><span style="color:#5597d6;">Query</span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;react-apollo&quot;</span><span>;
+</span><span>
+</span><span style="color:#72ab00;">import </span><span>{</span><span style="color:#5597d6;">IOrganization</span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;../../../types&quot;</span><span>;
+</span><span>
+</span><span style="color:#72ab00;">export </span><span style="color:#668f14;">const </span><span style="color:#5597d6;">ALL_ORGS_QUERY </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">gql</span><span style="color:#d07711;">`
+</span><span style="color:#d07711;">  query allOrgs {
+</span><span style="color:#d07711;">    organizations {
+</span><span style="color:#d07711;">      id
+</span><span style="color:#d07711;">      name
+</span><span style="color:#d07711;">      slug
+</span><span style="color:#d07711;">
+</span><span style="color:#d07711;">      members {
+</span><span style="color:#d07711;">        id
+</span><span style="color:#d07711;">        role
+</span><span style="color:#d07711;">
+</span><span style="color:#d07711;">        user {
+</span><span style="color:#d07711;">          id
+</span><span style="color:#d07711;">          name
+</span><span style="color:#d07711;">          timezone
+</span><span style="color:#d07711;">        }
+</span><span style="color:#d07711;">      }
+</span><span style="color:#d07711;">    }
+</span><span style="color:#d07711;">  }
+</span><span style="color:#d07711;">`</span><span>;
+</span><span>
+</span><span style="color:#72ab00;">export </span><span style="color:#668f14;">interface </span><span style="color:#c23f31;">IData </span><span>{
+</span><span>  </span><span style="color:#5597d6;">organizations</span><span style="color:#72ab00;">: </span><span style="color:#c23f31;">Array</span><span>&lt;</span><span style="color:#c23f31;">IOrganization</span><span>&gt;;
+</span><span>}
+</span><span>
+</span><span style="color:#72ab00;">export </span><span style="color:#668f14;">class </span><span style="color:#c23f31;">AllOrgsQuery </span><span style="color:#668f14;">extends </span><span style="font-style:italic;color:#b06936;">Query</span><span>&lt;</span><span style="color:#c23f31;">IData</span><span>&gt; {}
+</span></code></pre>
+<p>Now that we have seen how I organise each individual component, let's dive in the Atomic Design part.</p>
+<h2 id="atomic-design">Atomic Design<a class="zola-anchor" href="#atomic-design" aria-label="Anchor link for: atomic-design">🔗</a></h2>
+<p>If you have read the article introducing Atomic Design, you can probably guess that your <code>components</code> folder is going to look like that:</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#b39f04;">.
+</span><span style="color:#5597d6;">├──</span><span> atoms
+</span><span style="color:#5597d6;">├──</span><span> molecules
+</span><span style="color:#5597d6;">├──</span><span> organisms
+</span><span style="color:#5597d6;">├──</span><span> templates
+</span><span style="color:#5597d6;">└──</span><span> pages
+</span></code></pre>
+<p>Let's look at them in the same order.</p>
+<h3 id="atoms">Atoms<a class="zola-anchor" href="#atoms" aria-label="Anchor link for: atoms">🔗</a></h3>
+<p>Atoms are independent components that do not have any dependencies on other components and that exist in isolation: they
+probably don't do anything on their own, are mostly composed of <code>props</code> and any action they do is coming from <code>props</code>.
+In terms of Redux/MobX, all of those components should be dumb/pure/presentational components.</p>
+<p>Looking at one private project atoms, I have:</p>
+<ul>
+<li><code>button</code></li>
+<li><code>input</code></li>
+<li><code>link</code></li>
+<li><code>tag</code></li>
+<li><code>toast</code></li>
+<li><code>portal</code></li>
+<li><code>icon</code></li>
+</ul>
+<p>There are obviously many more but this should be enough to give you an idea: they are the building blocks
+of your site.</p>
+<p>Try to have as many of your components in that folder, you will have a much easier time composing interfaces later on.</p>
+<p>While atoms can become fairly complex (<code>input</code> for example), they can also be as simple as <a href="https://github.com/Keats/hn-react/blob/master/src/app/components/atoms/spinner/index.tsx">a spinner</a>.</p>
+<h3 id="molecules">Molecules<a class="zola-anchor" href="#molecules" aria-label="Anchor link for: molecules">🔗</a></h3>
+<p>By themselves, atoms are not very useful and need to be combined to make something useable: <code>input</code> + <code>button</code> giving you a <code>form</code> for example.
+That is what molecules are: a combination of 2 or more <code>atoms</code> or, in rarer cases, a smart wrapper around an atom.
+Therefore molecules should be dumb components when possible but it isn't required.</p>
+<p>Here are some of the molecules from the same project:</p>
+<ul>
+<li><code>form</code> (<code>input</code> + <code>label</code>): using MobX for state but dumb otherwise</li>
+<li><code>dialog</code> (<code>overlay</code> + <code>button</code>): dumb</li>
+<li><code>toast-container</code> (<code>toast</code>): smart component that will display the currents <code>&lt;Toast&gt;</code> components from the store</li>
+</ul>
+<p>Since the HackerNews repository is a basic example, I didn't create enough atoms to have interesting molecules. However, looking at
+the <a href="https://github.com/Keats/hn-react/blob/master/src/app/components/molecules/story-item/index.tsx">story-item</a> it is easy to imagine
+adding an <code>upvote</code> atom in there.</p>
+<p>If you need to use a molecule in another molecule, it probably means it is an organism folder as we will now see.</p>
+<h3 id="organisms">Organisms<a class="zola-anchor" href="#organisms" aria-label="Anchor link for: organisms">🔗</a></h3>
+<p>As with molecules, there are two types of organisms I distinguish here:</p>
+<ul>
+<li>components using one or more molecules</li>
+<li>business-specific usage of molecule</li>
+</ul>
+<p>A good definition comes from the original article:</p>
+<blockquote>
+<p>Organisms are groups of molecules joined together to form a relatively complex, distinct section of an interface.</p>
+</blockquote>
+<p>As before, here are some examples in my project:</p>
+<ul>
+<li><code>sidebar</code>: uses only one molecule but is a distinct section of the interface</li>
+<li><code>login-form</code>: the <code>form</code> molecule set-up with the right fields and the GraphQL login query</li>
+<li><code>signup-form</code>: the <code>form</code> molecule set-up with the right fields and the GraphQL signup query</li>
+</ul>
+<p>Each form in the app gets its own component, making testing/storybook very easy.
+Most of those forms components do not have style of their own as they just rely on the <code>form</code> molecule for that.</p>
+<p>I do not have any organisms in the HackerNews example.</p>
+<h3 id="templates">Templates<a class="zola-anchor" href="#templates" aria-label="Anchor link for: templates">🔗</a></h3>
+<p>If you look at most SaaS sites, you will notice they use different layouts for different parts of their site:
+the most common one being one logged out layout for the login/signup forms and the logged in layout
+with your dashboard and the actual tool.</p>
+<p>I classify those different layouts as templates and you could have for example:</p>
+<ul>
+<li><code>logged-in</code>: a <code>sidebar</code> organism on the left and the <code>child</code> on the rest of the page</li>
+<li><code>logged-out</code>: a different background with centered forms</li>
+<li><code>settings</code>: some tabs</li>
+</ul>
+<p>Each of those templates will have their own styling - since that's their main use - but potentially also queries: you probably
+need to fetch the current user information for a <code>logged-in</code> template so moving that query at the template level will allow each page using it
+to automatically fetch the data in a uniform way.</p>
+<p>The HackerNews example has only <a href="https://github.com/Keats/hn-react/blob/master/src/app/components/templates/main/index.tsx">one template</a> as, even
+when logged in, the interface doesn't change significantly.</p>
+<h3 id="pages">Pages<a class="zola-anchor" href="#pages" aria-label="Anchor link for: pages">🔗</a></h3>
+<p>Those are the components you use in your router, each of them corresponding to a specific URL.
+They are therefore connected to your data stores and will probably have to fetch some data from your server. Most of the time,
+these components <code>render</code> method will be wrapped into a template component to ensure consistent styling.</p>
+<p>Pages tie all of the elements of Atomic Design we just talked about in a small component. There shouldn't be any styling
+in those components other than the (rare) occasional divergence.
+I also follow a slightly more lax approach to the "one component = one folder" mantra and group sub-routes in the same folder as the main route
+for easy discovery.</p>
+<p>Example of pages components:</p>
+<ul>
+<li><code>login</code></li>
+<li><code>home</code></li>
+<li><code>user-settings</code></li>
+<li><code>verify-email</code></li>
+</ul>
+<p>You can view the <a href="https://github.com/Keats/hn-react/blob/master/src/app/components/pages/stories-list/index.tsx">HackerNews homepage</a> for an example.</p>
+<h2 id="conclusion">Conclusion<a class="zola-anchor" href="#conclusion" aria-label="Anchor link for: conclusion">🔗</a></h2>
+<p>While some of the rules I introduced seem inflexible, you can bend them so they make sense to you.
+For example, I put my <code>overlay</code> component in the atoms folder despite it using the <code>portal</code> atom simply because I kept looking for it in the atoms folder
+since I always forget it actually uses <code>portal</code>.</p>
+<p>Overall, this structure has been a big improvement for me:</p>
+<ul>
+<li>super easy to find components (if you don't have a Go To Definition shortcut)</li>
+<li>trivial to test and make storybook stories</li>
+<li>self contained enough that I can copy-paste the atoms and molecules folder and have everything working quickly</li>
+</ul>
+<p>As mentioned in the introduction, I wrote a <a href="https://github.com/Keats/hn-react">HN clone</a> as an example for that article.
+It is a basic React app following Atomic Design using TypeScript and MobX, as well as the routing
+method <a href="https://www.vincentprouillet.com/blog/testing-a-different-spa-routing-update/">I wrote about before</a> if you are curious about how it looks in practice.
+In my own projects, I also use <a href="https://storybook.js.org/">StoryBook</a> to easily have a visual overview of every component but I skipped adding it
+for this example app.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Handling errors in Rust and making it easier with error-chain
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Handling errors in Rust</h1>
+            <div class="post__meta">
+                2016-12-15
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>Error handling in Rust is pretty straightforward.</p>
+<p>The standard library comes with the <code>Result</code> type which has the following definition:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span>#[</span><span style="color:#5597d6;">must_use</span><span>]
+</span><span style="color:#668f14;">pub enum </span><span style="color:#c23f31;">Result</span><span>&lt;T, E&gt; {
+</span><span>    </span><span style="color:#a2a001;">Ok</span><span>(T),
+</span><span>    </span><span style="color:#a2a001;">Err</span><span>(E),
+</span><span>}
+</span></code></pre>
+<p>In short, <code>Result</code> can either be OK with a value <code>T</code> or be an error with value <code>E</code>.
+The <code>#[must_use]</code> annotation means that the compiler will warn you if you ignore a <code>Result</code>.</p>
+<p>No more forgetting to catch that one exception or a <code>if err != nil { return nil, err }</code>.</p>
+<h2 id="handling-result">Handling Result<a class="zola-anchor" href="#handling-result" aria-label="Anchor link for: handling-result">🔗</a></h2>
+<p>Let's have a look a small program to see the various way of creating and handling errors in Rust.
+Follow this <a href="https://is.gd/ZhThdZ">playground link</a> to run and play with the examples below.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#72ab00;">use </span><span>std::fmt;
+</span><span style="color:#72ab00;">use </span><span>std::io;
+</span><span style="color:#72ab00;">use </span><span>std::error::Error;
+</span><span>
+</span><span style="color:#7f8989;">// Our set of errors for that program
+</span><span>#[</span><span style="color:#5597d6;">derive</span><span>(Debug)]
+</span><span style="color:#668f14;">enum </span><span style="color:#c23f31;">MyErrors </span><span>{
+</span><span>    BadMood,
+</span><span>    </span><span style="color:#7f8989;">// Badly implemented IO error
+</span><span>    FileFailure(</span><span style="color:#a2a001;">String</span><span>),
+</span><span>    </span><span style="color:#7f8989;">// Correctly implemented IO error
+</span><span>    FileFailure2(io::Error),
+</span><span>}
+</span><span>
+</span><span style="color:#7f8989;">// Impl display so we can have nice strings to print
+</span><span style="color:#668f14;">impl </span><span>fmt::Display </span><span style="color:#72ab00;">for </span><span style="color:#c23f31;">MyErrors </span><span>{
+</span><span>    </span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">fmt</span><span>(</span><span style="color:#72ab00;">&amp;</span><span style="color:#5597d6;">self</span><span>, </span><span style="color:#5597d6;">f</span><span>: </span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">mut </span><span>fmt::Formatter) -&gt; fmt::Result {
+</span><span>        </span><span style="color:#72ab00;">match *</span><span style="color:#5597d6;">self </span><span>{
+</span><span>            MyErrors::FileFailure(</span><span style="color:#668f14;">ref</span><span> err) </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">write!</span><span>(f, </span><span style="color:#d07711;">&quot;File creation failed: </span><span style="color:#aeb52b;">{:?}</span><span style="color:#d07711;">&quot;</span><span>, err),
+</span><span>            MyErrors::FileFailure2(</span><span style="color:#668f14;">ref</span><span> err) </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">write!</span><span>(f, </span><span style="color:#d07711;">&quot;File creation failed: </span><span style="color:#aeb52b;">{:?}</span><span style="color:#d07711;">&quot;</span><span>, err),
+</span><span>            MyErrors::BadMood </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">write!</span><span>(f, </span><span style="color:#d07711;">&quot;Nothing wrong, just wanted to error.&quot;</span><span>),
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">impl </span><span>Error </span><span style="color:#72ab00;">for </span><span style="color:#c23f31;">MyErrors </span><span>{
+</span><span>    </span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">description</span><span>(</span><span style="color:#72ab00;">&amp;</span><span style="color:#5597d6;">self</span><span>) -&gt; </span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">str </span><span>{
+</span><span>        </span><span style="color:#72ab00;">match *</span><span style="color:#5597d6;">self </span><span>{
+</span><span>            MyErrors::BadMood </span><span style="color:#72ab00;">=&gt; </span><span style="color:#d07711;">&quot;bad mood&quot;</span><span>,
+</span><span>            MyErrors::FileFailure(</span><span style="color:#668f14;">ref</span><span> err) </span><span style="color:#72ab00;">=&gt; </span><span style="color:#d07711;">&quot;file failure&quot;</span><span>,
+</span><span>            MyErrors::FileFailure2(</span><span style="color:#668f14;">ref</span><span> err) </span><span style="color:#72ab00;">=&gt; </span><span style="color:#d07711;">&quot;file failure&quot;</span><span>,
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">cause</span><span>(</span><span style="color:#72ab00;">&amp;</span><span style="color:#5597d6;">self</span><span>) -&gt; </span><span style="color:#a2a001;">Option</span><span>&lt;</span><span style="color:#72ab00;">&amp;</span><span>Error&gt; {
+</span><span>        </span><span style="color:#72ab00;">match *</span><span style="color:#5597d6;">self </span><span>{
+</span><span>            MyErrors::FileFailure(</span><span style="color:#72ab00;">_</span><span>) </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">None</span><span>,
+</span><span>            </span><span style="color:#7f8989;">// the cause is the io::error
+</span><span>            MyErrors::FileFailure2(</span><span style="color:#668f14;">ref</span><span> err) </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">Some</span><span>(err),
+</span><span>            MyErrors::BadMood </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">None</span><span>,
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span>
+</span><span style="color:#668f14;">impl </span><span style="color:#a2a001;">From</span><span>&lt;io::Error&gt; </span><span style="color:#72ab00;">for </span><span style="color:#c23f31;">MyErrors </span><span>{
+</span><span>    </span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">from</span><span>(</span><span style="color:#5597d6;">err</span><span>: io::Error) -&gt; MyErrors {
+</span><span>        MyErrors::FileFailure2(err)
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span>
+</span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">will_succeed</span><span>() -&gt; </span><span style="color:#a2a001;">Result</span><span>&lt;</span><span style="color:#668f14;">bool</span><span>, MyErrors&gt; {
+</span><span>    </span><span style="color:#a2a001;">Ok</span><span>(</span><span style="color:#b3933a;">true</span><span>)
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">will_fail</span><span>(</span><span style="color:#5597d6;">filename</span><span>: </span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">str</span><span>) -&gt; </span><span style="color:#a2a001;">Result</span><span>&lt;(), MyErrors&gt; {
+</span><span>    </span><span style="color:#a2a001;">Err</span><span>(MyErrors::FileFailure(</span><span style="color:#a2a001;">format!</span><span>(</span><span style="color:#d07711;">&quot;Failed to created </span><span style="color:#aeb52b;">{}</span><span style="color:#d07711;">&quot;</span><span>, filename)))
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">do_something</span><span>() -&gt; </span><span style="color:#a2a001;">Result</span><span>&lt;(), MyErrors&gt; {
+</span><span>    </span><span style="color:#72ab00;">match </span><span style="color:#b39f04;">will_fail</span><span>(</span><span style="color:#d07711;">&quot;index.html&quot;</span><span>) {
+</span><span>        </span><span style="color:#a2a001;">Ok</span><span>(</span><span style="color:#72ab00;">_</span><span>) </span><span style="color:#72ab00;">=&gt; </span><span>{
+</span><span>            </span><span style="color:#7f8989;">// we don&#39;t care about the result value, it&#39;s an empty tuple
+</span><span>            </span><span style="color:#72ab00;">return </span><span style="color:#a2a001;">Ok</span><span>(());
+</span><span>        }
+</span><span>        </span><span style="color:#a2a001;">Err</span><span>(e) </span><span style="color:#72ab00;">=&gt; </span><span>{
+</span><span>            </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Error while creating a file:</span><span style="color:#aeb52b;">\n {}</span><span style="color:#d07711;">&quot;</span><span>, e);
+</span><span>        }
+</span><span>    };
+</span><span>
+</span><span>    </span><span style="color:#7f8989;">// Equivalent to match above
+</span><span>    </span><span style="color:#72ab00;">if </span><span style="color:#668f14;">let </span><span style="color:#a2a001;">Err</span><span>(e) </span><span style="color:#72ab00;">= </span><span style="color:#b39f04;">will_fail</span><span>(</span><span style="color:#d07711;">&quot;index.html&quot;</span><span>) {
+</span><span>        </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Error while creating a file:</span><span style="color:#aeb52b;">\n {}</span><span style="color:#d07711;">&quot;</span><span>, e);
+</span><span>    } </span><span style="color:#72ab00;">else </span><span>{
+</span><span>        </span><span style="color:#72ab00;">return </span><span style="color:#a2a001;">Ok</span><span>(());
+</span><span>    }
+</span><span>    </span><span style="color:#7f8989;">// method 1 to propagate errors: try! macro
+</span><span>    </span><span style="color:#668f14;">let</span><span> did_succeed </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">try!</span><span>(</span><span style="color:#b39f04;">will_succeed</span><span>());
+</span><span>    </span><span style="color:#7f8989;">// method 2 to propagate errors: question mark operator
+</span><span>    </span><span style="color:#668f14;">let</span><span> did_succeed2 </span><span style="color:#72ab00;">= </span><span style="color:#b39f04;">will_succeed</span><span>()</span><span style="color:#72ab00;">?</span><span>;
+</span><span>
+</span><span>    </span><span style="color:#a2a001;">Ok</span><span>(())
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">main</span><span>() {
+</span><span>    </span><span style="color:#b39f04;">do_something</span><span>();
+</span><span>}
+</span></code></pre>
+<p>About half of the lines are about defining errors, we will see how to reduce that boilerplate in the following section.
+If you want to read more on that, the <a href="https://doc.rust-lang.org/book/error-handling.html">error handling section</a> in the Rust book is very good.</p>
+<p>The interesting part in that code is the body of the <code>do_something</code> function which showcases the various ways of
+handling <code>Result</code>.</p>
+<p>You can be in 2 situations when handling errors:</p>
+<ul>
+<li>you want to handle them immediately</li>
+<li>you want to do an early return and pass them back to the caller</li>
+</ul>
+<p>The <code>match</code> and <code>if let</code> constructs are equivalent in this case and  used if you are in the first situation.</p>
+<p>The <code>try!</code> and question mark operator are also equivalent: they return the error if there is one and unpacks the <code>Ok</code> value
+otherwise.</p>
+<p><code>?</code> was stabilised in Rust 1.13 (released about one month before this post) and is somewhat controversial
+as some think that error handling is hidden when using it.</p>
+<p>I like the <code>?</code> operator myself since I think it makes the code neater but I let you be the judge:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">let</span><span> val </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">try!</span><span>(</span><span style="color:#a2a001;">try!</span><span>(</span><span style="color:#a2a001;">try!</span><span>(</span><span style="color:#b39f04;">do_something</span><span>()).</span><span style="color:#b39f04;">do_something_else</span><span>()).</span><span style="color:#b39f04;">finish</span><span>());
+</span><span style="color:#7f8989;">// or cleaner
+</span><span style="color:#668f14;">let</span><span> a </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">try!</span><span>(</span><span style="color:#b39f04;">do_something</span><span>());
+</span><span style="color:#668f14;">let</span><span> b </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">try!</span><span>(a.</span><span style="color:#b39f04;">do_something_else</span><span>());
+</span><span style="color:#668f14;">let</span><span> val </span><span style="color:#72ab00;">= </span><span style="color:#a2a001;">try!</span><span>(b.</span><span style="color:#b39f04;">finish</span><span>());
+</span><span>
+</span><span style="color:#668f14;">let</span><span> val </span><span style="color:#72ab00;">= </span><span style="color:#b39f04;">do_something</span><span>()</span><span style="color:#72ab00;">?</span><span>.</span><span style="color:#b39f04;">do_something_else</span><span>()</span><span style="color:#72ab00;">?</span><span>.</span><span style="color:#b39f04;">finish</span><span>();
+</span></code></pre>
+<h2 id="avoiding-error-boilerplate">Avoiding error boilerplate<a class="zola-anchor" href="#avoiding-error-boilerplate" aria-label="Anchor link for: avoiding-error-boilerplate">🔗</a></h2>
+<p>As you saw from the example above, defining your own errors is very verbose.</p>
+<p>After experimenting on my own at first, I found the <a href="https://crates.io/crates/quick-error">quick-error</a> crate which
+makes creating your own error and extending built-in ones like the <code>io::Error</code> in the previous section a breeze.
+This was my go-to crate for error handling, until reading <a href="http://brson.github.io/2016/11/30/starting-with-error-chain">this article</a>
+about <a href="https://crates.io/crates/error-chain">error-chain</a>.</p>
+<p><code>error-chain</code> builds on <code>quick-error</code> and makes it even more painless.</p>
+<p>I have switched <a href="https://github.com/Keats/tera">Tera</a> 0.5 to use <a href="https://crates.io/crates/error-chain">error-chain</a> and am very
+happy about the end result.</p>
+<p>The <code>errors.rs</code> file in Tera went from <a href="https://github.com/Keats/tera/blob/3471df41ab454c60a85ec271a945f7123705e49a/src/errors.rs">~80 lines</a>
+and lots of custom errors to:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#a2a001;">error_chain! </span><span>{
+</span><span>    errors {}
+</span><span>}
+</span></code></pre>
+<p>There is nothing you might say. And you would be somewhat correct!
+Using the <code>error_chain!</code> macro gives me <code>Result</code>, <code>ResultExt</code> (a trait), <code>ErrorKind</code> and <code>Error</code> but I didn't define any
+custom errors myself.</p>
+<p>It's obviously not always empty though, here's the <code>errors.rs</code> of a static site engine using Tera:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#72ab00;">use</span><span> tera;
+</span><span>
+</span><span>
+</span><span style="color:#a2a001;">error_chain! </span><span>{
+</span><span>    links {
+</span><span>        </span><span style="color:#7f8989;">// Links Tera errors to that crate
+</span><span>        Tera(tera::Error, tera::ErrorKind);
+</span><span>    }
+</span><span>
+</span><span>    foreign_links {
+</span><span>        </span><span style="color:#7f8989;">// Link with errors not defined with error-chain
+</span><span>        Io(::std::io::Error);
+</span><span>    }
+</span><span>
+</span><span>    errors {
+</span><span>        </span><span style="color:#7f8989;">// I&#39;m using this one lots of time so creating it there to keep it DRY
+</span><span>        InvalidConfig {
+</span><span>            </span><span style="color:#b39f04;">description</span><span>(</span><span style="color:#d07711;">&quot;invalid config&quot;</span><span>)
+</span><span>            </span><span style="color:#b39f04;">display</span><span>(</span><span style="color:#d07711;">&quot;The config.toml is invalid or is using the wrong type for an argument&quot;</span><span>)
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>The article linked previously made me realise that you need custom errors in 2 occasions: the user of the library will pattern match on them or you want
+to avoid repeating yourself like the <code>InvalidConfig</code> above.</p>
+<p>In Tera case, I was able to replace all the errors with <code>bail!</code> macro that comes with <code>error-chain</code>.
+This is a very simple macro that works similarly to <code>println!</code> except it returns an error with the text given:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#72ab00;">if</span><span> something_is_wrong {
+</span><span>    </span><span style="color:#a2a001;">bail!</span><span>(</span><span style="color:#d07711;">&quot;Something wrong happened while doing {:?}&quot;</span><span>, action);
+</span><span>}
+</span><span>
+</span><span style="color:#7f8989;">// expands to
+</span><span style="color:#72ab00;">if</span><span> something_is_wrong {
+</span><span>    </span><span style="color:#72ab00;">return </span><span style="color:#a2a001;">Err</span><span>(</span><span style="color:#a2a001;">format!</span><span>(</span><span style="color:#d07711;">&quot;Something wrong happened while doing </span><span style="color:#aeb52b;">{:?}</span><span style="color:#d07711;">&quot;</span><span>, action).</span><span style="color:#b39f04;">into</span><span>());
+</span><span>}
+</span></code></pre>
+<p>It doesn't look like much but using stringly typed errors saves a lot of time and makes you write better errors
+at the same time as you can write very specific errors without any boilerplate.</p>
+<p>But the killer feature of <code>error-chain</code> is to chain errors, as its name implies.
+You often want to add context to errors and chaining allows just that.</p>
+<p>The easiest example is a function to open a file: Rust doesn't include the filename in the error but you usually want it if
+you are going to display it.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#72ab00;">use </span><span>errors::ResultExt;
+</span><span>
+</span><span>File::open(path)
+</span><span>    .</span><span style="color:#b39f04;">chain_err</span><span>(|| </span><span style="color:#a2a001;">format!</span><span>(</span><span style="color:#d07711;">&quot;Failed to open </span><span style="color:#aeb52b;">{}</span><span style="color:#d07711;">.&quot;</span><span>, path))</span><span style="color:#72ab00;">?
+</span><span>    .</span><span style="color:#b39f04;">read_to_string</span><span>(</span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">mut</span><span> content)</span><span style="color:#72ab00;">?</span><span>;
+</span></code></pre>
+<p><code>chain_err</code> is coming from the <code>ResultExt</code> and is where the magic happens. If an error in <code>File::open</code> happens,
+it will create a new error, storing the one caused by <code>File::open</code> as its cause. Errors can be chained multiple times, allowing you
+to annotate errors at several levels and giving detailed error messages.</p>
+<p>Printing all chained errors is as simple as the code below:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Error: </span><span style="color:#aeb52b;">{}</span><span style="color:#d07711;">&quot;</span><span>, e);
+</span><span style="color:#72ab00;">for</span><span> e </span><span style="color:#72ab00;">in</span><span> e.</span><span style="color:#b39f04;">iter</span><span>().</span><span style="color:#b39f04;">skip</span><span>(</span><span style="color:#b3933a;">1</span><span>) {
+</span><span>    </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Reason: </span><span style="color:#aeb52b;">{}</span><span style="color:#d07711;">&quot;</span><span>, e);
+</span><span>}
+</span></code></pre>
+<p>I'm liking this approach quite a lot and will be using it for all my projects for the foreseeable future!</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

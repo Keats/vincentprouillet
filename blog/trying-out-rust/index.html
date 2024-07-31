@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    Checking out that new language from Mozilla
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>Trying out Rust</h1>
+            <div class="post__meta">
+                2014-07-19
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>Rust is an in-progress systems programming language (<a href="http://www.rust-lang.org/">official website</a>).
+I'll start this post by saying I'm a python/js/go developer and never really done C or C++ (my first programming languages were PHP/C# actually since I started with a degree in biology).
+Rust is mainly targeting those C/C++ developers that need speed (without a GC) and safety.
+As a guy who does only web stuff, the absence/presence of a GC is not important since you can use slow languages like python or ruby and be completely fine with it for 99% of the sites so a GC pause probably won't even be noticed unlike in video games for example.
+Why bother learning low level languages then?</p>
+<ul>
+<li>It's fun</li>
+<li>It's fast</li>
+<li>It has types (I love types)</li>
+</ul>
+<p>This is just my feelings after playing with it a few hours, it may contain mistakes and some stuff will probably be outdated pretty soon anyway.
+Like every article I've read, I'll be comparing some of the features with Go but do note that I like them both.</p>
+<h2 id="what-s-rust">What's Rust?<a class="zola-anchor" href="#what-s-rust" aria-label="Anchor link for: what-s-rust">🔗</a></h2>
+<p>As mentioned above, Rust is a language developed by Mozilla in the open: all the code is on github, decisions are taken by committee.
+A stable release is expected around Q4 of 2014.
+You can follow or even submit/comment on RFCs on the language: <a href="https://github.com/rust-lang/rfcs">RFCs repo</a>, decisions on these RFCs being taken in meetings for which you can find the transcripts on <a href="https://github.com/rust-lang/meeting-minutes">github as well</a>.
+The language itself is also in github in case you didn't guess: <a href="https://github.com/rust-lang/rust">rust repo</a>.
+More discussions also happen on reddit (<a href="http://www.reddit.com/r/rust">/r/rust</a>) and on the <a href="https://users.rust-lang.org/">discourse forum</a>.
+I talked quite a bit about the community because I find looking at the evolution quite fascinating, let's talk a bit about the language itself now.</p>
+<p>Let's use bullet points and then go through those individually</p>
+<ul>
+<li>Statically and strongly typed with generics (yay!)</li>
+<li>Memory safety</li>
+<li>Easy concurrency with no data race</li>
+<li>Functional stuff</li>
+</ul>
+<h3 id="type-system">Type system<a class="zola-anchor" href="#type-system" aria-label="Anchor link for: type-system">🔗</a></h3>
+<p>It is pretty cool.
+Variables are immutable by default and the compiler will complain if you are using a variable before initalizing it (not very idiomatic in Rust to initialize a variable after declaring it apparently anyway) or if it's unused (you can make that fail compilation if you want).
+It has generics which allows some cool stuff without passing interface{} if you wanted to do something similar in Go (let's say an ORM).
+It uses traits rather than the classic interfaces OOP languages, if you've used Scala it will be familiar.</p>
+<h2 id="memory-safety">Memory safety<a class="zola-anchor" href="#memory-safety" aria-label="Anchor link for: memory-safety">🔗</a></h2>
+<p>Part of that section could go in the type system section but since this is the complex part of rust for newcomer like me I feel it deserves its own section.
+There are 3 types of pointers in Rust:</p>
+<ul>
+<li>owned pointers: the classic ones, compiler takes care of them automatically</li>
+<li>borrowed pointers: as the name implies, you can use them when you want to access data, but without taking ownership of it</li>
+</ul>
+<p>Ownership (and mainly the lifetimes that go with it) is a major point of Rust and documentation will do a better job than me at explaining them: <a href="https://doc.rust-lang.org/1.36.0/book/ch10-03-lifetime-syntax.html">The Rust References and Lifetimes Guide</a>.</p>
+<h3 id="easy-concurrency-with-no-data-race">Easy concurrency with no data race<a class="zola-anchor" href="#easy-concurrency-with-no-data-race" aria-label="Anchor link for: easy-concurrency-with-no-data-race">🔗</a></h3>
+<p>Concurrency in Rust is as easy as in Go, here's a very basic example:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#7f8989;">// run on http://is.gd/kDPsLe
+</span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">main</span><span>() {
+</span><span>    </span><span style="color:#668f14;">let </span><span>(tx, rx): (Sender&lt;int&gt;, Receiver&lt;int&gt;) </span><span style="color:#72ab00;">= </span><span style="color:#b39f04;">channel</span><span>();
+</span><span>
+</span><span>    </span><span style="color:#b39f04;">spawn</span><span>(</span><span style="background-color:#562d56bf;color:#f8f8f8;">proc</span><span>() { tx.</span><span style="color:#b39f04;">send</span><span>(</span><span style="color:#b3933a;">1</span><span>); });
+</span><span>
+</span><span>    </span><span style="color:#668f14;">let</span><span> result </span><span style="color:#72ab00;">=</span><span> rx.</span><span style="color:#b39f04;">recv</span><span>();
+</span><span>}
+</span></code></pre>
+<p>It is very easy to read and I actually find it easier to have the named channels like this than reading from the channel.
+The "no data race" part comes from the fact that you cannot access mutable data inside a task (It won't even let you reuse the tx variable here in another as you can see in that <a href="http://is.gd/ncfyM4">playpen</a>.
+Trying to modify a mutable structure for example would result in a compiler error: <a href="http://is.gd/5AFfTn">playpen</a>.
+An in-depth explanation is also present in the docs: <a href="http://doc.rust-lang.org/guide-tasks.html">The Rust Tasks and Communication Guide</a>.</p>
+<h3 id="functional-stuff">Functional stuff<a class="zola-anchor" href="#functional-stuff" aria-label="Anchor link for: functional-stuff">🔗</a></h3>
+<p>I'm usually a bit wary of functional elements as it can sometimes be very hard to read and understand at a glance what a functional programmer did when he was being 'neat'.
+Nevertheless, functional programming also brings very very cool stuff:</p>
+<h4 id="options">Options<a class="zola-anchor" href="#options" aria-label="Anchor link for: options">🔗</a></h4>
+<p>An idiomatic Go function will usually return 2 elements: a value and an error. You will have to check whether the error is nil or not and handle both cases</p>
+<pre data-lang="go" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-go "><code class="language-go" data-lang="go"><span style="color:#5597d6;">books</span><span>, </span><span style="color:#5597d6;">err </span><span style="color:#72ab00;">:= </span><span style="color:#5597d6;">GetBooks</span><span>()
+</span><span style="color:#72ab00;">if </span><span style="color:#5597d6;">err </span><span style="color:#72ab00;">!= </span><span style="color:#b3933a;">nil </span><span>{
+</span><span>  </span><span style="color:#72ab00;">return </span><span style="color:#b3933a;">nil</span><span>, </span><span style="color:#5597d6;">err
+</span><span>}
+</span><span style="color:#5597d6;">books </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">books</span><span>[:</span><span style="color:#b3933a;">5</span><span>] </span><span style="color:#7f8989;">// will give a nil error if we didn&#39;t check the error above
+</span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">books</span><span>, </span><span style="color:#b3933a;">nil
+</span></code></pre>
+<p>I don't mind explicit error handling but it's easy to forget it somewhere and end up with a null pointer exception.
+Options are basically nullable types that forces you to handle them, enforced by the compiler.
+It is typically handled using pattern matching.</p>
+<h4 id="pattern-matching">Pattern matching<a class="zola-anchor" href="#pattern-matching" aria-label="Anchor link for: pattern-matching">🔗</a></h4>
+<p>Those are amazing, like a switch but way more powerful.
+To handle something that could fail like the Go example above, it would look like this.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#7f8989;">// Example from docs with a few more stuff added
+</span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">divide</span><span>(</span><span style="color:#5597d6;">numerator</span><span>: </span><span style="color:#668f14;">f64</span><span>, </span><span style="color:#5597d6;">denominator</span><span>: </span><span style="color:#668f14;">f64</span><span>) -&gt; </span><span style="color:#a2a001;">Option</span><span>&lt;</span><span style="color:#668f14;">f64</span><span>&gt; {
+</span><span>    </span><span style="color:#72ab00;">if</span><span> denominator </span><span style="color:#72ab00;">== </span><span style="color:#b3933a;">0.0 </span><span>{
+</span><span>        </span><span style="color:#a2a001;">None
+</span><span>    } </span><span style="color:#72ab00;">else </span><span>{
+</span><span>        </span><span style="color:#a2a001;">Some</span><span>(numerator </span><span style="color:#72ab00;">/</span><span> denominator)
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#7f8989;">// The return value of the function is an option
+</span><span style="color:#668f14;">let</span><span> result </span><span style="color:#72ab00;">= </span><span style="color:#b39f04;">divide</span><span>(</span><span style="color:#b3933a;">2.0</span><span>, </span><span style="color:#b3933a;">3.0</span><span>);
+</span><span>
+</span><span style="color:#7f8989;">// Pattern match to retrieve the value
+</span><span style="color:#72ab00;">match</span><span> result {
+</span><span>    </span><span style="color:#a2a001;">Some</span><span>(</span><span style="color:#b3933a;">1.0</span><span>) </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Result was exactly 1&quot;</span><span>),
+</span><span>    </span><span style="color:#a2a001;">Some</span><span>(x) </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Result: </span><span style="color:#aeb52b;">{}</span><span style="color:#d07711;">&quot;</span><span>, x),
+</span><span>    </span><span style="color:#a2a001;">None    </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Cannot divide by 0&quot;</span><span>),
+</span><span>    </span><span style="color:#72ab00;">_ =&gt; </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Nothing&quot;</span><span>) </span><span style="color:#7f8989;">// Compiler will fail and tell that this is unreachable as you&#39;re dealing with Some and None
+</span><span>}
+</span></code></pre>
+<p>A playpen is available <a href="http://is.gd/0tW2Bc">here</a>, modify the paraneters to divide and the pattern matching to see how it works.
+You could match on types, on values, this makes the code really neat imo and is awesome.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">fn </span><span style="color:#c23f31;">main</span><span>() {
+</span><span>    </span><span style="color:#668f14;">let</span><span> x </span><span style="color:#72ab00;">=</span><span> 10i;
+</span><span>
+</span><span>    </span><span style="color:#72ab00;">match</span><span> x {
+</span><span>        </span><span style="color:#b3933a;">0 </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;It&#39;s 0!&quot;</span><span>),
+</span><span>        </span><span style="color:#b3933a;">1 </span><span style="color:#72ab00;">..</span><span style="color:#b3933a;">9 </span><span style="color:#72ab00;">=&gt; </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Between 1 and 9: </span><span style="color:#aeb52b;">{}</span><span style="color:#d07711;">&quot;</span><span>, x),
+</span><span>        </span><span style="color:#72ab00;">_ =&gt; </span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;Different from 0-9: </span><span style="color:#aeb52b;">{}</span><span style="color:#d07711;">&quot;</span><span>, x) </span><span style="color:#7f8989;">// needed to be exhaustive here, compiler will yell without it
+</span><span>    };
+</span><span>}
+</span></code></pre>
+<h4 id="general-functional-functions">General 'functional' functions<a class="zola-anchor" href="#general-functional-functions" aria-label="Anchor link for: general-functional-functions">🔗</a></h4>
+<p>I did the first Euler problems in Rust to get the hang of it and everytime I started with the naive approach of looping.
+After reading a bit of code from experience devs, I realised you could do some nice stuff like defining a Fibonacci iterator and making a simple one liner after that to solve <a href="https://projecteuler.net/problem=2">problem 2</a>:</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span>Fibonacci::new().</span><span style="color:#b39f04;">take_while</span><span>(|</span><span style="color:#72ab00;">&amp;</span><span style="color:#5597d6;">i</span><span>| i </span><span style="color:#72ab00;">&lt;= </span><span style="color:#b3933a;">4000000</span><span>).</span><span style="color:#b39f04;">filter</span><span>(|</span><span style="color:#72ab00;">&amp;</span><span style="color:#5597d6;">i</span><span>| i </span><span style="color:#72ab00;">% </span><span style="color:#b3933a;">2 </span><span style="color:#72ab00;">== </span><span style="color:#b3933a;">0</span><span>).</span><span style="color:#b39f04;">sum</span><span>();
+</span></code></pre>
+<h2 id="what-do-i-think-of-it">What do I think of it?<a class="zola-anchor" href="#what-do-i-think-of-it" aria-label="Anchor link for: what-do-i-think-of-it">🔗</a></h2>
+<p>As you saw from the previous part, I'm quite enthusiastic about it.
+It's still too much in flux to be used seriously but I think that it could become a pretty big thing.
+Again, talking from the point of view of websites/services, it could become a nice alternative to Go (as more and more companies start using it for services).
+The fact that they're also building a package manager (<a href="https://github.com/rust-lang/cargo">Cargo</a>) along the language is a very nice thing, solving the whole dependencies issues in Go, I need to find out whether they plan to include vendoring or not.
+I think Go is easier to pick up (language has less features, some people will consider that a minus, other a plus), has the community behind it and tools like gofmt (<a href="https://github.com/pcwalton/rustfmt">one</a> is in the works for Rust).
+Another issue Rust currently has is that it is changing very fast, most of the threads/posts talking about it will not work in the current version and that is confusing.
+Up to date resources includes:</p>
+<ul>
+<li>http://rustbyexample.com/</li>
+<li>http://doc.rust-lang.org/std/index.html (very helpful since there's no autocompletion yet, there's <a href="https://github.com/phildawes/racer">racer</a> but it doesn't seem finished)</li>
+</ul>
+<p>Overall, I'll keep an eye on it and try to do a small project on it as soon as I have some free time.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>

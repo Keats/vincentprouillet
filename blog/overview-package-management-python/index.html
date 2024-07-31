@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="
+    There are many things happening in package management for Python in 2018!
+">
+      <meta name="author" content="Vincent Prouillet">
+      <title>Vincent Prouillet: Developer &amp; Entrepreneur</title>
+      <link rel="stylesheet" href="https://www.vincentprouillet.com/site.css?h=6dba58370284a334effb" />
+      <link rel="shortcut icon" type="image/png" href="https://www.vincentprouillet.com/favicon.ico"/>
+      <link href="https://www.vincentprouillet.com/rss.xml" rel="feed" type="application/rss+xml" title="Vincent Prouillet: Developer &amp; Entrepreneur" />
+    </head>
+
+    <header id="header">
+        <h1 class="logo"><a href="/">Vincent Prouillet</a></h1>
+        <ul>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </header>
+
+    <div id="content">
+        
+    <div class="post">
+        <div class="post__title">
+            <h1>An overview of package management in Python in 2018</h1>
+            <div class="post__meta">
+                2018-09-07
+                
+            </div>
+            <hr />
+        </div>
+
+        <div class="post__body">
+            <p>First of all, this article will only talk about package management in the
+context of backend applications. I do not maintain any Python library so I am
+not able to give insights on that side of the package management story.</p>
+<p>I will begin by quickly explaining the most common way of setting up Python projects and handling dependencies
+to make sure everyone is on the same page.</p>
+<h2 id="a-basic-setup">A basic setup<a class="zola-anchor" href="#a-basic-setup" aria-label="Anchor link for: a-basic-setup">🔗</a></h2>
+<p>Pretty much all the Django/Flask projects I have seen use the same structure: a <code>requirements</code>
+folder containing several <code>.txt</code> files listing the dependencies and their versions.</p>
+<p>The folder typically looks like the following:</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#b39f04;">.
+</span><span style="color:#5597d6;">├──</span><span> base.txt
+</span><span style="color:#5597d6;">├──</span><span> local.txt
+</span><span style="color:#5597d6;">└──</span><span> prod.txt
+</span></code></pre>
+<p><code>base.txt</code> contains all the essential dependencies:</p>
+<pre data-lang="txt" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-txt "><code class="language-txt" data-lang="txt"><span>boto3==1.6.10
+</span><span>
+</span><span>Django==2.0.3
+</span><span>django-cors-headers==2.2.0
+</span><span>django-filter==1.1.0
+</span><span>django-floppyforms==1.7.0
+</span><span>django-nested-inline==0.3.7
+</span><span>django-storages==1.6.5
+</span><span>djangorestframework==3.7.7
+</span><span>djangorestframework-jsonp==1.0.2
+</span><span>social-auth-app-django==2.1.0
+</span><span>social-auth-core==1.7.0
+</span><span>django-widget-tweaks==1.4.1
+</span></code></pre>
+<p>While it is not required, every requirement files I have seen were using <code>==</code>, also called requirement pinning, to
+depend on the exact versions to ensure reproducibility. Well, as much reproducibility
+as a mutable package index allows anyway as we will see later.</p>
+<p>Other requirements files will import the <code>base.txt</code> file and then add environment specific dependencies such
+as testing libraries or developer tools for <code>local.txt</code> for example.</p>
+<pre data-lang="txt" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-txt "><code class="language-txt" data-lang="txt"><span>-r base.txt
+</span><span>
+</span><span>ipython==6.2.1
+</span><span>flake8==3.5.0
+</span><span>django-extensions==2.0.6
+</span><span>mypy==0.570
+</span><span>factory_boy==2.10.0
+</span></code></pre>
+<p>But wait! Before being able to install the dependencies, you first need to create
+a <a href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a> if you are not using <a href="https://www.docker.com/">Docker</a>. Python 3
+has built-in support for virtualenvs and you can create one simply by running <code>python3 -m venv tutorial-env</code>.
+To activate it, you need to execute the <code>activate</code> script in the <code>bin</code> folder of the virtualenv.</p>
+<p>As this feature is somewhat recent, many virtualenv helpers exist to make it easier to use.
+I use <a href="https://virtualenvwrapper.readthedocs.io/en/latest/">virtualenvwrapper</a> combined with the <code>zsh</code> plugin with
+the same name to automatically activate the right virtualenv when I'm <code>cd</code>ing into a folder that has one.</p>
+<p>Now that your virtualenv is setup and activated, you can run <code>pip install -r requirements/local.txt</code>
+to install your dependencies.</p>
+<p>You can list the currently installed packages by running <code>pip freeze</code> in the virtualenv. The downside is that it will also show
+all indirect dependencies as well. You can order that list with the <code>-r my_file.txt</code> argument to have your explicit dependencies
+at the top but it isn't great.</p>
+<p>This process works but is quite manual:</p>
+<ul>
+<li>beginners might not know of virtualenvs and how to use them</li>
+<li>packages and their versions are edited manually so it is easy to make mistakes
+by forgetting to add/remove one</li>
+<li>not really secure: the package index <a href="https://pypi.org">Pypi</a> is mutable so 2.1.0 one day
+can be different from 2.1.0 another day and there will no way to know about it. While you can add
+hashes to requirements files but I have never seen anyone go through the hassle of doing that themselves</li>
+</ul>
+<p>We can see that when dealing with package management in Python there are two issues: dealing with virtualenvs
+and actually managing the packages.</p>
+<p>There are plenty of tools that have been built to fix one or both issues; let's look at a few of them now.
+I will use the list of packages of an actual Django project with about 28 dependencies to test them. While
+speed is not THAT important for a package manager, I will only mention it if there is something to be said about it.</p>
+<h2 id="pip-tools">pip-tools<a class="zola-anchor" href="#pip-tools" aria-label="Anchor link for: pip-tools">🔗</a></h2>
+<p><a href="https://github.com/jazzband/pip-tools">pip-tools</a> only tries to handle the package management part, meaning you still need to use
+<code>virtualenvwrapper</code> or something similar to handle virtualenvs.</p>
+<p><code>pip-tools</code> gives you two command line tools: <code>pip-compile</code> and <code>pip-sync</code>.</p>
+<p>The easiest way to get started with <code>pip-tools</code> is to create a <code>requirements.in</code> file listing your dependencies:</p>
+<pre data-lang="txt" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-txt "><code class="language-txt" data-lang="txt"><span>boto3
+</span><span>Django
+</span><span>django-cors-headers
+</span><span>django-filter
+</span><span>django-floppyforms
+</span><span>django-nested-inline
+</span><span>django-storages
+</span><span>djangorestframework
+</span><span>djangorestframework-jsonp
+</span><span>social-auth-app-django
+</span><span>social-auth-core
+</span><span>django-widget-tweaks
+</span></code></pre>
+<p>The <code>requirements.in</code> file uses the same requirements syntax as <code>requirements.txt</code>:
+I could indicate for example that I want <code>Django==2.0.8</code> instead of the latest version.</p>
+<p>Running <code>pip-compile</code> in the same folder will create a <code>requirements.txt</code> file:</p>
+<pre data-lang="txt" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-txt "><code class="language-txt" data-lang="txt"><span>#
+</span><span># This file is autogenerated by pip-compile
+</span><span># To update, run:
+</span><span>#
+</span><span>#    pip-compile --output-file requirements.txt requirements.in
+</span><span>#
+</span><span>boto3==1.8.7
+</span><span>botocore==1.11.7          # via boto3, s3transfer
+</span><span>certifi==2018.8.24        # via requests
+</span><span>chardet==3.0.4            # via requests
+</span><span>defusedxml==0.5.0         # via python3-openid, social-auth-core
+</span><span>django-cors-headers==2.4.0
+</span><span>django-filter==2.0.0
+</span><span>django-floppyforms==1.7.0
+</span><span>django-nested-inline==0.3.7
+</span><span>django-storages==1.7
+</span><span>django-widget-tweaks==1.4.2
+</span><span>django==2.1.1
+</span><span>
+</span><span>... more lines
+</span></code></pre>
+<p><code>pip-compile</code> automatically grabbed the latest versions and each line not present
+in your <code>requirements.in</code> has a comment indicating why it is here. This is already
+a big improvement over <code>pip freeze &gt; requirements.txt</code>.</p>
+<p>Remember the packages hashes mentioned before? <code>pip-compile --generate-hashes</code> can automatically computes the hashes and put them
+in the generated file:</p>
+<pre data-lang="txt" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-txt "><code class="language-txt" data-lang="txt"><span>#
+</span><span># This file is autogenerated by pip-compile
+</span><span># To update, run:
+</span><span>#
+</span><span>#    pip-compile --generate-hashes --output-file requirements.txt requirements.in
+</span><span>#
+</span><span>boto3==1.8.7 \
+</span><span>    --hash=sha256:7b54cc29dde1d4833b082b8ef4062872297cf652ed20b2d485e1cae544c7cdad \
+</span><span>    --hash=sha256:b181fb87661a4268174ba29cb5efbc9e728202f3f80e00356e8135ce50a3799b
+</span><span>botocore==1.11.7 \
+</span><span>    --hash=sha256:4d36cb3a0b6308eeb56f69b964b92b9f4609423b07a4979c298dba694a5a4bd6 \
+</span><span>    --hash=sha256:86d0bf23b5071c6a956ad2a1d5cd8d1d7c997e2c04151f7c8fff50779a8315d8 \
+</span><span>    # via boto3, s3transfer
+</span><span>certifi==2018.8.24 \
+</span><span>    --hash=sha256:376690d6f16d32f9d1fe8932551d80b23e9d393a8578c5633a2ed39a64861638 \
+</span><span>    --hash=sha256:456048c7e371c089d0a77a5212fb37a2c2dce1e24146e3b7e0261736aaeaa22a \
+</span><span>    # via requests
+</span><span>chardet==3.0.4 \
+</span><span>    --hash=sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae \
+</span><span>    --hash=sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691 \
+</span><span>    # via requests
+</span><span>
+</span><span>... more lines
+</span></code></pre>
+<p>The initial run takes a bit of time but subsequent ones take under a second.</p>
+<p>The last thing we need for package management is an easy way to upgrade the packages and
+<code>pip-compile</code> provides that out of the box:</p>
+<ul>
+<li><code>pip-compile --upgrade</code> will update all packages</li>
+<li><code>pip-compile -P PACKAGE_NAME</code> will update only that package</li>
+</ul>
+<p>An astute reader might have noticed that so far we have only managed to write and update
+a text file and have not actually installed anything. That's where <code>pip-sync</code> comes into play.</p>
+<p>Running <code>pip-sync requirements.txt</code> will compare the packages listed in the file with
+what is currently installed, installing the missing packages and uninstalling the packages
+not listed. This ensures your virtualenv doesn't have extra dependencies and is representing
+accurately your requirements file.</p>
+<p>The main con I have is pretty silly: why is it <code>pip-compile</code> and <code>pip-sync</code> instead of <code>piptools compile</code>
+and <code>piptools sync</code>?</p>
+<h2 id="pipenv">Pipenv<a class="zola-anchor" href="#pipenv" aria-label="Anchor link for: pipenv">🔗</a></h2>
+<p><a href="https://pipenv.readthedocs.io/en/latest/">Pipenv</a> is developed by the <a href="https://github.com/pypa">Python Packaging Authority</a>,
+responsible for developing <a href="https://github.com/pypa/pip">pip</a> so I had big expectations.</p>
+<p>It is inspired by Cargo/Bundler/Yarn and introduces 2 files that you will recognize if you used any of them before:</p>
+<ul>
+<li>a <code>Pipfile</code>: a TOML file listing packages as well as a minimal Python version</li>
+<li>a <code>Pipfile.lock</code>: a lockfile in JSON format listing every dependencies version with their hash</li>
+</ul>
+<p>Anytime you want to install the dependencies, Pipenv will read <code>Pipfile.lock</code> and install everything in it.
+To make it easier for users, Pipenv also wraps virtualenv, getting rid of the need to have <code>virtualenvwrapper</code>. Pipenv seems
+to be only targeting applications, it doesn't help if you are packaging a library.</p>
+<p>Let's see how it works in practice.</p>
+<p>The first step is to create a new project: <code>pipenv --python 3.7</code>.
+This is a pretty strange command as <code>pipenv</code> only displays the help so I would have expected the command to be <code>pipenv new</code>
+rather than some flags. Typically flags in this situation are only there to display information, like <code>pipenv --version</code>.
+Pipenv will also create a new virtualenv when running <code>pipenv install</code> if there isn't one.</p>
+<p>To activate the newly created virtualenv, run <code>pipenv shell</code>. To exit it, simply type <code>exit</code>.</p>
+<p>Running <code>pipenv install django</code> will do two things:</p>
+<ul>
+<li>insert <code>django = "*"</code> in the <code>packages</code> table of the <code>Pipfile</code></li>
+<li>download the latest django version, install it in the virtual env and add the hash/version in <code>Pipfile.lock</code></li>
+</ul>
+<p>Putting <code>"*"</code> as a version number is not great: I need to read the <code>Pipfile.lock</code> to see which version was installed
+and <code>*</code> is never a good default for a version number, even with a lockfile. Changing it to <code>django = "==2.1.1"</code> which was
+the version it installed did the trick.</p>
+<p>You can run <code>pipenv sync</code> to do the equivalent of <code>pip-sync</code> from <code>pip-tools</code>, but using <code>Pipfile.lock</code> as the truth this time.
+Pipenv actually uses <code>pip-tools</code> for some of its commands under the hood.</p>
+<p>A cool feature of Pipenv is <code>pipenv check</code> that will check for security issues in your packages. Running a slightly
+outdated version of Django for example gives the following:</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5597d6;">Checking</span><span> PEP 508 requirements...
+</span><span style="color:#5597d6;">Passed!
+</span><span style="color:#5597d6;">Checking</span><span> installed package safety...
+</span><span style="color:#5597d6;">36368:</span><span> django </span><span style="color:#72ab00;">&gt;</span><span>=2.0.0, </span><span style="color:#72ab00;">&lt;</span><span style="color:#b3933a;">2</span><span>.0.8 resolved (2.0.5 installed)</span><span style="color:#72ab00;">!
+</span><span style="color:#5597d6;">django.middleware.common.CommonMiddleware</span><span> in Django 1.11.x before 1.11.15 and 2.0.x before 2.0.8 has an Open Redirect. A remote user can redirect the target user</span><span style="color:#d07711;">&#39;s browser to an arbitrary site.
+</span></code></pre>
+<blockquote>
+<p><a href="https://www.python.org/dev/peps/pep-0508/">PEP 508</a> is the grammar defining how to write dependencies versions, i.e. the <code>==</code> for example you
+have seen before in that article.</p>
+</blockquote>
+<p>Pipenv seems extremely slow: running <code>pipenv install -d</code> the test project with already pinned versions took 166s.
+Almost 3 minutes. Running it again right after took 55s. Any action dealing with packages
+takes a minimum of 30s on my machine. I did say in the introduction that speed is not too important but Pipenv does test the limit
+of that affirmation.</p>
+<p>Lastly, I found the UX of the whole tool to be pretty awkward or buggy:</p>
+<ul>
+<li><code>pipenv</code> shows an help menu with the various actions but <code>pipenv check --help</code> for example will not tell you
+what <code>pipenv check</code> actually does, only what flags are available</li>
+<li><code>pipenv uninstall</code> is said to "Un-installs a provided package and removes it from Pipfile." but somehow <code>pipenv uninstall --three </code>
+will destroy the current virtualenv and create a new one? It looks like all subcommands have the same flags available to
+create/recreate a virtualenv instead of having a <code>pipenv new</code> command and avoid this pitfall.</li>
+<li>errors are very cryptic: I made a typo while adding a dependency in <code>Pipfile</code> resulting in an invalid TOML variable and all I got was
+two tracebacks for a total of 70 lines with the reason on the last line. How about only showing me the reason instead?</li>
+<li><code>pipenv update</code> doesn't tell what was actually updated...?</li>
+<li><code>pipenv update django</code> updates all the packages instead of only django....?</li>
+</ul>
+<h2 id="poetry">poetry<a class="zola-anchor" href="#poetry" aria-label="Anchor link for: poetry">🔗</a></h2>
+<p>I believe I first heard of <a href="https://github.com/sdispater/poetry">poetry</a> while looking up <a href="https://github.com/ambv/black">Black</a> and noticing
+a <code>pyproject.toml</code>.</p>
+<p><a href="https://www.python.org/dev/peps/pep-0518/">PEP 518</a> introduced <code>pyproject.toml</code>:</p>
+<blockquote>
+<p>This PEP specifies how Python software packages should specify what build dependencies they have in order
+to execute their chosen build system.
+As part of this specification, a new configuration file is introduced for software packages to use to specify
+their build dependencies (with the expectation that the same configuration file will be used for future configuration details).</p>
+</blockquote>
+<p>The interesting part of that PEP for the purpose of this article is the <a href="https://www.python.org/dev/peps/pep-0518/#tool-table">tool section</a>.</p>
+<p>Rather than having one config file for each tool like <a href="http://flake8.pycqa.org/en/latest/index.html#">Flake8</a> or Black, having
+all of them consolidated in one file would be very valuable.</p>
+<p>Poetry uses this file to list the dependencies, keeping everything neatly in place.</p>
+<p>There are two ways to get started with poetry:</p>
+<ul>
+<li><code>poetry new SOME_NAME</code>: will create a folder named SOME_NAME with some basic structure setup for a Python project</li>
+<li><code>poetry init</code>: an interactive way to setup your project and some dependencies</li>
+</ul>
+<p>The downside of the <code>poetry init</code> is that the package search is not that great: searching for <code>django</code> will
+return a list of 99 packages, all of them being <code>django-something</code> and not the actual django. I don't know what Pypi
+offers as an API so maybe it is a limitation of the API but even then, showing 99 results is not very user friendly and
+if there is an exact match it should show it to you.
+The help text says I can enter the exact package name but typing <code>django</code> tries to autocomplete with the package names
+from the list and results in an error:</p>
+<pre data-lang="bash" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-bash "><code class="language-bash" data-lang="bash"><span> </span><span style="color:#72ab00;">&gt;</span><span> django
+</span><span style="color:#5597d6;">Value </span><span style="color:#d07711;">&quot;django&quot;</span><span> is invalid
+</span><span>
+</span><span style="color:#5597d6;">Enter</span><span> package </span><span style="color:#7f8989;"># to add, or the complete package name if it is not listed:
+</span><span> </span><span style="color:#b39f04;">[</span><span> 0] django-bagou
+</span><span> </span><span style="color:#b39f04;">[</span><span> 1] django-maro
+</span><span> </span><span style="color:#5597d6;">...</span><span> 99 packages
+</span></code></pre>
+<p>Poetry will also create virtualenv automatically when running <code>install</code>, <code>add</code> or <code>remove</code> with the current version of <code>python</code>:
+you cannot currently create a virtualenv with a different version.</p>
+<p>You are supposed to activate a shell with <code>poetry shell</code> but it breaks if you using <code>$WORKON_HOME</code> for other tools:
+https://github.com/sdispater/poetry/issues/214 so I ended up ignoring the virtualenv related commands. I didn't spend time looking
+into it so there might be an easy fix but it should work out of the box with the rest of the ecosystem.</p>
+<p>If you try to install a package using <code>poetry add django</code>, you will notice that a <code>pyproject.lock</code> has been created
+and that some dependencies were added to <code>pyproject.toml</code>:</p>
+<pre data-lang="toml" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-toml "><code class="language-toml" data-lang="toml"><span>[</span><span style="color:#6486ab;">tool.poetry.dependencies</span><span>]
+</span><span style="color:#7f902a;">python </span><span>= </span><span style="color:#d07711;">&quot;3.7&quot;
+</span><span style="color:#7f902a;">django </span><span>= </span><span style="color:#d07711;">&quot;^2.1&quot;
+</span><span>
+</span><span>[</span><span style="color:#6486ab;">tool.poetry.dev-dependencies</span><span>]
+</span><span style="color:#7f902a;">pytest </span><span>= </span><span style="color:#d07711;">&quot;^3.0&quot;
+</span></code></pre>
+<p>As opposed to the other tools, <code>poetry</code> uses the semantic versioning to refer to dependencies versions. If you have used
+<a href="https://github.com/rust-lang/cargo">Cargo</a> in Rust, you will feel at home. The issue is that many Python libraries do not use
+semantic versioning so it does feel a bit weird to use in this context.</p>
+<p>While trying to clean its cache to test the speed, I ran into a small UX issue.
+Poetry offers a command to clean the cache (<code>poetry cache:clear</code>) but it takes a path/string to a cache as an argument. A new
+user like me will not know what argument to give, especially since the command is not <a href="https://poetry.eustace.io/docs/cli/">in the documentation</a>.
+Looking into issues, we can see that we can run <code>poetry cache:clear --all pypi</code> but the documentation doesn't even mention <code>cache:clear</code> so it's not
+obvious.</p>
+<p>As expected, the initial <code>poetry install</code> takes some time but subsequent runs take under a second.
+The UI is very clean and clear about what was installed and their versions.</p>
+<p>Poetry also has <code>poetry update</code> to update dependencies and once again makes it clear what has changed.</p>
+<p>While this post is focused on backend applications, it is worth mentioning that Poetry apparently handles building and publishing
+libraries as well which is a big plus if you are a maintainer: one tool for all purposes!</p>
+<h2 id="my-opinion">My opinion<a class="zola-anchor" href="#my-opinion" aria-label="Anchor link for: my-opinion">🔗</a></h2>
+<p>I have only mentioned 3 tools but there are way more! I wouldn't be surprised if Python had the highest
+number of tools dedicated to package and environment management of any programming language.
+Since all those tools are written in Python themselves you still need to use Pip first to install them, globally sometimes. A better solution
+in my opinion would be to write the package manager in a language compiling down to a binary, solving the bootstrapping issue and
+being a good example of <a href="https://xkcd.com/927/">https://xkcd.com/927/</a>.</p>
+<p>To go back to the three tools mentioned in this article, I would recommend either pip-tools or poetry.
+My limited usage of Pipenv had too many WTFs to be considered ready for actual use, not even taking into account
+its extreme slowness. I'm not entirely sure why it is the recommended tool other than the virtualenv setup was easy to do because it feels
+like an alpha version. If you are using Docker containers instead of virtualenvs, I don't see any advantage of Pipenv over pip-tools or Poetry.</p>
+<p>I like the simplicity of <code>pip-tools</code>. If you are currently writing <code>requirements.txt</code> by hand, using <code>pip-tools</code> to get
+some extra features like hashes is a pretty small step to take which I would recommend right now.</p>
+<p>On the other hand, if <code>pyproject.toml</code> gets adopted by other tools (Flake8, mypy etc), having everything in one file would be very
+appealing and poetry would become the best choice at that time. I expect <code>poetry</code> to work with my current use of <code>virtualenvwrapper</code> though,
+I don't want to convert all my projects to <code>poetry</code> just to make it happy.</p>
+
+        </div>
+    </div>
+
+    </div>
+
+  <body>
+  </body>
+</html>
