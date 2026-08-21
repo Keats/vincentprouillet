@@ -29,9 +29,9 @@ The installation is a bit tricky as it uses [OpenCV](http://opencv.org/) and nee
 The setup for Ubuntu is described in the README, I haven't tried to install it on any other OS so I cannot comment on it.
 Here's a photo of actualy physical installation:
 
-{{ image(src="setup_laptop.jpg", alt="Laptop setup") }}
+{{ <image page={page} src="setup_laptop.jpg" alt="Laptop setup" /> }}
 
-{{ image(src="setup_bait.jpg", alt="Bait setup") }}
+{{ <image page={page} src="setup_bait.jpg" alt="Bait setup" /> }}
 
 We were not sure of what we are trying to catch so the bait is pretty much a bit of everything: nutella, bread, tuna, cheese etc
 
@@ -155,7 +155,7 @@ difference2 = cv2.absdiff(current_image, gray_image)
 ```
 In practice the difference looks like the following:
 
-{{ image(src="difference.jpg", alt="Difference with absdiff") }}
+{{ <image page={page} src="difference.jpg" alt="Difference with absdiff" /> }}
 
 You can see my outline, with a pretty cool effect imo, as I was moving in front of the camera.
 
@@ -168,11 +168,11 @@ This gives a result similar to the above, but usually more faint.
 I personally love this kind of picture, it gives a watercolour like effect.
 Here you can see my arm while I was standing up, a bit on profile:
 
-{{ image(src="bitwise_and.jpg", alt="Result after bitwise_and") }}
+{{ <image page={page} src="bitwise_and.jpg" alt="Result after bitwise_and" /> }}
 
 To make it clearer and know what you're looking at, I tried to highlight the outline of my body:
 
-{{ image(src="bitwise_and_contour.jpg", alt="Result after bitwise_and outline") }}
+{{ <image page={page} src="bitwise_and_contour.jpg" alt="Result after bitwise_and outline" /> }}
 
 We then want to apply a binary threshold to only get clear motions:
 
@@ -182,7 +182,7 @@ _, result = cv2.threshold(result, 40, 255, cv2.THRESH_BINARY)
 This means that for every pixel in the result, turn those with a value above 40 (arbitrary value, seems to give good results but open to changing it!) to 255 (white).
 This is the picture above after the thresholding:
 
-{{ image(src="threshold.jpg", alt="Result after thresholding") }}
+{{ <image page={page} src="threshold.jpg" alt="Result after thresholding" /> }}
 
 A picture after threshold with no motion would be completely black.
 
@@ -200,7 +200,7 @@ Note that the rectangle method does the transformation in-place, it doesn't retu
 Here's what a motion made into a video looks like:
 
 
-{{ image(src="motion.gif", alt="Motion detection") }}
+{{ <image page={page} src="motion.gif" alt="Motion detection" /> }}
 
 
 ## Results

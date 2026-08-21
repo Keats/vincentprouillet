@@ -42,7 +42,7 @@ Let's have a look at the current set of features - it's pretty packed for a 0.1.
 - **automatic table of contents**
 - **automatic insertion of anchors on titles**: same as [READMEs on Github](https://github.com/Keats/gutenberg)
 - **shortcodes**: when you want to insert some HTML in a page but don't want to copy the HTML everywhere. For example
-`{{/* youtube(id="dQw4w9WgXcQ") */}}` is a built-in shortcode and will insert the YouTube video for that id.
+`{% raw %}{{ youtube(id="dQw4w9WgXcQ") }}{% endraw %}` is a built-in shortcode and will insert the YouTube video for that id.
 - **Sass compilation**
 - **RSS feed** generation when requested
 - **Tags and categories** generation when requested

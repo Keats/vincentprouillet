@@ -121,7 +121,7 @@ To make things more explicit two changes have been made:
     - `date`: now called `page.earlier` and `page.later`
     - `weight`: now called `page.lighter` and `page.heavier`
 
-No more `<a class="previous" href="{{page.next.permalink}}>{{page.next.title}}</a>`!
+No more `{% raw %}<a class="previous" href="{{page.next.permalink}}>{{page.next.title}}</a>{% endraw %}`!
 
 To fix sites using `order` or `date`, you will need to:
 

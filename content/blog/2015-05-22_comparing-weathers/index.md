@@ -117,7 +117,7 @@ _ = nice['avg_temp'].plot(figsize=(15, 5))
 ```
 
 
-{{ image(src="weather_3_0.png", alt="Average temperature in Nice") }}
+{{ <image page={page} src="weather_3_0.png" alt="Average temperature in Nice" /> }}
 
 
 While we could continue having one `DataFrame` per city, it is more convenient to have one `DataFrame` containing all the data as this allows us to use plotting directly from it like we did above.
@@ -364,7 +364,7 @@ _ = plt.xlabel("Time", fontsize=16)
 ```
 
 
-{{ image(src="weather_8_0.png", alt="Monthly average temperatures") }}
+{{ <image page={page} src="weather_8_0.png" alt="Monthly average temperatures" /> }}
 
 
 We can make a few observations on this chart:
@@ -513,7 +513,7 @@ _ = plt.ylabel("Humidity %", fontsize=16)
 ```
 
 
-{{ image(src="weather_11_0.png", alt="Graph comparing 4 cities") }}
+{{ <image page={page} src="weather_11_0.png" alt="Graph comparing 4 cities" /> }}
 
 
 Looking at those graphs we can notice a few things:
@@ -562,7 +562,7 @@ _ = plt.ylabel("Number of snow days", fontsize=16)
 ```
 
 
-{{ image(src="weather_13_0.png", alt="Rain and snow days") }}
+{{ <image page={page} src="weather_13_0.png" alt="Rain and snow days" /> }}
 
 
 We can see it's raining quite a bit in Okinawa since they have a rainy season (May-June) and a typhoon season (June-November).

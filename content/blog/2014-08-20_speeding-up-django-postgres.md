@@ -110,9 +110,9 @@ For example, let's say you have an Article and Author model and you want to disp
 # Let's assume there are 50 articles
 articles = Article.objects.all().select_related('author')
 
-{% for article in articles %}
+{% raw %}{% for article in articles %}
   {{ article }} {{ article.author.name }}  # without select_related this will do an additional query per loop
-{% endfor %}
+{% endfor %}{% endraw %}
 
 # With select_related:  1 query
 # Without: 51 queries

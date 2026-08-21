@@ -7,9 +7,8 @@ feed_filenames = ["rss.xml"]
 
 compile_sass = true
 
-[markdown]
-highlight_code = true
-highlight_theme = "cheerfully-light"
+[markdown.highlighting]
+theme = "catppuccin-mocha"
 
 [link_checker]
 skip_anchor_prefixes = [

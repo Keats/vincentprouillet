@@ -31,13 +31,13 @@ For example, if you want to change the about part of the sidebar of Hyde, it is 
 `templates` folder with the following:
 
 ```jinja2
-{% extends "hyde/templates/index.html" %}
+{% raw %}{% extends "hyde/templates/index.html" %}
 
 {% block sidebar_about %}
     Something else
     You can of course render the theme block
-    first by calling {{/* super() */}} if wanted.
-{% endblock sidebar_about %}
+    first by calling {{ super() }} if wanted.
+{% endblock sidebar_about %}{% endraw %}
 ```
 
 The architecture chosen for themes is the same as [Hugo](https://gohugo.io/): you have a themes folder in which you download your

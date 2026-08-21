@@ -124,7 +124,7 @@ While this gives _ok_ results, this approach fails to account for the standard d
 Time to look at [z-score](http://en.wikipedia.org/wiki/Standard_score) !
 This is the standard algorithm to find trending things and is simple to implement:
 
-{{ image(src="http://upload.wikimedia.org/math/8/4/6/8463971a22cc96a1e0612588e5656bce.png", alt="z-score formula") }}
+{{ <image page={page} src="http://upload.wikimedia.org/math/8/4/6/8463971a22cc96a1e0612588e5656bce.png" alt="z-score formula" /> }}
 
 With μ being the history mean and σ the standard deviation of the history data.
 

@@ -16,7 +16,7 @@ Let's start by explaining what is MobX and how it works. It's presented as using
 
 Now, FRP is a very controversial term as everyone seems to have their own definition so let's forget about that and look at a illustration from the MobX docs (click on it to open in a new tab and get full size or open [this link](mobx-flow.png)).
 
-{{ image(src="mobx-flow.png", alt="MobX flow") }}
+{{ <image page={page} src="mobx-flow.png" alt="MobX flow" /> }}
 
 In short, actions modify the state, which triggers reactions. Part of the state can be derived automatically, such as the number of tasks left to do in a TODO list to take the example of the picture above.
 What sets MobX apart from other Observable implementations is the transparent part. Reactions observe which observables you are using and subscribe to them automatically, without you having to explicitely subscribe to those.
@@ -343,7 +343,7 @@ Another neat thing about using MobX for state is that changes will be logged if 
 ### Dev tools
 For React, `mobx-react-devtools` is available and is pretty great. See the gif below from its repo to have an overview of the 3 features.
 
-{{ image(src="devtools.gif", alt="React MobX devtools") }}
+{{ <image page={page} src="devtools.gif" alt="React MobX devtools" /> }}
 
 I have mostly used the logging to inspect action and state changes while debugging and to spot erroneous updates and the re-rendering highlighter to figure out if some of our components were re-rendering too often.
 

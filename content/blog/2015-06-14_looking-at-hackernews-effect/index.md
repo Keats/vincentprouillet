@@ -75,7 +75,7 @@ for (date, title, offset) in articles:
 ```
 
 
-{{ image(src="ga-stats_1_0.png", alt="GA stats: sessions") }}
+{{ <image page={page} src="ga-stats_1_0.png" alt="GA stats: sessions" /> }}
 
 Here are the links of the articles for reference (I'll refer to them by their number in the list below from now on):
 
@@ -107,7 +107,7 @@ _ = plt.axis('equal')
 ```
 
 
-{{ image(src="ga-stats_3_0.png", alt="GA stats: source") }}
+{{ <image page={page} src="ga-stats_3_0.png" alt="GA stats: source" /> }}
 
 We can see most of our sessions are coming from Social, which includes HN/Reddit/Twitter mainly: 16,946 to be exact.
 We also have a significant portion of users coming from referrals which are mainly Python newsletters, [feedly.com](http://feedly.com), [lobste.rs](http://lobste.rs), [hckrnews.com](http://hckrnews.com) and [flipboard.com](http://flipboard.com).
@@ -139,7 +139,7 @@ _ = ax.set_xlabel("Number of sessions")
 ```
 
 
-{{ image(src="ga-stats_5_0.png", alt="GA stats: countries") }}
+{{ <image page={page} src="ga-stats_5_0.png" alt="GA stats: countries" /> }}
 
 As expected, most of the users are from English speaking countries, the articles being written in English after all. We could translate them into French/German if we wanted but that wouldn't be worth the effort of maintaining multiple versions of each article.
 
@@ -176,7 +176,7 @@ oses[oses['Sessions'] > 200]['Sessions'].plot(
 _ = plt.axis('equal')
 ```
 
-{{ image(src="ga-stats_8_0.png", alt="GA stats: os") }}
+{{ <image page={page} src="ga-stats_8_0.png" alt="GA stats: os" /> }}
 
 Interestingly enough, Android and iOS are almost identical.
 
@@ -201,7 +201,7 @@ browsers[browsers['Sessions'] > 200]['Sessions'].plot(
 _ = plt.axis('equal')
 ```
 
-{{ image(src="ga-stats_10_0.png", alt="GA stats: browsers") }}
+{{ <image page={page} src="ga-stats_10_0.png" alt="GA stats: browsers" /> }}
 
 This is a pretty damn big win for Chrome here and almost all of those are on Chrome 42 or 43.
 Most Safari and Firefox users are also on the latest version of their respective browsers.

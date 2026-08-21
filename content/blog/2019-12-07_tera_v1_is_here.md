@@ -35,9 +35,9 @@ type so if you had defined your own they should continue to work, as soon as you
 You can now use the same whitespace management as Jinja2 in Tera:
 
 ```jinja2
-hello
+{% raw %}hello
 {{- username -}}
-!
+!{% endraw %}
 ```
 
 will render `hellovincent!` if `username` is `vincent`. Please see the [documentation](https://tera.netlify.com/docs/#whitespace-control) for more details.

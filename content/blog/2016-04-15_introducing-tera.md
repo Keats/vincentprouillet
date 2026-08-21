@@ -11,24 +11,24 @@ Back in October 2015, I tried [Rust for web services](@/blog/2015-10-01_trying-r
 
 ## Goals and philosophy
 As mentioned before, the inspiration comes from both Jinja2 and Django templates. As you might know, those two have similar syntax but different philosophies: Django templates are for presentation only and don't allow a lot of logic while Jinja2 has more powerful programming constructs in the templates.
-I side with Django on this one as complex logic is better put in code than in a template but Django goes a bit too far by even not supporting something like `{{ count + 1 }}`.
+I side with Django on this one as complex logic is better put in code than in a template but Django goes a bit too far by even not supporting something like `{% raw %}{{ count + 1 }}{% endraw %}`.
 
 So here are some of the features I want:
 
 - math operations in templates
 - no macros or other complex logic in the template
-- beautiful html output out of the box (ie no need for the `{{-` tags)
+- beautiful html output out of the box (ie no need for the `{% raw %}{{-{% endraw %}` tags)
 - simple inheritance
 - simple to use filters
-- able to register new tags easily like the `{% url ... %}` in Django
+- able to register new tags easily like the `{% raw %}{% url ... %}{% endraw %}` in Django
 - include partial templates
 
 While new tags are definitely logic in the template, that logic would have to be written in Rust and not in a template. That limits reusability but is simpler to understand in the end.
 
 Filters should be kept simple and be limited in scope: variable in, modifier function with optional argument and return a string. The easiest to think of would be uppercase, lowercase, capitalize and more importantly time formatting. Here are some examples of how it should look:
 ```jinja
-{{ name | uppercase }}
-{{ birthday | time:"YYYY-MM-dd" }}
+{% raw %}{{ name | uppercase }}
+{{ birthday | time:"YYYY-MM-dd" }}{% endraw %}
 ```
 Users should be able to add their own filters as well.
 
@@ -111,7 +111,7 @@ pub fn parse(&mut self) {
 }
 ```
 
-The trickiest bit was handling precedence in blocks so that something like `{{1 / 2 + 3 * 2 + 42}}` would parse as expected. This is done by assigning precedence values to each kind of token and looking forward to see if something with higer precedence is coming. I would be surprised if there was not a bug in there.
+The trickiest bit was handling precedence in blocks so that something like `{% raw %}{{1 / 2 + 3 * 2 + 42}}{% endraw %}` would parse as expected. This is done by assigning precedence values to each kind of token and looking forward to see if something with higer precedence is coming. I would be surprised if there was not a bug in there.
 
 The output of the parser is a classic AST.
 

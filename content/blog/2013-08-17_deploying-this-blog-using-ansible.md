@@ -112,7 +112,7 @@ These are the actions the play will execute
 Here's the roles/pelican/tasks/main.yml :
 
 ```yaml
----
+{% raw %}---
 
 - name: Install required system packages.
   apt: pkg={{ item }} state=installed
@@ -143,19 +143,19 @@ Here's the roles/pelican/tasks/main.yml :
 
 # Deploy is in a different file because it might get long
 
-- include: deploy.yml
+- include: deploy.yml{% endraw %}
 ```
 
 This uses several [modules](https://docs.ansible.com/ansible/latest/modules/modules_by_category.html "Ansible modules") but this is really how Ansible works : give a
 name to a task and the command to execute, using a module or a raw command.
 I include the deploy.yml instead of listing the tasks in main.yml because I might want to create another playbook only for deploy and it's clearer
 that way anyway.
-All the {{ }} elements are variables explained in the next part.
+All the {% raw %}{{ }}{% endraw %} elements are variables explained in the next part.
 Since you probably don't want to run the whole play everytime you're deploying something, you can tag some tasks and run tasks by tags later.
 Here is the deploy.yml :
 
 ```yaml
----
+{% raw %}---
 
 # Deploy part of the playbook
 
@@ -191,7 +191,7 @@ Here is the deploy.yml :
   template: src=nginx.conf.j2 dest=/etc/nginx/sites-enabled/{{ user }}
   notify: reload nginx
   tags:
-    - deploy
+    - deploy{% endraw %}
 ```
 Several things going on there.
 First you can notice that we're using sudo and sudo_user because we want to run these steps as the pelican user and not root (not very satistied
@@ -204,7 +204,7 @@ These values will be added into the play and usable throughout the play.
 In this case, I'm using the variables in tasks and templates (the nginx config).
 You can also define variable specific to a group by putting them in a group_vars folder in a top directory and naming the yml file the name of the
 group (or use all.yml if you want the variables to be available for every groupe).
-You can use interpolation from within the file itself, but you need to use the ${} syntax of the {{ }} (if anyone knows how to make it work using {{ }} ).
+You can use interpolation from within the file itself, but you need to use the ${} syntax of the {% raw %}{{ }}{% endraw %} (if anyone knows how to make it work using {% raw %}{{ }}{% endraw %} ).
 
 ```yaml
 ---
